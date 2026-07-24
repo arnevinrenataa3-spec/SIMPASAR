@@ -1,2 +1,2 @@
-# SIM-PASAR
+# SIMPASAR
 Sistem Informasi Manajemen Pasar
