@@ -139,26 +139,26 @@ export default function Sidebar({ user }) {
 
       {/* User Profile & Logout Footer */}
       <div className="p-4 border-t border-slate-800/60 bg-slate-950/40">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
             <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-emerald-400 font-bold text-sm shrink-0">
               {user?.name ? user.name.charAt(0).toUpperCase() : 'P'}
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-200 truncate">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-slate-200 line-clamp-2 leading-snug break-words" title={user?.name || 'Petugas'}>
                 {user?.name || 'Petugas'}
               </p>
-              <span className="inline-block px-2 py-0.5 text-[10px] font-medium rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+              <span className="inline-block px-2 py-0.5 mt-0.5 text-[10px] font-medium rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
                 {user?.role || 'petugas'}
               </span>
             </div>
           </div>
 
-          <form action={logoutAction}>
+          <form action={logoutAction} className="shrink-0">
             <button
               type="submit"
               title="Keluar / Logout"
-              className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition duration-150"
+              className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition duration-150 flex items-center justify-center"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

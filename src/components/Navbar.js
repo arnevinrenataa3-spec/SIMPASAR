@@ -13,6 +13,10 @@ export default function Navbar({ user }) {
     day: 'numeric',
   });
 
+  const displayBadgeText = user?.role === 'admin'
+    ? 'Admin'
+    : (user?.pasarNama || 'Petugas');
+
   return (
     <header className="h-16 px-8 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 flex items-center justify-between sticky top-0 z-20">
       {/* Title / Breadcrumb */}
@@ -31,9 +35,9 @@ export default function Navbar({ user }) {
           {currentDate}
         </div>
 
-        {/* Officer Badge */}
-        <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 px-3 py-1.5 rounded-full">
-          <span className="font-semibold text-xs">{user?.name || 'Petugas'}</span>
+        {/* Market / Role Badge */}
+        <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 px-3.5 py-1.5 rounded-full" title={displayBadgeText}>
+          <span className="font-semibold text-xs truncate max-w-[200px]">{displayBadgeText}</span>
         </div>
       </div>
     </header>
