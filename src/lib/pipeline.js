@@ -10,9 +10,26 @@ import { boleh } from './policy.js';
 import { assertWriteScope } from './scope.js';
 
 /**
+ * @typedef {{ user: import('./auth.js').Session, pasarId: string|null }} ActionContext
+ */
+
+/**
+ * @callback ExecuteFn
+ * @param {Record<string,any>} data - hasil parse schema Zod (bentuk sesuai schema)
+ * @param {ActionContext} ctx - `{ user, pasarId }`; `pasarId` null kecuali scope: 'enforce'
+ * @returns {Promise<{message?:string}|{error:string}>}
+ */
+
+/**
  * Definisikan server action yang menyerap plumbing: auth, scope, validasi, revalidasi.
  *
- * @param {{ operasi: string, scope?: 'enforce', schema?: import('zod').ZodType, revalidate?: string[], execute: Function }} config
+ * @param {{
+ *   operasi: string,
+ *   scope?: 'enforce',
+ *   schema?: import('zod').ZodType,
+ *   revalidate?: string[],
+ *   execute: ExecuteFn
+ * }} config
  * @returns {(prevState: any, formData: FormData) => Promise<{success: boolean, message?: string, error?: string, fieldErrors?: Record<string,string[]>}>}
  */
 export function defineAction({ operasi, scope, schema, revalidate = [], execute }) {
