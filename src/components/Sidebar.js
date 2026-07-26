@@ -1,9 +1,11 @@
 'use client';
-/**
- * @description 
- * @author Arnevin Renata Ahmad Barkah
- */
 
+/**
+ * @file src/components/Sidebar.js
+ * @description Komponen Sidebar navigasi menu SIMPASAR.
+ * @author Arnevin Renata Ahmad Barkah
+ * @contributor Muhamad Hazmi Alfarizqi
+ */
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

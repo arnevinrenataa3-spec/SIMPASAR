@@ -1,9 +1,11 @@
 'use server';
-/**
- * @description 
- * @author Arnevin Renata Ahmad Barkah
- */
 
+/**
+ * @file src/app/actions/ruang-dagang.js
+ * @description Server Action untuk manajemen Master Data Ruang Dagang (CRUD & Validasi).
+ * @author Arnevin Renata Ahmad Barkah
+ * @contributor Muhamad Hazmi Alfarizqi
+ */
 
 import { revalidatePath } from 'next/cache';
 import { eq, sql } from 'drizzle-orm';

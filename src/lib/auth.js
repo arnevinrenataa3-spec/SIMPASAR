@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/lib/auth.js
+ * @description Utility autentikasi (manajemen session cookie terenkripsi, verifikasi session).
  * @author Muhamad Hazmi Alfarizqi
  */
 

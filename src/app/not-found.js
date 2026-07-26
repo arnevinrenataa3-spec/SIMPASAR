@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/app/not-found.js
+ * @description Halaman global 404 Not Found SIMPASAR.
  * @author Aditya Syahestiano
  */
 

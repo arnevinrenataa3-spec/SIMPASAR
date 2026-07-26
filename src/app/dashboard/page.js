@@ -1,6 +1,8 @@
 /**
- * @description 
+ * @file src/app/dashboard/page.js
+ * @description Halaman Overview Dashboard SIMPASAR (Statistik Pasar, Ruang Dagang, & Quick Actions).
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { getSession } from '../../lib/auth.js';

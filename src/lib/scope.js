@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/lib/scope.js
+ * @description Utility penentuan scope pasar efektif berdasarkan perizinan & role user.
  * @author Muhamad Hazmi Alfarizqi
  */
 

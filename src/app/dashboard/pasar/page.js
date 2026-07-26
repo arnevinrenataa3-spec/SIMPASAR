@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/app/dashboard/pasar/page.js
+ * @description Halaman server-side Master Data Pasar.
  * @author Arnevin Renata Ahmad Barkah
  */
 

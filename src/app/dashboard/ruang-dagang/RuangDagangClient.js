@@ -1,9 +1,11 @@
 'use client';
-/**
- * @description 
- * @author Arnevin Renata Ahmad Barkah
- */
 
+/**
+ * @file src/app/dashboard/ruang-dagang/RuangDagangClient.js
+ * @description Komponen UI Client-side untuk Master Data Ruang Dagang (CRUD, Validasi, Modal, Search & Filter).
+ * @author Arnevin Renata Ahmad Barkah
+ * @contributor Muhamad Hazmi Alfarizqi
+ */
 
 import { useState, useTransition, useMemo } from 'react';
 import Modal from '../../../components/Modal.js';

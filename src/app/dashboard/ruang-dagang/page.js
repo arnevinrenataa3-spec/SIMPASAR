@@ -1,6 +1,8 @@
 /**
- * @description 
+ * @file src/app/dashboard/ruang-dagang/page.js
+ * @description Halaman server-side Master Data Ruang Dagang (Los / Meja / Kios / Toko).
  * @author Arnevin Renata Ahmad Barkah
+ * @contributor Muhamad Hazmi Alfarizqi
  */
 
 import { redirect } from 'next/navigation';

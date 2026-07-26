@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/db/seed.js
+ * @description Seeder data awal pengguna (admin & petugas default) dan data pasar.
  * @author Muhamad Hazmi Alfarizqi
  */
 

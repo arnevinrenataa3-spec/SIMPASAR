@@ -1,9 +1,10 @@
 'use client';
+
 /**
- * @description 
+ * @file src/components/Modal.js
+ * @description Komponen Dialog Modal reusable dengan listener tombol Escape & Enter.
  * @author Arnevin Renata Ahmad Barkah
  */
-
 
 import { useEffect, useRef } from 'react';
 

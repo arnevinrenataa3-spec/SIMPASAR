@@ -1,10 +1,7 @@
 /**
- * @description 
+ * @file src/lib/logger.js
+ * @description Standard Logger dengan Pretty Print & Timestamp untuk SIMPASAR.
  * @author Muhamad Hazmi Alfarizqi
- */
-
-/**
- * Standard Logger with Pretty Print for SIMPASAR
  */
 
 const COLORS = {

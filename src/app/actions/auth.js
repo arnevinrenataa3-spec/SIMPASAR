@@ -1,9 +1,10 @@
 'use server';
+
 /**
- * @description 
+ * @file src/app/actions/auth.js
+ * @description Server Action untuk alur autentikasi (login dan logout session).
  * @author Muhamad Hazmi Alfarizqi
  */
-
 
 import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';

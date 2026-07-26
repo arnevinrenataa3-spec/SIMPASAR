@@ -1,9 +1,10 @@
 'use server';
+
 /**
- * @description 
+ * @file src/app/actions/pasar.js
+ * @description Server Action untuk manajemen Master Data Pasar (CRUD).
  * @author Muhamad Hazmi Alfarizqi
  */
-
 
 import { revalidatePath } from 'next/cache';
 import { eq, sql } from 'drizzle-orm';

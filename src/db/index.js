@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/db/index.js
+ * @description Inisialisasi koneksi database PostgreSQL dengan Drizzle ORM.
  * @author Muhamad Hazmi Alfarizqi
  */
 

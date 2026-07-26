@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/lib/password.js
+ * @description Utility hashing dan komparasi password aman menggunakan Argon2id.
  * @author Muhamad Hazmi Alfarizqi
  */
 

@@ -1,9 +1,11 @@
 'use client';
-/**
- * @description 
- * @author Arnevin Renata Ahmad Barkah
- */
 
+/**
+ * @file src/app/dashboard/users/UserManagementClient.js
+ * @description Komponen UI Client-side untuk Manajemen Pengguna (CRUD, Modal, Search & Filter).
+ * @author Arnevin Renata Ahmad Barkah
+ * @contributor Muhamad Hazmi Alfarizqi
+ */
 
 import { useState, useTransition } from 'react';
 import Modal from '../../../components/Modal.js';

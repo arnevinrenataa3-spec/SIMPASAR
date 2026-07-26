@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/app/dashboard/layout.js
+ * @description Root layout untuk area Dashboard SIMPASAR (Sidebar, Navbar, Scope Provider).
  * @author Muhamad Hazmi Alfarizqi
  */
 

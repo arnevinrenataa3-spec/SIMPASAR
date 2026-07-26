@@ -1,6 +1,8 @@
 /**
- * @description 
+ * @file src/db/schema.js
+ * @description Single source of truth skema database Drizzle ORM (users, pasar, ruangDagang, perizinan).
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { pgTable, pgEnum, uuid, varchar, text, timestamp, date } from "drizzle-orm/pg-core";

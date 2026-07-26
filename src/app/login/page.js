@@ -1,9 +1,10 @@
 'use client';
+
 /**
- * @description 
+ * @file src/app/login/page.js
+ * @description Halaman login pengguna SIMPASAR.
  * @author Muhamad Hazmi Alfarizqi
  */
-
 
 import { useActionState } from 'react';
 import { loginAction } from '../actions/auth.js';

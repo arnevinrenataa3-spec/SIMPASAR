@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/app/dashboard/users/page.js
+ * @description Halaman server-side Manajemen Pengguna (Admin & Petugas Pasar).
  * @author Arnevin Renata Ahmad Barkah
  */
 

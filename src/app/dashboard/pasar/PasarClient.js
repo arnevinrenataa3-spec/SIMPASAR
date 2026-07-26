@@ -1,9 +1,11 @@
 'use client';
-/**
- * @description 
- * @author Arnevin Renata Ahmad Barkah
- */
 
+/**
+ * @file src/app/dashboard/pasar/PasarClient.js
+ * @description Komponen UI Client-side untuk kelola Master Data Pasar (CRUD, Search & Filter).
+ * @author Arnevin Renata Ahmad Barkah
+ * @contributor Muhamad Hazmi Alfarizqi
+ */
 
 import { useState, useTransition } from 'react';
 import Modal from '../../../components/Modal.js';

@@ -1,9 +1,10 @@
 'use server';
+
 /**
- * @description 
+ * @file src/app/actions/scope.js
+ * @description Server Action untuk pembaruan scope pasar aktif pada session cookie.
  * @author Muhamad Hazmi Alfarizqi
  */
-
 
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';

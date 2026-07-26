@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/db/migrate.js
+ * @description Runner skrip eksekusi migrasi Drizzle Kit.
  * @author Muhamad Hazmi Alfarizqi
  */
 

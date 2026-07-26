@@ -1,9 +1,10 @@
 'use server';
+
 /**
- * @description 
+ * @file src/app/actions/users.js
+ * @description Server Action untuk Manajemen Pengguna / User (Admin & Petugas).
  * @author Muhamad Hazmi Alfarizqi
  */
-
 
 import { revalidatePath } from 'next/cache';
 import { eq, ne, and } from 'drizzle-orm';

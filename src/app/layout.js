@@ -1,5 +1,6 @@
 /**
- * @description 
+ * @file src/app/layout.js
+ * @description Root layout aplikasi SIMPASAR dengan konfigurasi Font & Provider.
  * @author Aditya Syahestiano
  */
 

@@ -1,9 +1,10 @@
 'use client';
+
 /**
- * @description 
+ * @file src/components/Navbar.js
+ * @description Komponen Navbar header dashboard (User Info & Scope Switcher).
  * @author Arnevin Renata Ahmad Barkah
  */
-
 
 import { useTransition } from 'react';
 import { setPasarScopeAction } from '../app/actions/scope.js';
