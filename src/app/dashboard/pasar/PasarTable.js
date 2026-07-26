@@ -13,7 +13,7 @@ import AlertBanner from '../../../components/AlertBanner.js';
 import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import { createPasarAction, updatePasarAction, deletePasarAction } from '../../actions/pasar.js';
 
-export default function PasarClient({ pasars }) {
+export default function PasarTable({ pasars }) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingPasar, setEditingPasar] = useState(null);
   const [deletingPasar, setDeletingPasar] = useState(null);

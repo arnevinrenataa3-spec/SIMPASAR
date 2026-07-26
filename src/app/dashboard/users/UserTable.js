@@ -13,7 +13,7 @@ import AlertBanner from '../../../components/AlertBanner.js';
 import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import { createUserAction, updateUserAction, deleteUserAction } from '../../actions/users.js';
 
-export default function UserManagementClient({ users, pasars = [], currentUserId, selectedScope = 'all' }) {
+export default function UserTable({ users, pasars = [], currentUserId, selectedScope = 'all' }) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [deletingUser, setDeletingUser] = useState(null);

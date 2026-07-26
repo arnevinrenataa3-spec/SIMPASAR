@@ -7,7 +7,7 @@ import { getSession } from '../../../lib/auth.js';
 import { db } from '../../../db/index.js';
 import { users, pasar } from '../../../db/schema.js';
 import { eq, asc } from 'drizzle-orm';
-import UserManagementClient from './UserManagementClient.js';
+import UserTable from './UserTable.js';
 
 export default async function UsersPage() {
   const session = await getSession();
@@ -51,7 +51,7 @@ export default async function UsersPage() {
     .orderBy(asc(pasar.namaPasar));
 
   return (
-    <UserManagementClient
+    <UserTable
       users={userList}
       pasars={pasars}
       currentUserId={session.id}

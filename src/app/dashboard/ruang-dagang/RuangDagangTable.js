@@ -14,7 +14,7 @@ import AlertBanner from '../../../components/AlertBanner.js';
 import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import { createRuangDagangAction, updateRuangDagangAction, deleteRuangDagangAction } from '../../actions/ruang-dagang.js';
 
-export default function RuangDagangClient({ initialData = [], pasars = [], user, selectedScope = 'all' }) {
+export default function RuangDagangTable({ initialData = [], pasars = [], user, selectedScope = 'all' }) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [deletingItem, setDeletingItem] = useState(null);

@@ -6,7 +6,7 @@
 import { getSession } from '../../../lib/auth.js';
 import { db } from '../../../db/index.js';
 import { pasar } from '../../../db/schema.js';
-import PasarClient from './PasarClient.js';
+import PasarTable from './PasarTable.js';
 
 export default async function PasarPage() {
   const session = await getSession();
@@ -37,5 +37,5 @@ export default async function PasarPage() {
     })
     .from(pasar);
 
-  return <PasarClient pasars={pasarList} />;
+  return     <PasarTable pasars={pasarList} />;
 }

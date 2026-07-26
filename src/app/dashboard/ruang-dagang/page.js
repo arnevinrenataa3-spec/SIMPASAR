@@ -11,7 +11,7 @@ import { resolveScope, buildScopeFilter } from '../../../lib/scope.js';
 import { formatLuas, hitungLuas } from '../../../lib/luas.js';
 import { db } from '../../../db/index.js';
 import { ruangDagang, pasar } from '../../../db/schema.js';
-import RuangDagangClient from './RuangDagangClient.js';
+import RuangDagangTable from './RuangDagangTable.js';
 
 export default async function RuangDagangPage() {
   const session = await getSession();
@@ -55,7 +55,7 @@ export default async function RuangDagangPage() {
     .orderBy(asc(pasar.namaPasar));
 
   return (
-    <RuangDagangClient
+    <RuangDagangTable
       initialData={ruangList}
       pasars={pasars}
       user={session}
