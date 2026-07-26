@@ -1,17 +1,19 @@
-# Project Agents & Roles
+<!-- BEGIN:nextjs-agent-rules -->
+# This is NOT the Next.js you know
 
-*To be filled.*
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+<!-- END:nextjs-agent-rules -->
 
 ## Agent skills
 
 ### Issue tracker
 
-Issues and PRDs for this repo live as GitHub issues. See `docs/agents/issue-tracker.md`.
+Issues are tracked on GitHub Issues. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
-The default canonical triage labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+The default 5 canonical labels. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
-Single-context repo layout (`CONTEXT.md` at the root). See `docs/agents/domain.md`.
+Single-context layout. See `docs/agents/domain.md`.
