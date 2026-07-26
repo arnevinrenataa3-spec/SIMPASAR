@@ -4,11 +4,11 @@
  */
 
 import { redirect } from 'next/navigation';
-import { asc } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { getSession } from '../../../lib/auth.js';
+import { getEffectivePasarScope } from '../../../lib/scope.js';
 import { db } from '../../../db/index.js';
 import { ruangDagang, pasar } from '../../../db/schema.js';
-import { eq } from 'drizzle-orm';
 import RuangDagangClient from './RuangDagangClient.js';
 
 export default async function RuangDagangPage() {
@@ -16,6 +16,13 @@ export default async function RuangDagangPage() {
 
   if (!session) {
     redirect('/login');
+  }
+
+  const scope = await getEffectivePasarScope(session);
+
+  let whereClause = undefined;
+  if (scope && scope !== 'all') {
+    whereClause = eq(ruangDagang.pasarId, scope);
   }
 
   const ruangList = await db
@@ -32,6 +39,7 @@ export default async function RuangDagangPage() {
     })
     .from(ruangDagang)
     .leftJoin(pasar, eq(ruangDagang.pasarId, pasar.id))
+    .where(whereClause)
     .orderBy(asc(ruangDagang.kodeRuang));
 
   const pasars = await db
@@ -42,5 +50,12 @@ export default async function RuangDagangPage() {
     .from(pasar)
     .orderBy(asc(pasar.namaPasar));
 
-  return <RuangDagangClient initialData={ruangList} pasars={pasars} user={session} />;
+  return (
+    <RuangDagangClient
+      initialData={ruangList}
+      pasars={pasars}
+      user={session}
+      selectedScope={scope}
+    />
+  );
 }

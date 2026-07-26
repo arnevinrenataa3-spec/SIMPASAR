@@ -9,7 +9,7 @@ import { useState, useTransition } from 'react';
 import Modal from '../../../components/Modal.js';
 import { createUserAction, updateUserAction, deleteUserAction } from '../../actions/users.js';
 
-export default function UserManagementClient({ users, pasars = [], currentUserId }) {
+export default function UserManagementClient({ users, pasars = [], currentUserId, selectedScope = 'all' }) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [deletingUser, setDeletingUser] = useState(null);
@@ -311,6 +311,7 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
               <select
                 name="pasarId"
                 required
+                defaultValue={selectedScope !== 'all' ? selectedScope : ''}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="">-- Pilih Pasar --</option>

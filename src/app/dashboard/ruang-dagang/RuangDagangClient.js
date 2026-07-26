@@ -9,7 +9,7 @@ import { useState, useTransition, useMemo } from 'react';
 import Modal from '../../../components/Modal.js';
 import { createRuangDagangAction, updateRuangDagangAction, deleteRuangDagangAction } from '../../actions/ruang-dagang.js';
 
-export default function RuangDagangClient({ initialData = [], pasars = [], user }) {
+export default function RuangDagangClient({ initialData = [], pasars = [], user, selectedScope = 'all' }) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [deletingItem, setDeletingItem] = useState(null);
@@ -405,6 +405,7 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user 
             <select
               name="pasarId"
               required
+              defaultValue={selectedScope !== 'all' ? selectedScope : ''}
               className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
             >
               <option value="">-- Pilih Pasar --</option>

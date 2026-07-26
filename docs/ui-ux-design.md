@@ -30,3 +30,13 @@ Desain ini tidak hanya akan terlihat seperti aplikasi *enterprise/startup* sungg
 Menyesuaikan alur peneguran lapangan, visual kotak pada denah ruang dagang akan menampilkan indikator tambahan:
 - 🟧 **Oranye/Kuning:** Ruang berstatus SP1 atau SP2 (Sudah lewat tenggang waktu 4-5 minggu).
 - 🚨 **Merah Pekat Berkedip:** Ruang berstatus SP3 (Tenggang waktu habis, ruang siap ditarik paksa secara sistem).
+
+### 5. Market Scope Selector & Aksesibilitas Keyboard Modal
+- **Interactive Scope Selector (Navbar):**
+  - Untuk role **Admin**, Navbar menyediakan dropdown selector pasar dengan ikon panah chevron yang memfasilitasi *single-click market switching*.
+  - Pemilihan pasar disimpan dalam cookie (`simpasar_scope_pasar`) untuk memfilter data pada *Dashboard*, *Ruang Dagang*, dan *User Management*, serta secara otomatis mengonfigurasi `defaultValue` pada modal form CRUD baru.
+  - Untuk role **Petugas**, Navbar menampilkan indikator badge nama pasar tempat petugas ditugaskan.
+- **Aksesibilitas Modal Keyboard:**
+  - Tombol **Esc** (Escape) otomatis menutup modal dialog aktif.
+  - Tombol **Enter** secara cerdas mengeksekusi *form submission* atau aksi utama modal (dengan mengecualikan elemen `<textarea>` untuk baris baru dan tombol `<button>` berfokus).
+

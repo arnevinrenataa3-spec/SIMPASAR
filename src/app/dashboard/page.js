@@ -4,22 +4,59 @@
  */
 
 import { getSession } from '../../lib/auth.js';
+import { getEffectivePasarScope } from '../../lib/scope.js';
+import { db } from '../../db/index.js';
+import { ruangDagang, pasar } from '../../db/schema.js';
+import { eq } from 'drizzle-orm';
 
 export default async function DashboardPage() {
   const user = await getSession();
+  const scope = await getEffectivePasarScope(user);
+
+  let whereClause = undefined;
+  if (scope && scope !== 'all') {
+    whereClause = eq(ruangDagang.pasarId, scope);
+  }
+
+  const allRuang = await db
+    .select({
+      id: ruangDagang.id,
+      status: ruangDagang.status,
+      pasarId: ruangDagang.pasarId,
+    })
+    .from(ruangDagang)
+    .where(whereClause);
+
+  const terisiCount = allRuang.filter((r) => r.status === 'terisi').length;
+  const kosongCount = allRuang.filter((r) => r.status === 'kosong').length;
+
+  let activeScopeLabel = 'Semua Pasar';
+  if (scope && scope !== 'all') {
+    const scopePasar = await db
+      .select({ namaPasar: pasar.namaPasar })
+      .from(pasar)
+      .where(eq(pasar.id, scope))
+      .limit(1);
+    if (scopePasar.length > 0) {
+      activeScopeLabel = scopePasar[0].namaPasar;
+    }
+  }
 
   return (
     <div className="space-y-8">
       {/* Welcome Banner */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-950/70 via-slate-900/80 to-slate-900/80 border border-emerald-500/30 p-8 shadow-xl">
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        
+
         <div className="relative z-10 max-w-2xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold mb-3">
+            🏢 Active Scope: {activeScopeLabel}
+          </div>
           <h1 className="text-3xl font-extrabold text-slate-100 tracking-tight">
             Selamat Datang, {user?.name || 'Petugas'}! 👋
           </h1>
           <p className="text-slate-300 text-sm leading-relaxed mt-2">
-            Portal Sistem Informasi Manajemen Pasar (SIMPASAR). Gunakan menu di sidebar untuk mengelola denah ruang dagang, data pedagang, perizinan, dan peneguran Surat Peringatan (SP).
+            Portal Sistem Informasi Manajemen Pasar (SIMPASAR). Mengelola denah ruang dagang, data pedagang, perizinan, dan peneguran Surat Peringatan (SP) untuk scope <strong>{activeScopeLabel}</strong>.
           </p>
         </div>
       </div>
@@ -38,7 +75,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-slate-100">0</span>
+            <span className="text-3xl font-bold text-slate-100">{terisiCount}</span>
             <span className="text-xs text-emerald-400 font-medium">Ruang Dagang Aktif</span>
           </div>
         </div>
@@ -55,7 +92,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-slate-100">0</span>
+            <span className="text-3xl font-bold text-slate-100">{kosongCount}</span>
             <span className="text-xs text-slate-400 font-medium">Tersedia</span>
           </div>
         </div>

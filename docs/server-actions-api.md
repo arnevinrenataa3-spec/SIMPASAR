@@ -66,3 +66,9 @@ Karena aplikasi dibangun menggunakan **Next.js v16**, kita menggunakan **Server 
 - **Tujuan:** Mengelola akun pengguna (Admin & Petugas) dan penempatan petugas ke Pasar.
 - **Input:** `name`, `username`, `password`, `role`, `pasarId` (untuk petugas)
 - **Output:** `{ success: true, message: '...' }` atau `{ error: '...' }`
+
+#### 9. `setPasarScopeAction(pasarId)`
+- **Aktor:** Admin
+- **Tujuan:** Mengubah dan menyimpan cookie `simpasar_scope_pasar` untuk mengontrol scope aktif seluruh dashboard & CRUD.
+- **Input:** `pasarId` ('all' atau UUID pasar spesifik)
+- **Output:** Memicu `revalidatePath('/dashboard', 'layout')` untuk perbaruan data otomatis.

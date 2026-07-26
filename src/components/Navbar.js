@@ -5,7 +5,12 @@
  */
 
 
-export default function Navbar({ user }) {
+import { useTransition } from 'react';
+import { setPasarScopeAction } from '../app/actions/scope.js';
+
+export default function Navbar({ user, pasars = [], selectedScope = 'all' }) {
+  const [isPending, startTransition] = useTransition();
+
   const currentDate = new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
     year: 'numeric',
@@ -13,9 +18,12 @@ export default function Navbar({ user }) {
     day: 'numeric',
   });
 
-  const displayBadgeText = user?.role === 'admin'
-    ? 'Admin'
-    : (user?.pasarNama || 'Petugas');
+  const handleScopeChange = (e) => {
+    const val = e.target.value;
+    startTransition(async () => {
+      await setPasarScopeAction(val);
+    });
+  };
 
   return (
     <header className="h-16 px-8 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 flex items-center justify-between sticky top-0 z-20">
@@ -35,10 +43,41 @@ export default function Navbar({ user }) {
           {currentDate}
         </div>
 
-        {/* Market / Role Badge */}
-        <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 px-3.5 py-1.5 rounded-full" title={displayBadgeText}>
-          <span className="font-semibold text-xs truncate max-w-[200px]">{displayBadgeText}</span>
-        </div>
+        {/* Market Selector (Admin) or Badge (Petugas) */}
+        {user?.role === 'admin' ? (
+          <div className="relative inline-flex items-center">
+            <select
+              id="pasarScopeSelector"
+              value={selectedScope}
+              onChange={handleScopeChange}
+              disabled={isPending}
+              className="appearance-none bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/50 text-emerald-300 text-xs font-semibold pl-3.5 pr-8 py-1.5 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40 cursor-pointer transition duration-150"
+            >
+              <option value="all" className="bg-slate-900 text-slate-200">
+                🌐 Semua Pasar
+              </option>
+              {pasars.map((p) => (
+                <option key={p.id} value={p.id} className="bg-slate-900 text-slate-200">
+                  🏢 {p.namaPasar}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-emerald-400">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        ) : (
+          <div
+            className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 px-3.5 py-1.5 rounded-full"
+            title={user?.pasarNama || 'Petugas'}
+          >
+            <span className="font-semibold text-xs truncate max-w-[200px]">
+              🏢 {user?.pasarNama || 'Petugas'}
+            </span>
+          </div>
+        )}
       </div>
     </header>
   );
