@@ -7,9 +7,12 @@ import { db } from './index.js';
 import { users } from './schema.js';
 import { hashPassword } from '../lib/password.js';
 import { eq } from 'drizzle-orm';
+import logger from '../lib/logger.js';
 
-async function seed() {
-  console.log('Seeding initial users...');
+const seedLogger = logger.child('DB:Seed');
+
+export async function seed() {
+  seedLogger.info('Seeding initial users...');
 
   const adminPasswordHash = await hashPassword('admin123');
   const petugasPasswordHash = await hashPassword('petugas123');
@@ -22,9 +25,9 @@ async function seed() {
       password: adminPasswordHash,
       role: 'admin',
     });
-    console.log('Created user: admin / admin123');
+    seedLogger.info('Created user: admin / admin123');
   } else {
-    console.log('User "admin" already exists.');
+    seedLogger.info('User "admin" already exists.');
   }
 
   const existingPetugas = await db.select().from(users).where(eq(users.username, 'petugas'));
@@ -35,16 +38,19 @@ async function seed() {
       password: petugasPasswordHash,
       role: 'petugas',
     });
-    console.log('Created user: petugas / petugas123');
+    seedLogger.info('Created user: petugas / petugas123');
   } else {
-    console.log('User "petugas" already exists.');
+    seedLogger.info('User "petugas" already exists.');
   }
 
-  console.log('Seeding completed successfully.');
-  process.exit(0);
+  seedLogger.info('Seeding completed successfully.');
 }
 
-seed().catch((err) => {
-  console.error('Seed failed:', err);
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  seed()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      seedLogger.error('Seed failed:', err);
+      process.exit(1);
+    });
+}
