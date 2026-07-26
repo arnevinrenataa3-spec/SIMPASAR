@@ -30,6 +30,8 @@ export async function createUserAction(prevState, formData) {
   const username = formData.get('username')?.toString().trim().toLowerCase();
   const password = formData.get('password')?.toString();
   const role = formData.get('role')?.toString() || 'petugas';
+  const pasarIdRaw = formData.get('pasarId')?.toString();
+  const pasarId = role === 'admin' ? null : pasarIdRaw;
 
   if (!name || !username || !password) {
     return { error: 'Nama lengkap, username, dan password wajib diisi.' };
@@ -37,6 +39,10 @@ export async function createUserAction(prevState, formData) {
 
   if (!['admin', 'petugas'].includes(role)) {
     return { error: 'Role tidak valid.' };
+  }
+
+  if (role === 'petugas' && !pasarId) {
+    return { error: 'Petugas wajib ditugaskan ke sebuah Pasar.' };
   }
 
   try {
@@ -56,6 +62,7 @@ export async function createUserAction(prevState, formData) {
       username,
       password: passwordHash,
       role,
+      pasarId,
     });
 
     revalidatePath('/dashboard/users');
@@ -77,6 +84,8 @@ export async function updateUserAction(prevState, formData) {
   const username = formData.get('username')?.toString().trim().toLowerCase();
   const password = formData.get('password')?.toString();
   const role = formData.get('role')?.toString() || 'petugas';
+  const pasarIdRaw = formData.get('pasarId')?.toString();
+  const pasarId = role === 'admin' ? null : pasarIdRaw;
 
   if (!id || !name || !username) {
     return { error: 'Data user tidak lengkap.' };
@@ -84,6 +93,10 @@ export async function updateUserAction(prevState, formData) {
 
   if (!['admin', 'petugas'].includes(role)) {
     return { error: 'Role tidak valid.' };
+  }
+
+  if (role === 'petugas' && !pasarId) {
+    return { error: 'Petugas wajib ditugaskan ke sebuah Pasar.' };
   }
 
   try {
@@ -101,6 +114,7 @@ export async function updateUserAction(prevState, formData) {
       name,
       username,
       role,
+      pasarId,
       updatedAt: new Date(),
     };
 

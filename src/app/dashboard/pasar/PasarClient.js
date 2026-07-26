@@ -7,15 +7,12 @@
 
 import { useState, useTransition } from 'react';
 import Modal from '../../../components/Modal.js';
-import { createUserAction, updateUserAction, deleteUserAction } from '../../actions/users.js';
+import { createPasarAction, updatePasarAction, deletePasarAction } from '../../actions/pasar.js';
 
-export default function UserManagementClient({ users, pasars = [], currentUserId }) {
+export default function PasarClient({ pasars }) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
-  const [deletingUser, setDeletingUser] = useState(null);
-
-  const [addRole, setAddRole] = useState('petugas');
-  const [editRole, setEditRole] = useState('petugas');
+  const [editingPasar, setEditingPasar] = useState(null);
+  const [deletingPasar, setDeletingPasar] = useState(null);
 
   const [createState, setCreateState] = useState(null);
   const [isCreatePending, startCreateTransition] = useTransition();
@@ -28,7 +25,7 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
 
   const handleCreate = (formData) => {
     startCreateTransition(async () => {
-      const res = await createUserAction(createState, formData);
+      const res = await createPasarAction(createState, formData);
       setCreateState(res);
       if (res?.success) {
         setIsAddModalOpen(false);
@@ -38,20 +35,20 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
 
   const handleUpdate = (formData) => {
     startUpdateTransition(async () => {
-      const res = await updateUserAction(updateState, formData);
+      const res = await updatePasarAction(updateState, formData);
       setUpdateState(res);
       if (res?.success) {
-        setEditingUser(null);
+        setEditingPasar(null);
       }
     });
   };
 
   const handleDelete = (formData) => {
     startDeleteTransition(async () => {
-      const res = await deleteUserAction(deleteState, formData);
+      const res = await deletePasarAction(deleteState, formData);
       setDeleteState(res);
       if (res?.success) {
-        setDeletingUser(null);
+        setDeletingPasar(null);
       }
     });
   };
@@ -62,10 +59,10 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl">
         <div>
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
-            Kelola User & Petugas
+            Kelola Pasar
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Daftar akun pengelola pasar yang memiliki akses ke sistem SIMPASAR.
+            Daftar pasar yang dikelola dalam sistem SIMPASAR.
           </p>
         </div>
 
@@ -79,7 +76,7 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
           </svg>
-          <span>Tambah User Baru</span>
+          <span>Tambah Pasar Baru</span>
         </button>
       </div>
 
@@ -135,112 +132,96 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
         </div>
       )}
 
-      {/* User Table */}
+      {/* Pasar Table */}
       <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-300">
             <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
               <tr>
-                <th className="px-6 py-4">Pengguna</th>
-                <th className="px-6 py-4">Username</th>
-                <th className="px-6 py-4">Role & Penempatan</th>
+                <th className="px-6 py-4">Nama Pasar</th>
+                <th className="px-6 py-4">Nomor Pasar</th>
+                <th className="px-6 py-4">Alamat</th>
                 <th className="px-6 py-4">Tanggal Dibuat</th>
                 <th className="px-6 py-4 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
-              {users.map((u) => {
-                const isSelf = u.id === currentUserId;
-                const formattedDate = u.createdAt
-                  ? new Date(u.createdAt).toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })
-                  : '-';
+              {pasars.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-8 text-center text-slate-500">
+                    Belum ada data pasar. Silakan tambahkan pasar baru.
+                  </td>
+                </tr>
+              ) : (
+                pasars.map((p) => {
+                  const formattedDate = p.createdAt
+                    ? new Date(p.createdAt).toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })
+                    : '-';
 
-                return (
-                  <tr key={u.id} className="hover:bg-slate-800/40 transition duration-150">
-                    <td className="px-6 py-4 font-medium text-slate-100 flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-sm shrink-0">
-                        {u.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span>{u.name}</span>
-                          {isSelf && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase">
-                              Saya
-                            </span>
-                          )}
+                  return (
+                    <tr key={p.id} className="hover:bg-slate-800/40 transition duration-150">
+                      <td className="px-6 py-4 font-medium text-slate-100 flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-sm shrink-0 uppercase">
+                          {p.namaPasar.charAt(0)}
                         </div>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4 text-slate-300 font-mono text-xs">
-                      @{u.username}
-                    </td>
-
-                    <td className="px-6 py-4">
-                      {u.role === 'admin' ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-semibold uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                          Admin
-                        </span>
-                      ) : (
-                        <div className="flex flex-col gap-1.5 items-start">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-xs font-medium uppercase tracking-wider">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                            Petugas
-                          </span>
-                          <span className="text-[10px] text-slate-400 max-w-[120px] truncate" title={u.namaPasar}>
-                            {u.namaPasar || 'Belum ditugaskan'}
-                          </span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span>{p.namaPasar}</span>
+                          </div>
                         </div>
-                      )}
-                    </td>
+                      </td>
 
-                    <td className="px-6 py-4 text-slate-400 text-xs">
-                      {formattedDate}
-                    </td>
+                      <td className="px-6 py-4 text-slate-300 font-mono text-xs">
+                        {p.nomorPasar}
+                      </td>
 
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button
-                        onClick={() => {
-                          setUpdateState(null);
-                          setEditingUser(u);
-                          setEditRole(u.role);
-                        }}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
-                      >
-                        Edit
-                      </button>
+                      <td className="px-6 py-4 text-slate-300 text-xs max-w-xs truncate">
+                        {p.alamat}
+                      </td>
 
-                      {!isSelf && (
+                      <td className="px-6 py-4 text-slate-400 text-xs">
+                        {formattedDate}
+                      </td>
+
+                      <td className="px-6 py-4 text-right space-x-2">
+                        <button
+                          onClick={() => {
+                            setUpdateState(null);
+                            setEditingPasar(p);
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
+                        >
+                          Edit
+                        </button>
+
                         <button
                           onClick={() => {
                             setDeleteState(null);
-                            setDeletingUser(u);
+                            setDeletingPasar(p);
                           }}
                           className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
                         >
                           Hapus
                         </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Add User Modal */}
+      {/* Add Pasar Modal */}
       <Modal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        title="Tambah User Baru"
+        title="Tambah Pasar Baru"
       >
         <form action={handleCreate} className="space-y-4">
           {createState?.error && (
@@ -251,75 +232,42 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
 
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-              Nama Lengkap
+              Nama Pasar
             </label>
             <input
-              name="name"
+              name="namaPasar"
               type="text"
               required
-              placeholder="Contoh: Ahmad Subagja"
+              placeholder="Contoh: Pasar Induk Cikopo"
               className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-              Username
+              Nomor Pasar
             </label>
             <input
-              name="username"
+              name="nomorPasar"
               type="text"
               required
-              placeholder="ahmad_petugas"
+              placeholder="Contoh: 001"
               className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-              Password
+              Alamat Lengkap
             </label>
-            <input
-              name="password"
-              type="password"
+            <textarea
+              name="alamat"
               required
-              placeholder="••••••••"
+              rows={3}
+              placeholder="Contoh: Jl. Dipatiukur No. 1, Bandung"
               className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
-
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-              Role Akses
-            </label>
-            <select
-              name="role"
-              value={addRole}
-              onChange={(e) => setAddRole(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="petugas">Petugas (Operasional)</option>
-              <option value="admin">Admin (Akses Penuh)</option>
-            </select>
-          </div>
-
-          {addRole === 'petugas' && (
-            <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                Penempatan Pasar <span className="text-rose-400">*</span>
-              </label>
-              <select
-                name="pasarId"
-                required
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option value="">-- Pilih Pasar --</option>
-                {pasars.map((p) => (
-                  <option key={p.id} value={p.id}>{p.namaPasar}</option>
-                ))}
-              </select>
-            </div>
-          )}
 
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
             <button
@@ -334,21 +282,21 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
               disabled={isCreatePending}
               className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
             >
-              {isCreatePending ? 'Menyimpan...' : 'Simpan User'}
+              {isCreatePending ? 'Menyimpan...' : 'Simpan Pasar'}
             </button>
           </div>
         </form>
       </Modal>
 
-      {/* Edit User Modal */}
+      {/* Edit Pasar Modal */}
       <Modal
-        isOpen={Boolean(editingUser)}
-        onClose={() => setEditingUser(null)}
-        title="Edit User"
+        isOpen={Boolean(editingPasar)}
+        onClose={() => setEditingPasar(null)}
+        title="Edit Pasar"
       >
-        {editingUser && (
+        {editingPasar && (
           <form action={handleUpdate} className="space-y-4">
-            <input type="hidden" name="id" value={editingUser.id} />
+            <input type="hidden" name="id" value={editingPasar.id} />
 
             {updateState?.error && (
               <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
@@ -358,80 +306,47 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
 
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                Nama Lengkap
+                Nama Pasar
               </label>
               <input
-                name="name"
+                name="namaPasar"
                 type="text"
                 required
-                defaultValue={editingUser.name}
+                defaultValue={editingPasar.namaPasar}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                Username
+                Nomor Pasar
               </label>
               <input
-                name="username"
+                name="nomorPasar"
                 type="text"
                 required
-                defaultValue={editingUser.username}
+                defaultValue={editingPasar.nomorPasar}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                Password Baru <span className="text-slate-500 capitalize font-normal">(Kosongkan jika tidak ingin mengubah)</span>
+                Alamat Lengkap
               </label>
-              <input
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              <textarea
+                name="alamat"
+                required
+                rows={3}
+                defaultValue={editingPasar.alamat}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
-
-            <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                Role Akses
-              </label>
-              <select
-                name="role"
-                value={editRole}
-                onChange={(e) => setEditRole(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option value="petugas">Petugas (Operasional)</option>
-                <option value="admin">Admin (Akses Penuh)</option>
-              </select>
-            </div>
-
-            {editRole === 'petugas' && (
-              <div>
-                <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                  Penempatan Pasar <span className="text-rose-400">*</span>
-                </label>
-                <select
-                  name="pasarId"
-                  required
-                  defaultValue={editingUser.pasarId}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <option value="">-- Pilih Pasar --</option>
-                  {pasars.map((p) => (
-                    <option key={p.id} value={p.id}>{p.namaPasar}</option>
-                  ))}
-                </select>
-              </div>
-            )}
 
             <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
               <button
                 type="button"
-                onClick={() => setEditingUser(null)}
+                onClick={() => setEditingPasar(null)}
                 className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
               >
                 Batal
@@ -450,10 +365,10 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
 
       {/* Delete Confirmation Modal */}
       <Modal
-        isOpen={Boolean(deletingUser)}
-        onClose={() => setDeletingUser(null)}
+        isOpen={Boolean(deletingPasar)}
+        onClose={() => setDeletingPasar(null)}
       >
-        {deletingUser && (
+        {deletingPasar && (
           <div className="space-y-5 text-center">
             <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center mx-auto">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -462,14 +377,14 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
             </div>
 
             <div>
-              <h3 className="text-lg font-bold text-slate-100">Hapus User @{deletingUser.username}?</h3>
+              <h3 className="text-lg font-bold text-slate-100">Hapus Pasar {deletingPasar.namaPasar}?</h3>
               <p className="text-xs text-slate-400 mt-2">
-                Tindakan ini tidak dapat dibatalkan. Akun user ini akan dihapus permanen dari sistem SIMPASAR.
+                Tindakan ini tidak dapat dibatalkan. Pastikan tidak ada ruang dagang atau petugas yang terhubung dengan pasar ini sebelum menghapus.
               </p>
             </div>
 
             <form action={handleDelete} className="space-y-4">
-              <input type="hidden" name="id" value={deletingUser.id} />
+              <input type="hidden" name="id" value={deletingPasar.id} />
 
               {deleteState?.error && (
                 <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs text-left">
@@ -480,7 +395,7 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
               <div className="flex justify-center gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setDeletingUser(null)}
+                  onClick={() => setDeletingPasar(null)}
                   className="px-4 py-2.5 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
                 >
                   Batal
@@ -490,7 +405,7 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
                   disabled={isDeletePending}
                   className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-rose-500 text-slate-950 hover:bg-rose-400 disabled:opacity-50"
                 >
-                  {isDeletePending ? 'Menghapus...' : 'Ya, Hapus User'}
+                  {isDeletePending ? 'Menghapus...' : 'Ya, Hapus Pasar'}
                 </button>
               </div>
             </form>

@@ -57,21 +57,33 @@ const baseNavItems = [
   },
 ];
 
-const adminNavItem = {
-  name: 'Kelola User',
-  href: '/dashboard/users',
-  isAdminOnly: true,
-  icon: (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-    </svg>
-  ),
-};
+const adminNavItems = [
+  {
+    name: 'Kelola Pasar',
+    href: '/dashboard/pasar',
+    isAdminOnly: true,
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m4 10V11m-4 0h4" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Kelola User',
+    href: '/dashboard/users',
+    isAdminOnly: true,
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    ),
+  }
+];
 
 export default function Sidebar({ user }) {
   const pathname = usePathname();
 
-  const navItems = user?.role === 'admin' ? [...baseNavItems, adminNavItem] : baseNavItems;
+  const navItems = user?.role === 'admin' ? [...baseNavItems, ...adminNavItems] : baseNavItems;
 
   return (
     <aside className="w-64 bg-slate-900/80 backdrop-blur-xl border-r border-slate-800/80 flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none">

@@ -1,8 +1,17 @@
 CREATE TYPE "public"."status_izin" AS ENUM('aktif', 'kedaluwarsa', 'dicabut', 'diperpanjang');--> statement-breakpoint
 CREATE TYPE "public"."role" AS ENUM('admin', 'petugas');--> statement-breakpoint
-CREATE TYPE "public"."jenis_ruang" AS ENUM('kios', 'los', 'lapak');--> statement-breakpoint
+CREATE TYPE "public"."jenis_ruang" AS ENUM('kios', 'los', 'lapak', 'toko');--> statement-breakpoint
 CREATE TYPE "public"."status_ruang" AS ENUM('kosong', 'terisi');--> statement-breakpoint
 CREATE TYPE "public"."status_teguran" AS ENUM('none', 'sp1', 'sp2', 'sp3');--> statement-breakpoint
+CREATE TABLE "pasar" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
+	"nama_pasar" varchar(255) NOT NULL,
+	"alamat" text NOT NULL,
+	"nomor_pasar" varchar(50) NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE "pedagang" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"nik" varchar(16) NOT NULL,
@@ -32,8 +41,10 @@ CREATE TABLE "perizinan" (
 --> statement-breakpoint
 CREATE TABLE "ruang_dagang" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
+	"pasar_id" uuid NOT NULL,
 	"kode_ruang" varchar(50) NOT NULL,
 	"jenis" "jenis_ruang" NOT NULL,
+	"luas" varchar(50),
 	"status" "status_ruang" DEFAULT 'kosong',
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
@@ -42,6 +53,7 @@ CREATE TABLE "ruang_dagang" (
 --> statement-breakpoint
 CREATE TABLE "users" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
+	"pasar_id" uuid,
 	"name" varchar(255) NOT NULL,
 	"username" varchar(255) NOT NULL,
 	"password" varchar(255) NOT NULL,
@@ -52,4 +64,6 @@ CREATE TABLE "users" (
 );
 --> statement-breakpoint
 ALTER TABLE "perizinan" ADD CONSTRAINT "perizinan_ruang_dagang_id_ruang_dagang_id_fk" FOREIGN KEY ("ruang_dagang_id") REFERENCES "public"."ruang_dagang"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "perizinan" ADD CONSTRAINT "perizinan_pedagang_id_pedagang_id_fk" FOREIGN KEY ("pedagang_id") REFERENCES "public"."pedagang"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "perizinan" ADD CONSTRAINT "perizinan_pedagang_id_pedagang_id_fk" FOREIGN KEY ("pedagang_id") REFERENCES "public"."pedagang"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "ruang_dagang" ADD CONSTRAINT "ruang_dagang_pasar_id_pasar_id_fk" FOREIGN KEY ("pasar_id") REFERENCES "public"."pasar"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "users" ADD CONSTRAINT "users_pasar_id_pasar_id_fk" FOREIGN KEY ("pasar_id") REFERENCES "public"."pasar"("id") ON DELETE no action ON UPDATE no action;

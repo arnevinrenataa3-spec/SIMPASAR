@@ -15,9 +15,21 @@ export const teguranStatusEnum = pgEnum("status_teguran", ['none', 'sp1', 'sp2',
 // Postgres v18 has native uuidv7() function
 const defaultUuidV7 = sql`uuidv7()`;
 
+export const pasar = pgTable("pasar", {
+  id: uuid("id").primaryKey().default(defaultUuidV7),
+
+  namaPasar: varchar("nama_pasar", { length: 255 }).notNull(),
+  alamat: text("alamat").notNull(),
+  nomorPasar: varchar("nomor_pasar", { length: 50 }).notNull(),
+
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().default(defaultUuidV7),
 
+  pasarId: uuid("pasar_id").references(() => pasar.id),
   name: varchar("name", { length: 255 }).notNull(),
   username: varchar("username", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
@@ -42,6 +54,7 @@ export const pedagang = pgTable("pedagang", {
 export const ruangDagang = pgTable("ruang_dagang", {
   id: uuid("id").primaryKey().default(defaultUuidV7),
 
+  pasarId: uuid("pasar_id").references(() => pasar.id).notNull(),
   kodeRuang: varchar("kode_ruang", { length: 50 }).notNull().unique(),
   jenis: ruangJenisEnum("jenis").notNull(),
   luas: varchar("luas", { length: 50 }),

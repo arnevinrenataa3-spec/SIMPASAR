@@ -1,9 +1,61 @@
 {
-  "id": "16bfae63-bcf8-47b6-94e5-a99646008cdf",
+  "id": "6c5583af-2254-4f66-9f23-5cd6276b4b35",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.pasar": {
+      "name": "pasar",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuidv7()"
+        },
+        "nama_pasar": {
+          "name": "nama_pasar",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alamat": {
+          "name": "alamat",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nomor_pasar": {
+          "name": "nomor_pasar",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.pedagang": {
       "name": "pedagang",
       "schema": "",
@@ -208,6 +260,12 @@
           "notNull": true,
           "default": "uuidv7()"
         },
+        "pasar_id": {
+          "name": "pasar_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "kode_ruang": {
           "name": "kode_ruang",
           "type": "varchar(50)",
@@ -220,6 +278,12 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
+        },
+        "luas": {
+          "name": "luas",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
         },
         "status": {
           "name": "status",
@@ -245,7 +309,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "ruang_dagang_pasar_id_pasar_id_fk": {
+          "name": "ruang_dagang_pasar_id_pasar_id_fk",
+          "tableFrom": "ruang_dagang",
+          "tableTo": "pasar",
+          "columnsFrom": [
+            "pasar_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "ruang_dagang_kode_ruang_unique": {
@@ -270,6 +348,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "uuidv7()"
+        },
+        "pasar_id": {
+          "name": "pasar_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         },
         "name": {
           "name": "name",
@@ -313,7 +397,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "users_pasar_id_pasar_id_fk": {
+          "name": "users_pasar_id_pasar_id_fk",
+          "tableFrom": "users",
+          "tableTo": "pasar",
+          "columnsFrom": [
+            "pasar_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "users_username_unique": {
@@ -354,7 +452,8 @@
       "values": [
         "kios",
         "los",
-        "lapak"
+        "lapak",
+        "toko"
       ]
     },
     "public.status_ruang": {

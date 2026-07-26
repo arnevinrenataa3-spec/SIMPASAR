@@ -8,6 +8,7 @@ Berdasarkan User Story (Issue #2) dan tambahan fitur Surat Peringatan (SP), beri
 erDiagram
     USERS {
         uuid id PK "UUIDv7"
+        uuid pasar_id FK "Nullable for admin"
         string name
         string username
         string password
@@ -26,10 +27,20 @@ erDiagram
         datetime updated_at
     }
 
+    PASAR {
+        uuid id PK "UUIDv7"
+        string nama_pasar
+        string nomor_pasar
+        text alamat
+        datetime created_at
+        datetime updated_at
+    }
+
     RUANG_DAGANG {
         uuid id PK "UUIDv7"
+        uuid pasar_id FK
         string kode_ruang "UNIQUE (e.g. A01)"
-        string jenis "'kios', 'los', 'lapak'"
+        string jenis "'kios', 'los', 'lapak', 'toko'"
         string status "'kosong', 'terisi'"
         datetime created_at
         datetime updated_at
@@ -50,13 +61,16 @@ erDiagram
         datetime updated_at
     }
 
+    PASAR ||--o{ USERS : "memiliki petugas"
+    PASAR ||--o{ RUANG_DAGANG : "memiliki ruang"
     PEDAGANG ||--o{ PERIZINAN : "mengajukan"
     RUANG_DAGANG ||--o{ PERIZINAN : "ditempati"
 ```
 
 ### Penjelasan Relasi & Keputusan Teknis
 1. **Primary Key (UUIDv7)**: Menggunakan UUIDv7 (bukan Auto-Increment / BigInt) untuk semua entitas. UUIDv7 sangat ideal karena terurut berdasarkan waktu (*time-ordered*), menjaga performa *indexing* database, dan lebih aman dari *enumeration attack*.
-2. **One-to-Many (`PEDAGANG` -> `PERIZINAN`)**: 1 Pedagang bisa menyewa banyak Ruang Dagang sekaligus (multi-petak) dan memiliki banyak riwayat. Tidak boleh ada duplikasi NIK di tabel `PEDAGANG`.
-3. **One-to-Many (`RUANG_DAGANG` -> `PERIZINAN`)**: 1 Ruang Dagang memiliki banyak `PERIZINAN` karena history penyewa sebelumnya atau history perpanjangan izin tetap tersimpan.
-4. **Pencarian Publik (QR Code)**: Kolom `nomor_kartu` pada tabel `PERIZINAN` adalah parameter unik (string *random* atau nomor register) yang digunakan saat Penghuni melakukan scan QR Code di halaman publik.
-5. **Surat Peringatan (SP)**: Penambahan kolom `status_teguran` dan `tanggal_teguran` di tabel `PERIZINAN` untuk melacak riwayat SP berjenjang (SP1, SP2, SP3) jika penyewa menunggak.
+2. **One-to-Many (`PASAR` -> `USERS` & `RUANG_DAGANG`)**: Semua entitas ruang dagang dan petugas dikelompokkan ke masing-masing Pasar.
+3. **One-to-Many (`PEDAGANG` -> `PERIZINAN`)**: 1 Pedagang bisa menyewa banyak Ruang Dagang sekaligus (multi-petak) dan memiliki banyak riwayat. Tidak boleh ada duplikasi NIK di tabel `PEDAGANG`.
+4. **One-to-Many (`RUANG_DAGANG` -> `PERIZINAN`)**: 1 Ruang Dagang memiliki banyak `PERIZINAN` karena history penyewa sebelumnya atau history perpanjangan izin tetap tersimpan.
+5. **Pencarian Publik (QR Code)**: Kolom `nomor_kartu` pada tabel `PERIZINAN` adalah parameter unik (string *random* atau nomor register) yang digunakan saat Penghuni melakukan scan QR Code di halaman publik.
+6. **Surat Peringatan (SP)**: Penambahan kolom `status_teguran` dan `tanggal_teguran` di tabel `PERIZINAN` untuk melacak riwayat SP berjenjang (SP1, SP2, SP3) jika penyewa menunggak.

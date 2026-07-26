@@ -9,7 +9,7 @@ import { useState, useTransition, useMemo } from 'react';
 import Modal from '../../../components/Modal.js';
 import { createRuangDagangAction, updateRuangDagangAction, deleteRuangDagangAction } from '../../actions/ruang-dagang.js';
 
-export default function RuangDagangClient({ initialData = [], user }) {
+export default function RuangDagangClient({ initialData = [], pasars = [], user }) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [deletingItem, setDeletingItem] = useState(null);
@@ -303,6 +303,7 @@ export default function RuangDagangClient({ initialData = [], user }) {
           <table className="w-full text-left text-sm text-slate-300">
             <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
               <tr>
+                <th className="px-4 py-3.5">Pasar</th>
                 <th className="px-4 py-3.5">Kode Ruang</th>
                 <th className="px-4 py-3.5">Jenis</th>
                 <th className="px-4 py-3.5">Luas (P x L)</th>
@@ -320,6 +321,9 @@ export default function RuangDagangClient({ initialData = [], user }) {
               ) : (
                 filteredData.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-800/40 transition duration-150">
+                    <td className="px-4 py-3.5 font-medium text-slate-100">
+                      {item.namaPasar || '-'}
+                    </td>
                     <td className="px-4 py-3.5 font-bold font-mono text-emerald-400">
                       {item.kodeRuang}
                     </td>
@@ -393,6 +397,22 @@ export default function RuangDagangClient({ initialData = [], user }) {
               {createState.error}
             </div>
           )}
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              Pasar <span className="text-rose-400">*</span>
+            </label>
+            <select
+              name="pasarId"
+              required
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
+            >
+              <option value="">-- Pilih Pasar --</option>
+              {pasars.map((p) => (
+                <option key={p.id} value={p.id}>{p.namaPasar}</option>
+              ))}
+            </select>
+          </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
@@ -522,6 +542,23 @@ export default function RuangDagangClient({ initialData = [], user }) {
                 {updateState.error}
               </div>
             )}
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Pasar <span className="text-rose-400">*</span>
+              </label>
+              <select
+                name="pasarId"
+                required
+                defaultValue={editingItem.pasarId}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
+              >
+                <option value="">-- Pilih Pasar --</option>
+                {pasars.map((p) => (
+                  <option key={p.id} value={p.id}>{p.namaPasar}</option>
+                ))}
+              </select>
+            </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">

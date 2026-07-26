@@ -5,11 +5,10 @@
 
 import { getSession } from '../../../lib/auth.js';
 import { db } from '../../../db/index.js';
-import { users, pasar } from '../../../db/schema.js';
-import { eq, asc } from 'drizzle-orm';
-import UserManagementClient from './UserManagementClient.js';
+import { pasar } from '../../../db/schema.js';
+import PasarClient from './PasarClient.js';
 
-export default async function UsersPage() {
+export default async function PasarPage() {
   const session = await getSession();
 
   if (!session || session.role !== 'admin') {
@@ -22,33 +21,21 @@ export default async function UsersPage() {
         </div>
         <h2 className="text-xl font-bold mb-2">Akses Ditolak</h2>
         <p className="text-sm text-rose-200/80">
-          Halaman ini khusus untuk pengguna dengan role <strong>Admin</strong>. Anda tidak memiliki izin untuk mengelola akun petugas/admin.
+          Halaman ini khusus untuk pengguna dengan role <strong>Admin</strong>. Anda tidak memiliki izin untuk mengelola data pasar.
         </p>
       </div>
     );
   }
 
-  const userList = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      username: users.username,
-      role: users.role,
-      pasarId: users.pasarId,
-      namaPasar: pasar.namaPasar,
-      createdAt: users.createdAt,
-    })
-    .from(users)
-    .leftJoin(pasar, eq(users.pasarId, pasar.id))
-    .orderBy(asc(users.name));
-
-  const pasars = await db
+  const pasarList = await db
     .select({
       id: pasar.id,
       namaPasar: pasar.namaPasar,
+      alamat: pasar.alamat,
+      nomorPasar: pasar.nomorPasar,
+      createdAt: pasar.createdAt,
     })
-    .from(pasar)
-    .orderBy(asc(pasar.namaPasar));
+    .from(pasar);
 
-  return <UserManagementClient users={userList} pasars={pasars} currentUserId={session.id} />;
+  return <PasarClient pasars={pasarList} />;
 }

@@ -44,3 +44,25 @@ Karena aplikasi dibangun menggunakan **Next.js v16**, kita menggunakan **Server 
 - **Tujuan:** Menerbitkan Surat Peringatan (SP1, SP2, SP3) berdasarkan waktu kedaluwarsa yang telah lewat (4 minggu, 5 minggu, 6 minggu).
 - **Input:** `ruang_dagang_id` (UUID), `tingkatan_sp` (String)
 - **Output:** `{ success: true, message: 'SP Berhasil Diterbitkan' }`
+
+---
+
+### Manajemen Master Data (Admin & Petugas)
+
+#### 6. `createPasarAction(formData)` / `updatePasarAction(formData)` / `deletePasarAction(formData)`
+- **Aktor:** Admin
+- **Tujuan:** Mengelola data master Pasar (Nama, Nomor, Alamat).
+- **Input:** `namaPasar`, `nomorPasar`, `alamat` (beserta `id` untuk update/delete)
+- **Output:** `{ success: true, message: '...' }` atau `{ error: '...' }`
+
+#### 7. `createRuangDagangAction(formData)` / `updateRuangDagangAction(formData)` / `deleteRuangDagangAction(formData)`
+- **Aktor:** Admin
+- **Tujuan:** Mengelola data master Ruang Dagang (Kios, Meja, Lapak, Toko).
+- **Input:** `pasarId`, `kodeRuang`, `jenis`, `panjang`, `lebar`, `status` (beserta `id` untuk update/delete)
+- **Output:** `{ success: true, message: '...' }` atau `{ error: '...' }`
+
+#### 8. `createUserAction(formData)` / `updateUserAction(formData)` / `deleteUserAction(formData)`
+- **Aktor:** Admin
+- **Tujuan:** Mengelola akun pengguna (Admin & Petugas) dan penempatan petugas ke Pasar.
+- **Input:** `name`, `username`, `password`, `role`, `pasarId` (untuk petugas)
+- **Output:** `{ success: true, message: '...' }` atau `{ error: '...' }`

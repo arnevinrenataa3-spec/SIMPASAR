@@ -15,7 +15,6 @@ export async function seed() {
   seedLogger.info('Seeding initial users...');
 
   const adminPasswordHash = await hashPassword('admin123');
-  const petugasPasswordHash = await hashPassword('petugas123');
 
   const existingAdmin = await db.select().from(users).where(eq(users.username, 'admin'));
   if (existingAdmin.length === 0) {
@@ -28,19 +27,6 @@ export async function seed() {
     seedLogger.info('Created user: admin / admin123');
   } else {
     seedLogger.info('User "admin" already exists.');
-  }
-
-  const existingPetugas = await db.select().from(users).where(eq(users.username, 'petugas'));
-  if (existingPetugas.length === 0) {
-    await db.insert(users).values({
-      name: 'Petugas Pengelola',
-      username: 'petugas',
-      password: petugasPasswordHash,
-      role: 'petugas',
-    });
-    seedLogger.info('Created user: petugas / petugas123');
-  } else {
-    seedLogger.info('User "petugas" already exists.');
   }
 
   seedLogger.info('Seeding completed successfully.');

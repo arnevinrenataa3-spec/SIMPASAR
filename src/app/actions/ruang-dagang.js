@@ -31,6 +31,7 @@ export async function createRuangDagangAction(prevState, formData) {
     return { error: 'Akses ditolak. Anda harus login untuk melakukan tindakan ini.' };
   }
 
+  const pasarId = formData.get('pasarId')?.toString();
   const kodeRuangRaw = formData.get('kodeRuang')?.toString().trim();
   const jenis = formData.get('jenis')?.toString().trim().toLowerCase();
   const status = formData.get('status')?.toString().trim().toLowerCase() || 'kosong';
@@ -46,6 +47,10 @@ export async function createRuangDagangAction(prevState, formData) {
       const totalArea = Math.round(p * l * 100) / 100;
       luas = `${p} x ${l} m (${totalArea} m²)`;
     }
+  }
+
+  if (!pasarId) {
+    return { error: 'Pasar wajib dipilih.' };
   }
 
   if (!kodeRuangRaw) {
@@ -74,6 +79,7 @@ export async function createRuangDagangAction(prevState, formData) {
     }
 
     await db.insert(ruangDagang).values({
+      pasarId,
       kodeRuang,
       jenis,
       luas,
@@ -100,6 +106,7 @@ export async function updateRuangDagangAction(prevState, formData) {
   }
 
   const id = formData.get('id')?.toString();
+  const pasarId = formData.get('pasarId')?.toString();
   const kodeRuangRaw = formData.get('kodeRuang')?.toString().trim();
   const jenis = formData.get('jenis')?.toString().trim().toLowerCase();
   const status = formData.get('status')?.toString().trim().toLowerCase() || 'kosong';
@@ -109,6 +116,10 @@ export async function updateRuangDagangAction(prevState, formData) {
 
   if (!id) {
     return { error: 'ID ruang dagang tidak valid.' };
+  }
+
+  if (!pasarId) {
+    return { error: 'Pasar wajib dipilih.' };
   }
 
   if (!kodeRuangRaw) {
@@ -149,6 +160,7 @@ export async function updateRuangDagangAction(prevState, formData) {
     await db
       .update(ruangDagang)
       .set({
+        pasarId,
         kodeRuang,
         jenis,
         luas,
