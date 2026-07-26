@@ -7,7 +7,7 @@ import { pgTable, pgEnum, uuid, varchar, text, timestamp, date } from "drizzle-o
 import { sql } from "drizzle-orm";
 
 export const roleEnum = pgEnum("role", ['admin', 'petugas']);
-export const ruangJenisEnum = pgEnum("jenis_ruang", ['kios', 'los', 'lapak']);
+export const ruangJenisEnum = pgEnum("jenis_ruang", ['kios', 'los', 'lapak', 'toko']);
 export const ruangStatusEnum = pgEnum("status_ruang", ['kosong', 'terisi']);
 export const perizinanStatusEnum = pgEnum("status_izin", ['aktif', 'kedaluwarsa', 'dicabut', 'diperpanjang']);
 export const teguranStatusEnum = pgEnum("status_teguran", ['none', 'sp1', 'sp2', 'sp3']);
@@ -44,6 +44,7 @@ export const ruangDagang = pgTable("ruang_dagang", {
 
   kodeRuang: varchar("kode_ruang", { length: 50 }).notNull().unique(),
   jenis: ruangJenisEnum("jenis").notNull(),
+  luas: varchar("luas", { length: 50 }),
   status: ruangStatusEnum("status").default('kosong'),
 
   createdAt: timestamp("created_at").defaultNow(),

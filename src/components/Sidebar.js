@@ -20,6 +20,15 @@ const baseNavItems = [
     ),
   },
   {
+    name: 'Ruang Dagang',
+    href: '/dashboard/ruang-dagang',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m4 10V11m-4 0h4" />
+      </svg>
+    ),
+  },
+  {
     name: 'Data Pedagang',
     href: '/dashboard/pedagang',
     icon: (

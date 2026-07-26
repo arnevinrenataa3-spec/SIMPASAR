@@ -5,7 +5,7 @@
  */
 
 
-import { useState, useActionState, useEffect } from 'react';
+import { useState, useActionState } from 'react';
 import { createUserAction, updateUserAction, deleteUserAction } from '../../actions/users.js';
 
 export default function UserManagementClient({ users, currentUserId }) {
@@ -17,24 +17,7 @@ export default function UserManagementClient({ users, currentUserId }) {
   const [updateState, updateAction, isUpdatePending] = useActionState(updateUserAction, null);
   const [deleteState, deleteAction, isDeletePending] = useActionState(deleteUserAction, null);
 
-  // Close modals on success
-  useEffect(() => {
-    if (createState?.success) {
-      setIsAddModalOpen(false);
-    }
-  }, [createState]);
 
-  useEffect(() => {
-    if (updateState?.success) {
-      setEditingUser(null);
-    }
-  }, [updateState]);
-
-  useEffect(() => {
-    if (deleteState?.success) {
-      setDeletingUser(null);
-    }
-  }, [deleteState]);
 
   return (
     <div className="space-y-6">
