@@ -44,7 +44,7 @@ export async function createRuangDagangAction(prevState, formData) {
     const l = parseFloat(lebarRaw);
     if (!isNaN(p) && !isNaN(l) && p > 0 && l > 0) {
       const totalArea = Math.round(p * l * 100) / 100;
-      luas = `${p}x${l} m² (${totalArea} m²)`;
+      luas = `${p} x ${l} m (${totalArea} m²)`;
     }
   }
 
@@ -55,7 +55,7 @@ export async function createRuangDagangAction(prevState, formData) {
   const kodeRuang = kodeRuangRaw.toUpperCase();
 
   if (!['kios', 'los', 'lapak', 'toko'].includes(jenis)) {
-    return { error: 'Jenis ruang dagang tidak valid. Pilih antara Kios, Los, Lapak, atau Toko.' };
+    return { error: 'Jenis ruang dagang tidak valid. Pilih antara Kios, Meja, Lapak, atau Toko.' };
   }
 
   if (!['kosong', 'terisi'].includes(status)) {
@@ -87,6 +87,83 @@ export async function createRuangDagangAction(prevState, formData) {
   } catch (err) {
     console.error('Error creating ruang dagang:', err);
     return { error: 'Gagal menambahkan ruang dagang baru pada server.' };
+  }
+}
+
+/**
+ * Server Action: Update existing Ruang Dagang
+ */
+export async function updateRuangDagangAction(prevState, formData) {
+  const session = await checkAuth();
+  if (!session) {
+    return { error: 'Akses ditolak. Anda harus login untuk melakukan tindakan ini.' };
+  }
+
+  const id = formData.get('id')?.toString();
+  const kodeRuangRaw = formData.get('kodeRuang')?.toString().trim();
+  const jenis = formData.get('jenis')?.toString().trim().toLowerCase();
+  const status = formData.get('status')?.toString().trim().toLowerCase() || 'kosong';
+
+  const panjangRaw = formData.get('panjang')?.toString().trim();
+  const lebarRaw = formData.get('lebar')?.toString().trim();
+
+  if (!id) {
+    return { error: 'ID ruang dagang tidak valid.' };
+  }
+
+  if (!kodeRuangRaw) {
+    return { error: 'Kode ruang dagang wajib diisi.' };
+  }
+
+  const kodeRuang = kodeRuangRaw.toUpperCase();
+
+  if (!['kios', 'los', 'lapak', 'toko'].includes(jenis)) {
+    return { error: 'Jenis ruang dagang tidak valid. Pilih antara Kios, Meja, Lapak, atau Toko.' };
+  }
+
+  if (!['kosong', 'terisi'].includes(status)) {
+    return { error: 'Status ruang dagang tidak valid. Pilih antara Kosong atau Terisi.' };
+  }
+
+  let luas = null;
+  if (panjangRaw && lebarRaw) {
+    const p = parseFloat(panjangRaw);
+    const l = parseFloat(lebarRaw);
+    if (!isNaN(p) && !isNaN(l) && p > 0 && l > 0) {
+      const totalArea = Math.round(p * l * 100) / 100;
+      luas = `${p} x ${l} m (${totalArea} m²)`;
+    }
+  }
+
+  try {
+    // Check if kodeRuang belongs to another record
+    const existing = await db
+      .select()
+      .from(ruangDagang)
+      .where(sql`LOWER(${ruangDagang.kodeRuang}) = LOWER(${kodeRuang}) AND ${ruangDagang.id} != ${id}`);
+
+    if (existing.length > 0) {
+      return { error: `Kode ruang "${kodeRuang}" sudah digunakan oleh ruang dagang lain.` };
+    }
+
+    await db
+      .update(ruangDagang)
+      .set({
+        kodeRuang,
+        jenis,
+        luas,
+        status,
+        updatedAt: new Date(),
+      })
+      .where(eq(ruangDagang.id, id));
+
+    revalidatePath('/dashboard/ruang-dagang');
+    revalidatePath('/dashboard');
+
+    return { success: true, message: `Ruang dagang "${kodeRuang}" berhasil diperbarui.` };
+  } catch (err) {
+    console.error('Error updating ruang dagang:', err);
+    return { error: 'Gagal memperbarui data ruang dagang pada server.' };
   }
 }
 

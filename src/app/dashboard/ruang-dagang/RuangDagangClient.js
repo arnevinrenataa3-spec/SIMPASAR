@@ -7,10 +7,11 @@
 
 import { useState, useTransition, useMemo } from 'react';
 import Modal from '../../../components/Modal.js';
-import { createRuangDagangAction, deleteRuangDagangAction } from '../../actions/ruang-dagang.js';
+import { createRuangDagangAction, updateRuangDagangAction, deleteRuangDagangAction } from '../../actions/ruang-dagang.js';
 
 export default function RuangDagangClient({ initialData = [], user }) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
   const [deletingItem, setDeletingItem] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,9 +20,14 @@ export default function RuangDagangClient({ initialData = [], user }) {
 
   const [panjang, setPanjang] = useState('');
   const [lebar, setLebar] = useState('');
+  const [editPanjang, setEditPanjang] = useState('');
+  const [editLebar, setEditLebar] = useState('');
 
   const [createState, setCreateState] = useState(null);
   const [isCreatePending, startCreateTransition] = useTransition();
+
+  const [updateState, setUpdateState] = useState(null);
+  const [isUpdatePending, startUpdateTransition] = useTransition();
 
   const [deleteState, setDeleteState] = useState(null);
   const [isDeletePending, startDeleteTransition] = useTransition();
@@ -34,6 +40,18 @@ export default function RuangDagangClient({ initialData = [], user }) {
         setIsAddModalOpen(false);
         setPanjang('');
         setLebar('');
+      }
+    });
+  };
+
+  const handleUpdate = (formData) => {
+    startUpdateTransition(async () => {
+      const res = await updateRuangDagangAction(updateState, formData);
+      setUpdateState(res);
+      if (res?.success) {
+        setEditingItem(null);
+        setEditPanjang('');
+        setEditLebar('');
       }
     });
   };
@@ -82,7 +100,7 @@ export default function RuangDagangClient({ initialData = [], user }) {
       case 'los':
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
-            Los
+            Meja
           </span>
         );
       case 'lapak':
@@ -132,7 +150,7 @@ export default function RuangDagangClient({ initialData = [], user }) {
             Master Data Ruang Dagang
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Kelola data fisik ruang dagang (Kios, Los, Lapak, dan Toko) serta pantau ketersediaannya.
+            Kelola data fisik ruang dagang (Kios, Meja, Lapak, dan Toko) serta pantau ketersediaannya.
           </p>
         </div>
 
@@ -157,19 +175,19 @@ export default function RuangDagangClient({ initialData = [], user }) {
           <div className="text-2xl font-bold text-slate-100 mt-1">{stats.total}</div>
         </div>
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-indigo-400 uppercase tracking-wider">Tipe Kios</span>
+          <span className="text-[11px] font-medium text-indigo-400 uppercase tracking-wider">Kios</span>
           <div className="text-2xl font-bold text-indigo-300 mt-1">{stats.kios}</div>
         </div>
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-cyan-400 uppercase tracking-wider">Tipe Los</span>
+          <span className="text-[11px] font-medium text-cyan-400 uppercase tracking-wider">Meja</span>
           <div className="text-2xl font-bold text-cyan-300 mt-1">{stats.los}</div>
         </div>
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-purple-400 uppercase tracking-wider">Tipe Lapak</span>
+          <span className="text-[11px] font-medium text-purple-400 uppercase tracking-wider">Lapak</span>
           <div className="text-2xl font-bold text-purple-300 mt-1">{stats.lapak}</div>
         </div>
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-blue-400 uppercase tracking-wider">Tipe Toko</span>
+          <span className="text-[11px] font-medium text-blue-400 uppercase tracking-wider">Toko</span>
           <div className="text-2xl font-bold text-blue-300 mt-1">{stats.toko}</div>
         </div>
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
@@ -246,27 +264,37 @@ export default function RuangDagangClient({ initialData = [], user }) {
           </div>
 
           <div className="flex items-center gap-3">
-            <select
-              value={filterJenis}
-              onChange={(e) => setFilterJenis(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-300 text-xs focus:outline-none focus:border-emerald-500/50"
-            >
-              <option value="all">Semua Tipe Ruang</option>
-              <option value="kios">Kios</option>
-              <option value="los">Los</option>
-              <option value="lapak">Lapak</option>
-              <option value="toko">Toko</option>
-            </select>
+            <div className="relative">
+              <select
+                value={filterJenis}
+                onChange={(e) => setFilterJenis(e.target.value)}
+                className="appearance-none pl-3.5 pr-8 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-300 text-xs focus:outline-none focus:border-emerald-500/50 hover:border-slate-700 transition cursor-pointer"
+              >
+                <option value="all" className="bg-slate-900 text-slate-200">Semua Jenis Ruang</option>
+                <option value="kios" className="bg-slate-900 text-slate-200">Kios</option>
+                <option value="los" className="bg-slate-900 text-slate-200">Meja</option>
+                <option value="lapak" className="bg-slate-900 text-slate-200">Lapak</option>
+                <option value="toko" className="bg-slate-900 text-slate-200">Toko</option>
+              </select>
+              <svg className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
 
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-300 text-xs focus:outline-none focus:border-emerald-500/50"
-            >
-              <option value="all">Semua Status</option>
-              <option value="kosong">Kosong</option>
-              <option value="terisi">Terisi</option>
-            </select>
+            <div className="relative">
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="appearance-none pl-3.5 pr-8 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-300 text-xs focus:outline-none focus:border-emerald-500/50 hover:border-slate-700 transition cursor-pointer"
+              >
+                <option value="all" className="bg-slate-900 text-slate-200">Semua Status</option>
+                <option value="kosong" className="bg-slate-900 text-slate-200">Kosong</option>
+                <option value="terisi" className="bg-slate-900 text-slate-200">Terisi</option>
+              </select>
+              <svg className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
         </div>
 
@@ -276,7 +304,7 @@ export default function RuangDagangClient({ initialData = [], user }) {
             <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
               <tr>
                 <th className="px-4 py-3.5">Kode Ruang</th>
-                <th className="px-4 py-3.5">Tipe</th>
+                <th className="px-4 py-3.5">Jenis</th>
                 <th className="px-4 py-3.5">Luas (P x L)</th>
                 <th className="px-4 py-3.5">Status</th>
                 {user?.role === 'admin' && <th className="px-4 py-3.5 text-right">Aksi</th>}
@@ -299,11 +327,8 @@ export default function RuangDagangClient({ initialData = [], user }) {
                       {getJenisBadge(item.jenis)}
                     </td>
                     <td className="px-4 py-3.5 font-mono text-xs text-slate-300">
-                      {item.panjang && item.lebar ? (
-                        <span>
-                          {item.panjang} x {item.lebar} m{' '}
-                          <span className="text-slate-500">({item.luasTotal} m²)</span>
-                        </span>
+                      {item.luas ? (
+                        <span>{item.luas}</span>
                       ) : (
                         <span className="text-slate-500">-</span>
                       )}
@@ -313,15 +338,39 @@ export default function RuangDagangClient({ initialData = [], user }) {
                     </td>
                     {user?.role === 'admin' && (
                       <td className="px-4 py-3.5 text-right">
-                        <button
-                          onClick={() => {
-                            setDeleteState(null);
-                            setDeletingItem(item);
-                          }}
-                          className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 transition cursor-pointer"
-                        >
-                          Hapus
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setUpdateState(null);
+                              setEditingItem(item);
+                              if (item.luas) {
+                                const match = item.luas.match(/^([\d.]+)\s*x\s*([\d.]+)/i);
+                                if (match) {
+                                  setEditPanjang(match[1]);
+                                  setEditLebar(match[2]);
+                                } else {
+                                  setEditPanjang('');
+                                  setEditLebar('');
+                                }
+                              } else {
+                                setEditPanjang('');
+                                setEditLebar('');
+                              }
+                            }}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/20 transition cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDeleteState(null);
+                              setDeletingItem(item);
+                            }}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 transition cursor-pointer"
+                          >
+                            Hapus
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -369,7 +418,7 @@ export default function RuangDagangClient({ initialData = [], user }) {
               className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
             >
               <option value="kios">Kios (Bangunan Permanen)</option>
-              <option value="los">Los (Meja / Area Terbuka)</option>
+              <option value="los">Meja (Area Terbuka)</option>
               <option value="lapak">Lapak (Area Harian / Pelataran)</option>
               <option value="toko">Toko (Bangunan Toko / Ruko)</option>
             </select>
@@ -456,6 +505,136 @@ export default function RuangDagangClient({ initialData = [], user }) {
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Modal Edit Ruang Dagang */}
+      <Modal
+        isOpen={Boolean(editingItem)}
+        onClose={() => setEditingItem(null)}
+        title="Edit Data Ruang Dagang"
+      >
+        {editingItem && (
+          <form action={handleUpdate} className="space-y-4">
+            <input type="hidden" name="id" value={editingItem.id} />
+
+            {updateState?.error && (
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+                {updateState.error}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Kode Ruang Dagang <span className="text-rose-400">*</span>
+              </label>
+              <input
+                type="text"
+                name="kodeRuang"
+                defaultValue={editingItem.kodeRuang}
+                required
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500/50 uppercase font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Jenis Ruang Dagang <span className="text-rose-400">*</span>
+              </label>
+              <select
+                name="jenis"
+                defaultValue={editingItem.jenis}
+                required
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
+              >
+                <option value="kios">Kios (Bangunan Permanen)</option>
+                <option value="los">Meja (Area Terbuka)</option>
+                <option value="lapak">Lapak (Area Harian / Pelataran)</option>
+                <option value="toko">Toko (Bangunan Toko / Ruko)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Ukuran Ruang Dagang (Panjang x Lebar)
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      name="panjang"
+                      placeholder="3"
+                      value={editPanjang}
+                      onChange={(e) => setEditPanjang(e.target.value)}
+                      className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 font-mono"
+                    />
+                    <span className="absolute right-3 top-3 text-xs text-slate-500 font-medium">m</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 mt-1 block">Panjang (meter)</span>
+                </div>
+
+                <div>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      name="lebar"
+                      placeholder="4"
+                      value={editLebar}
+                      onChange={(e) => setEditLebar(e.target.value)}
+                      className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 font-mono"
+                    />
+                    <span className="absolute right-3 top-3 text-xs text-slate-500 font-medium">m</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 mt-1 block">Lebar (meter)</span>
+                </div>
+              </div>
+
+              {editPanjang && editLebar && !isNaN(parseFloat(editPanjang)) && !isNaN(parseFloat(editLebar)) && parseFloat(editPanjang) > 0 && parseFloat(editLebar) > 0 && (
+                <div className="mt-2.5 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono flex items-center justify-between">
+                  <span>Estimasi Luas Total:</span>
+                  <span className="font-bold">
+                    {editPanjang} x {editLebar} m = {(parseFloat(editPanjang) * parseFloat(editLebar)).toFixed(2).replace(/\.00$/, '')} m²
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Status
+              </label>
+              <select
+                name="status"
+                defaultValue={editingItem.status}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
+              >
+                <option value="kosong">Kosong (Tersedia untuk disewa)</option>
+                <option value="terisi">Terisi</option>
+              </select>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setEditingItem(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 transition"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                disabled={isUpdatePending}
+                className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition shadow-lg shadow-emerald-500/20 cursor-pointer"
+              >
+                {isUpdatePending ? 'Menyimpan...' : 'Simpan Perubahan'}
+              </button>
+            </div>
+          </form>
+        )}
       </Modal>
 
       {/* Modal Konfirmasi Hapus */}
