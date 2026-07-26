@@ -29,7 +29,7 @@ export default async function DashboardPage() {
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 hover:border-slate-700/80 transition duration-200">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Total Petak Terisi
+              Ruang Dagang Terisi
             </span>
             <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -39,14 +39,14 @@ export default async function DashboardPage() {
           </div>
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-3xl font-bold text-slate-100">0</span>
-            <span className="text-xs text-emerald-400 font-medium">Petak Aktif</span>
+            <span className="text-xs text-emerald-400 font-medium">Ruang Dagang Aktif</span>
           </div>
         </div>
 
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 hover:border-slate-700/80 transition duration-200">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Petak Kosong
+              Ruang Dagang Kosong
             </span>
             <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 flex items-center justify-center">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

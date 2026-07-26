@@ -106,7 +106,7 @@ export default function RuangDagangClient({ initialData = [], user }) {
             Master Data Ruang Dagang
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Kelola data fisik petak pasar (Kios, Los, Lapak, dan Toko) serta pantau ketersediaannya.
+            Kelola data fisik ruang dagang (Kios, Los, Lapak, dan Toko) serta pantau ketersediaannya.
           </p>
         </div>
 
@@ -124,7 +124,7 @@ export default function RuangDagangClient({ initialData = [], user }) {
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total Petak</span>
+          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total Ruang Dagang</span>
           <div className="text-2xl font-bold text-slate-100 mt-1">{stats.total}</div>
         </div>
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
@@ -342,7 +342,7 @@ export default function RuangDagangClient({ initialData = [], user }) {
                   required
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500/50 uppercase font-mono"
                 />
-                <p className="text-[11px] text-slate-500 mt-1">Kode petak bersifat unik di sistem.</p>
+                <p className="text-[11px] text-slate-500 mt-1">Kode ruang dagang bersifat unik di sistem.</p>
               </div>
 
               <div>
@@ -355,8 +355,8 @@ export default function RuangDagangClient({ initialData = [], user }) {
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
                 >
                   <option value="kios">Kios (Bangunan Permanen)</option>
-                  <option value="los">Los (Meja / Petak Terbuka)</option>
-                  <option value="lapak">Lapak (Petak Harian / Pelataran)</option>
+                  <option value="los">Los (Meja / Area Terbuka)</option>
+                  <option value="lapak">Lapak (Area Harian / Pelataran)</option>
                   <option value="toko">Toko (Bangunan Toko / Ruko)</option>
                 </select>
               </div>
