@@ -1,14 +1,17 @@
 'use client';
 
 /**
- * @file src/app/dashboard/ruang-dagang/RuangDagangClient.js
  * @description Komponen UI Client-side untuk Master Data Ruang Dagang (CRUD, Validasi, Modal, Search & Filter).
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Muhamad Hazmi Alfarizqi
  */
 
-import { useState, useTransition, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useCrudActions } from '../../../lib/useCrudActions.js';
+import { hitungLuas, formatLuas } from '../../../lib/luas.js';
 import Modal from '../../../components/Modal.js';
+import AlertBanner from '../../../components/AlertBanner.js';
+import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import { createRuangDagangAction, updateRuangDagangAction, deleteRuangDagangAction } from '../../actions/ruang-dagang.js';
 
 export default function RuangDagangClient({ initialData = [], pasars = [], user, selectedScope = 'all' }) {
@@ -25,50 +28,23 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
   const [editPanjang, setEditPanjang] = useState('');
   const [editLebar, setEditLebar] = useState('');
 
-  const [createState, setCreateState] = useState(null);
-  const [isCreatePending, startCreateTransition] = useTransition();
+  const actions = useCrudActions({
+    create: createRuangDagangAction,
+    update: updateRuangDagangAction,
+    remove: deleteRuangDagangAction,
+    onCreateSuccess: () => {
+      setIsAddModalOpen(false);
+      setPanjang('');
+      setLebar('');
+    },
+    onUpdateSuccess: () => {
+      setEditingItem(null);
+      setEditPanjang('');
+      setEditLebar('');
+    },
+    onDeleteSuccess: () => setDeletingItem(null),
+  });
 
-  const [updateState, setUpdateState] = useState(null);
-  const [isUpdatePending, startUpdateTransition] = useTransition();
-
-  const [deleteState, setDeleteState] = useState(null);
-  const [isDeletePending, startDeleteTransition] = useTransition();
-
-  const handleCreate = (formData) => {
-    startCreateTransition(async () => {
-      const res = await createRuangDagangAction(createState, formData);
-      setCreateState(res);
-      if (res?.success) {
-        setIsAddModalOpen(false);
-        setPanjang('');
-        setLebar('');
-      }
-    });
-  };
-
-  const handleUpdate = (formData) => {
-    startUpdateTransition(async () => {
-      const res = await updateRuangDagangAction(updateState, formData);
-      setUpdateState(res);
-      if (res?.success) {
-        setEditingItem(null);
-        setEditPanjang('');
-        setEditLebar('');
-      }
-    });
-  };
-
-  const handleDelete = (formData) => {
-    startDeleteTransition(async () => {
-      const res = await deleteRuangDagangAction(deleteState, formData);
-      setDeleteState(res);
-      if (res?.success) {
-        setDeletingItem(null);
-      }
-    });
-  };
-
-  // Compute KPI Stats
   const stats = useMemo(() => {
     const total = initialData.length;
     const kios = initialData.filter((item) => item.jenis === 'kios').length;
@@ -80,7 +56,6 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
     return { total, kios, los, lapak, toko, kosong, terisi };
   }, [initialData]);
 
-  // Filtered List
   const filteredData = useMemo(() => {
     return initialData.filter((item) => {
       const matchSearch = item.kodeRuang.toLowerCase().includes(searchTerm.toLowerCase().trim());
@@ -90,7 +65,6 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
     });
   }, [initialData, searchTerm, filterJenis, filterStatus]);
 
-  // Helper for Badge Colors
   const getJenisBadge = (jenis) => {
     switch (jenis) {
       case 'kios':
@@ -107,13 +81,13 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
         );
       case 'lapak':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/15 text-purple-300 border border-purple-500/30 uppercase tracking-wider">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
             Lapak
           </span>
         );
       case 'toko':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 uppercase tracking-wider">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
             Toko
           </span>
         );
@@ -127,41 +101,48 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
   };
 
   const getStatusBadge = (status) => {
-    if (status === 'terisi') {
-      return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-          Terisi
-        </span>
-      );
+    switch (status) {
+      case 'terisi':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 text-xs font-semibold uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+            Terisi
+          </span>
+        );
+      case 'kosong':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-semibold uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            Kosong
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/15 text-slate-300 border border-slate-500/30 uppercase tracking-wider">
+            {status}
+          </span>
+        );
     }
-    return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-        Kosong
-      </span>
-    );
   };
 
-  return (
-    <div className="space-y-8">
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl shadow-lg">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
-            Master Data Ruang Dagang
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Kelola data fisik ruang dagang (Kios, Meja, Lapak, dan Toko) serta pantau ketersediaannya.
-          </p>
-        </div>
+  const luasPreviewCreat = hitungLuas(panjang, lebar);
+  const luasPreviewEdit = hitungLuas(editPanjang, editLebar);
+  const isAdmin = user?.role === 'admin';
 
+  return (
+    <div className="space-y-6">
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Kelola Ruang Dagang</h1>
+          <p className="text-xs text-slate-400 mt-1">Daftar ruang dagang yang tersedia di scope pasar aktif.</p>
+        </div>
         <button
           onClick={() => {
-            setCreateState(null);
+            actions.create.reset();
             setIsAddModalOpen(true);
           }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition duration-150 shadow-lg shadow-emerald-500/20 text-sm cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition duration-150 shadow-lg shadow-emerald-500/20 text-sm"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
@@ -170,119 +151,61 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
         </button>
       </div>
 
-      {/* KPI Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total Ruang Dagang</span>
-          <div className="text-2xl font-bold text-slate-100 mt-1">{stats.total}</div>
-        </div>
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-indigo-400 uppercase tracking-wider">Kios</span>
-          <div className="text-2xl font-bold text-indigo-300 mt-1">{stats.kios}</div>
-        </div>
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-cyan-400 uppercase tracking-wider">Meja</span>
-          <div className="text-2xl font-bold text-cyan-300 mt-1">{stats.los}</div>
-        </div>
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-purple-400 uppercase tracking-wider">Lapak</span>
-          <div className="text-2xl font-bold text-purple-300 mt-1">{stats.lapak}</div>
-        </div>
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-blue-400 uppercase tracking-wider">Toko</span>
-          <div className="text-2xl font-bold text-blue-300 mt-1">{stats.toko}</div>
-        </div>
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-emerald-400 uppercase tracking-wider">Kosong</span>
-          <div className="text-2xl font-bold text-emerald-400 mt-1">{stats.kosong}</div>
-        </div>
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4">
-          <span className="text-[11px] font-medium text-amber-400 uppercase tracking-wider">Terisi</span>
-          <div className="text-2xl font-bold text-amber-300 mt-1">{stats.terisi}</div>
-        </div>
+      {/* Alerts */}
+      <AlertBanner state={actions.create.state} />
+      <AlertBanner state={actions.update.state} />
+      <AlertBanner state={actions.delete.state} />
+
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
+        {[
+          { label: 'Total', value: stats.total, color: 'text-slate-100' },
+          { label: 'Kios', value: stats.kios, color: 'text-indigo-400' },
+          { label: 'Meja', value: stats.los, color: 'text-cyan-400' },
+          { label: 'Lapak', value: stats.lapak, color: 'text-emerald-400' },
+          { label: 'Toko', value: stats.toko, color: 'text-amber-400' },
+          { label: 'Kosong', value: stats.kosong, color: 'text-emerald-400' },
+          { label: 'Terisi', value: stats.terisi, color: 'text-rose-400' },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center"
+          >
+            <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
+            <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
+          </div>
+        ))}
       </div>
 
-      {/* Global Action Messages / Alerts */}
-      {createState?.success && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+      {/* Search & Filter */}
+      <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl px-6 py-4">
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          <div className="relative flex-1 w-full">
+            <svg className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <span>{createState.message}</span>
-          </div>
-        </div>
-      )}
-      {createState?.error && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center gap-2">
-          <svg className="w-5 h-5 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span>{createState.error}</span>
-        </div>
-      )}
-      {deleteState?.success && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm flex items-center gap-2">
-          <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <span>{deleteState.message}</span>
-        </div>
-      )}
-      {deleteState?.error && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center gap-2">
-          <svg className="w-5 h-5 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span>{deleteState.error}</span>
-        </div>
-      )}
-
-      {/* Filter & Table Container */}
-      <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl space-y-4 p-4 sm:p-6">
-        {/* Controls Toolbar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
-          <div className="relative flex-1 max-w-md">
             <input
               type="text"
-              placeholder="Cari kode ruang (misal: A-01)..."
+              placeholder="Cari kode ruang..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500/50 transition duration-150"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-emerald-500/50 placeholder-slate-600"
             />
-            <svg
-              className="w-4 h-4 text-slate-500 absolute left-3.5 top-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
           </div>
-
-          <div className="flex items-center gap-3">
+          <div className="flex gap-2">
             <div className="relative">
               <select
                 value={filterJenis}
                 onChange={(e) => setFilterJenis(e.target.value)}
                 className="appearance-none pl-3.5 pr-8 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-300 text-xs focus:outline-none focus:border-emerald-500/50 hover:border-slate-700 transition cursor-pointer"
               >
-                <option value="all" className="bg-slate-900 text-slate-200">Semua Jenis Ruang</option>
+                <option value="all" className="bg-slate-900 text-slate-200">Semua Jenis</option>
                 <option value="kios" className="bg-slate-900 text-slate-200">Kios</option>
                 <option value="los" className="bg-slate-900 text-slate-200">Meja</option>
                 <option value="lapak" className="bg-slate-900 text-slate-200">Lapak</option>
                 <option value="toko" className="bg-slate-900 text-slate-200">Toko</option>
               </select>
-              <svg className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
             </div>
-
             <div className="relative">
               <select
                 value={filterStatus}
@@ -293,15 +216,12 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
                 <option value="kosong" className="bg-slate-900 text-slate-200">Kosong</option>
                 <option value="terisi" className="bg-slate-900 text-slate-200">Terisi</option>
               </select>
-              <svg className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
             </div>
           </div>
         </div>
 
-        {/* Table Data */}
-        <div className="overflow-x-auto">
+        {/* Table */}
+        <div className="overflow-x-auto mt-4">
           <table className="w-full text-left text-sm text-slate-300">
             <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
               <tr>
@@ -310,13 +230,13 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
                 <th className="px-4 py-3.5">Jenis</th>
                 <th className="px-4 py-3.5">Luas (P x L)</th>
                 <th className="px-4 py-3.5">Status</th>
-                {user?.role === 'admin' && <th className="px-4 py-3.5 text-right">Aksi</th>}
+                <th className="px-4 py-3.5 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
               {filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan={user?.role === 'admin' ? 5 : 4} className="py-12 text-center text-slate-500">
+                  <td colSpan={6} className="py-12 text-center text-slate-500">
                     Tidak ada data ruang dagang yang cocok.
                   </td>
                 </tr>
@@ -342,43 +262,32 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
                     <td className="px-4 py-3.5">
                       {getStatusBadge(item.status)}
                     </td>
-                    {user?.role === 'admin' && (
-                      <td className="px-4 py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              setUpdateState(null);
-                              setEditingItem(item);
-                              if (item.luas) {
-                                const match = item.luas.match(/^([\d.]+)\s*x\s*([\d.]+)/i);
-                                if (match) {
-                                  setEditPanjang(match[1]);
-                                  setEditLebar(match[2]);
-                                } else {
-                                  setEditPanjang('');
-                                  setEditLebar('');
-                                }
-                              } else {
-                                setEditPanjang('');
-                                setEditLebar('');
-                              }
-                            }}
-                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/20 transition cursor-pointer"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => {
-                              setDeleteState(null);
-                              setDeletingItem(item);
-                            }}
-                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 transition cursor-pointer"
-                          >
-                            Hapus
-                          </button>
-                        </div>
-                      </td>
-                    )}
+                    <td className="px-4 py-3.5 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            actions.update.reset();
+                            setEditingItem(item);
+                            if (item.panjang != null) setEditPanjang(String(item.panjang));
+                            else setEditPanjang('');
+                            if (item.lebar != null) setEditLebar(String(item.lebar));
+                            else setEditLebar('');
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/20 transition cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => {
+                            actions.delete.reset();
+                            setDeletingItem(item);
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 transition cursor-pointer"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
@@ -387,35 +296,31 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
         </div>
       </div>
 
-      {/* Modal Form Tambah Ruang Dagang */}
+      {/* Add Modal */}
       <Modal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         title="Tambah Ruang Dagang Baru"
       >
-        <form action={handleCreate} className="space-y-4">
-          {createState?.error && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
-              {createState.error}
+        <form action={actions.create.action} className="space-y-4">
+          {isAdmin && (
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Pasar <span className="text-rose-400">*</span>
+              </label>
+              <select
+                name="pasarId"
+                required
+                defaultValue={selectedScope !== 'all' ? selectedScope : ''}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
+              >
+                <option value="">-- Pilih Pasar --</option>
+                {pasars.map((p) => (
+                  <option key={p.id} value={p.id}>{p.namaPasar}</option>
+                ))}
+              </select>
             </div>
           )}
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              Pasar <span className="text-rose-400">*</span>
-            </label>
-            <select
-              name="pasarId"
-              required
-              defaultValue={selectedScope !== 'all' ? selectedScope : ''}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
-            >
-              <option value="">-- Pilih Pasar --</option>
-              {pasars.map((p) => (
-                <option key={p.id} value={p.id}>{p.namaPasar}</option>
-              ))}
-            </select>
-          </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
@@ -424,26 +329,25 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
             <input
               type="text"
               name="kodeRuang"
-              placeholder="Contoh: A-01, K-12, T-05"
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500/50 uppercase font-mono"
+              placeholder="Contoh: KI-A-01"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50"
             />
-            <p className="text-[11px] text-slate-500 mt-1">Kode ruang dagang bersifat unik di sistem.</p>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              Jenis Ruang Dagang <span className="text-rose-400">*</span>
+              Jenis Ruang Dagang
             </label>
             <select
               name="jenis"
               required
               className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
             >
-              <option value="kios">Kios (Bangunan Permanen)</option>
-              <option value="los">Meja (Area Terbuka)</option>
-              <option value="lapak">Lapak (Area Harian / Pelataran)</option>
-              <option value="toko">Toko (Bangunan Toko / Ruko)</option>
+              <option value="kios">Kios</option>
+              <option value="los">Meja</option>
+              <option value="lapak">Lapak</option>
+              <option value="toko">Toko</option>
             </select>
           </div>
 
@@ -487,11 +391,11 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
               </div>
             </div>
 
-            {panjang && lebar && !isNaN(parseFloat(panjang)) && !isNaN(parseFloat(lebar)) && parseFloat(panjang) > 0 && parseFloat(lebar) > 0 && (
+            {luasPreviewCreat != null && (
               <div className="mt-2.5 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono flex items-center justify-between">
                 <span>Estimasi Luas Total:</span>
                 <span className="font-bold">
-                  {panjang} x {lebar} m = {(parseFloat(panjang) * parseFloat(lebar)).toFixed(2).replace(/\.00$/, '')} m²
+                  {formatLuas(panjang, lebar, luasPreviewCreat)}
                 </span>
               </div>
             )}
@@ -521,47 +425,44 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
             </button>
             <button
               type="submit"
-              disabled={isCreatePending}
+              disabled={actions.create.pending}
               className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition shadow-lg shadow-emerald-500/20 cursor-pointer"
             >
-              {isCreatePending ? 'Menyimpan...' : 'Simpan Ruang Dagang'}
+              {actions.create.pending ? 'Menyimpan...' : 'Simpan Ruang Dagang'}
             </button>
           </div>
         </form>
       </Modal>
 
-      {/* Modal Edit Ruang Dagang */}
+      {/* Edit Modal */}
       <Modal
         isOpen={Boolean(editingItem)}
         onClose={() => setEditingItem(null)}
         title="Edit Data Ruang Dagang"
       >
         {editingItem && (
-          <form action={handleUpdate} className="space-y-4">
+          <form action={actions.update.action} className="space-y-4">
             <input type="hidden" name="id" value={editingItem.id} />
+            <input type="hidden" name="pasarId" value={editingItem.pasarId} />
 
-            {updateState?.error && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
-                {updateState.error}
+            {isAdmin && (
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                  Pasar <span className="text-rose-400">*</span>
+                </label>
+                <select
+                  name="pasarId"
+                  required
+                  defaultValue={editingItem.pasarId}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
+                >
+                  <option value="">-- Pilih Pasar --</option>
+                  {pasars.map((p) => (
+                    <option key={p.id} value={p.id}>{p.namaPasar}</option>
+                  ))}
+                </select>
               </div>
             )}
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Pasar <span className="text-rose-400">*</span>
-              </label>
-              <select
-                name="pasarId"
-                required
-                defaultValue={editingItem.pasarId}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
-              >
-                <option value="">-- Pilih Pasar --</option>
-                {pasars.map((p) => (
-                  <option key={p.id} value={p.id}>{p.namaPasar}</option>
-                ))}
-              </select>
-            </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
@@ -570,26 +471,26 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
               <input
                 type="text"
                 name="kodeRuang"
-                defaultValue={editingItem.kodeRuang}
                 required
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500/50 uppercase font-mono"
+                defaultValue={editingItem.kodeRuang}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 uppercase font-mono"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Jenis Ruang Dagang <span className="text-rose-400">*</span>
+                Jenis Ruang Dagang
               </label>
               <select
                 name="jenis"
-                defaultValue={editingItem.jenis}
                 required
+                defaultValue={editingItem.jenis}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
               >
-                <option value="kios">Kios (Bangunan Permanen)</option>
-                <option value="los">Meja (Area Terbuka)</option>
-                <option value="lapak">Lapak (Area Harian / Pelataran)</option>
-                <option value="toko">Toko (Bangunan Toko / Ruko)</option>
+                <option value="kios">Kios</option>
+                <option value="los">Meja</option>
+                <option value="lapak">Lapak</option>
+                <option value="toko">Toko</option>
               </select>
             </div>
 
@@ -633,11 +534,11 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
                 </div>
               </div>
 
-              {editPanjang && editLebar && !isNaN(parseFloat(editPanjang)) && !isNaN(parseFloat(editLebar)) && parseFloat(editPanjang) > 0 && parseFloat(editLebar) > 0 && (
+              {luasPreviewEdit != null && (
                 <div className="mt-2.5 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono flex items-center justify-between">
                   <span>Estimasi Luas Total:</span>
                   <span className="font-bold">
-                    {editPanjang} x {editLebar} m = {(parseFloat(editPanjang) * parseFloat(editLebar)).toFixed(2).replace(/\.00$/, '')} m²
+                    {formatLuas(editPanjang, editLebar, luasPreviewEdit)}
                   </span>
                 </div>
               )}
@@ -667,72 +568,24 @@ export default function RuangDagangClient({ initialData = [], pasars = [], user,
               </button>
               <button
                 type="submit"
-                disabled={isUpdatePending}
+                disabled={actions.update.pending}
                 className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition shadow-lg shadow-emerald-500/20 cursor-pointer"
               >
-                {isUpdatePending ? 'Menyimpan...' : 'Simpan Perubahan'}
+                {actions.update.pending ? 'Menyimpan...' : 'Simpan Perubahan'}
               </button>
             </div>
           </form>
         )}
       </Modal>
 
-      {/* Modal Konfirmasi Hapus */}
-      <Modal
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
         isOpen={Boolean(deletingItem)}
         onClose={() => setDeletingItem(null)}
-      >
-        {deletingItem && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 text-rose-400">
-              <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center shrink-0">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-100">Konfirmasi Hapus</h3>
-                <p className="text-xs text-slate-400">Tindakan ini tidak dapat dibatalkan.</p>
-              </div>
-            </div>
-
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Apakah Anda yakin ingin menghapus ruang dagang dengan kode{' '}
-              <strong className="font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                {deletingItem.kodeRuang}
-              </strong>
-              ?
-            </p>
-
-            <form action={handleDelete} className="space-y-4">
-              <input type="hidden" name="id" value={deletingItem.id} />
-
-              {deleteState?.error && (
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
-                  {deleteState.error}
-                </div>
-              )}
-
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setDeletingItem(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 transition"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={isDeletePending}
-                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 disabled:opacity-50 transition shadow-lg shadow-rose-600/20 cursor-pointer"
-                >
-                  {isDeletePending ? 'Menghapus...' : 'Ya, Hapus Ruang Dagang'}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-      </Modal>
+        itemName={deletingItem?.kodeRuang}
+        onConfirm={actions.delete.action}
+        isPending={actions.delete.pending}
+      />
     </div>
   );
 }

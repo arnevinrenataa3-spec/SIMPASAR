@@ -1,161 +1,121 @@
 'use server';
 
 /**
- * @file src/app/actions/users.js
  * @description Server Action untuk Manajemen Pengguna / User (Admin & Petugas).
  * @author Muhamad Hazmi Alfarizqi
  */
 
-import { revalidatePath } from 'next/cache';
 import { eq, ne, and } from 'drizzle-orm';
+import { z } from 'zod';
 import { db } from '../../db/index.js';
 import { users } from '../../db/schema.js';
-import { getSession } from '../../lib/auth.js';
 import { hashPassword } from '../../lib/password.js';
+import { defineAction } from '../../lib/pipeline.js';
 
-async function checkAdminAuth() {
-  const session = await getSession();
-  if (!session || session.role !== 'admin') {
-    return null;
-  }
-  return session;
-}
+const createSchema = z.object({
+  name: z.string().min(1, 'Nama lengkap wajib diisi.'),
+  username: z.string().min(1, 'Username wajib diisi.'),
+  password: z.string().min(1, 'Password wajib diisi.'),
+  role: z.enum(['admin', 'petugas'], { message: 'Role tidak valid.' }),
+  pasarId: z.string().optional().default(''),
+});
 
-export async function createUserAction(prevState, formData) {
-  const adminSession = await checkAdminAuth();
-  if (!adminSession) {
-    return { error: 'Akses ditolak. Fitur ini hanya dapat diakses oleh Admin.' };
-  }
+const updateSchema = z.object({
+  id: z.string().min(1, 'ID user tidak valid.'),
+  name: z.string().min(1, 'Nama lengkap wajib diisi.'),
+  username: z.string().min(1, 'Username wajib diisi.'),
+  password: z.string().optional().default(''),
+  role: z.enum(['admin', 'petugas'], { message: 'Role tidak valid.' }),
+  pasarId: z.string().optional().default(''),
+});
 
-  const name = formData.get('name')?.toString().trim();
-  const username = formData.get('username')?.toString().trim().toLowerCase();
-  const password = formData.get('password')?.toString();
-  const role = formData.get('role')?.toString() || 'petugas';
-  const pasarIdRaw = formData.get('pasarId')?.toString();
-  const pasarId = role === 'admin' ? null : pasarIdRaw;
+const deleteSchema = z.object({
+  id: z.string().min(1, 'ID user tidak valid.'),
+});
 
-  if (!name || !username || !password) {
-    return { error: 'Nama lengkap, username, dan password wajib diisi.' };
-  }
+export const createUserAction = defineAction({
+  operasi: 'users:crud',
+  schema: createSchema,
+  revalidate: ['/dashboard/users'],
+  execute: async (data) => {
+    const pasarId = data.role === 'admin' ? null : data.pasarId;
 
-  if (!['admin', 'petugas'].includes(role)) {
-    return { error: 'Role tidak valid.' };
-  }
+    if (data.role === 'petugas' && !pasarId) {
+      return { error: 'Petugas wajib ditugaskan ke sebuah Pasar.' };
+    }
 
-  if (role === 'petugas' && !pasarId) {
-    return { error: 'Petugas wajib ditugaskan ke sebuah Pasar.' };
-  }
-
-  try {
     const existing = await db
       .select()
       .from(users)
-      .where(eq(users.username, username));
+      .where(eq(users.username, data.username.toLowerCase()));
 
     if (existing.length > 0) {
       return { error: 'Username sudah terdaftar. Silakan gunakan username lain.' };
     }
 
-    const passwordHash = await hashPassword(password);
+    const passwordHash = await hashPassword(data.password);
 
     await db.insert(users).values({
-      name,
-      username,
+      name: data.name,
+      username: data.username.toLowerCase(),
       password: passwordHash,
-      role,
+      role: data.role,
       pasarId,
     });
 
-    revalidatePath('/dashboard/users');
-    return { success: true, message: `User "${username}" berhasil dibuat.` };
-  } catch (err) {
-    console.error('Error creating user:', err);
-    return { error: 'Gagal membuat user baru pada server.' };
-  }
-}
+    return { message: `User "${data.username}" berhasil dibuat.` };
+  },
+});
 
-export async function updateUserAction(prevState, formData) {
-  const adminSession = await checkAdminAuth();
-  if (!adminSession) {
-    return { error: 'Akses ditolak. Fitur ini hanya dapat diakses oleh Admin.' };
-  }
+export const updateUserAction = defineAction({
+  operasi: 'users:crud',
+  schema: updateSchema,
+  revalidate: ['/dashboard/users'],
+  execute: async (data) => {
+    const pasarId = data.role === 'admin' ? null : data.pasarId;
 
-  const id = formData.get('id')?.toString();
-  const name = formData.get('name')?.toString().trim();
-  const username = formData.get('username')?.toString().trim().toLowerCase();
-  const password = formData.get('password')?.toString();
-  const role = formData.get('role')?.toString() || 'petugas';
-  const pasarIdRaw = formData.get('pasarId')?.toString();
-  const pasarId = role === 'admin' ? null : pasarIdRaw;
+    if (data.role === 'petugas' && !pasarId) {
+      return { error: 'Petugas wajib ditugaskan ke sebuah Pasar.' };
+    }
 
-  if (!id || !name || !username) {
-    return { error: 'Data user tidak lengkap.' };
-  }
-
-  if (!['admin', 'petugas'].includes(role)) {
-    return { error: 'Role tidak valid.' };
-  }
-
-  if (role === 'petugas' && !pasarId) {
-    return { error: 'Petugas wajib ditugaskan ke sebuah Pasar.' };
-  }
-
-  try {
-    // Check if username taken by another user
     const existing = await db
       .select()
       .from(users)
-      .where(and(eq(users.username, username), ne(users.id, id)));
+      .where(and(eq(users.username, data.username.toLowerCase()), ne(users.id, data.id)));
 
     if (existing.length > 0) {
       return { error: 'Username sudah digunakan oleh akun lain.' };
     }
 
     const updateData = {
-      name,
-      username,
-      role,
+      name: data.name,
+      username: data.username.toLowerCase(),
+      role: data.role,
       pasarId,
       updatedAt: new Date(),
     };
 
-    if (password && password.trim() !== '') {
-      updateData.password = await hashPassword(password);
+    if (data.password && data.password.trim() !== '') {
+      updateData.password = await hashPassword(data.password);
     }
 
-    await db.update(users).set(updateData).where(eq(users.id, id));
+    await db.update(users).set(updateData).where(eq(users.id, data.id));
 
-    revalidatePath('/dashboard/users');
-    return { success: true, message: `User "${username}" berhasil diperbarui.` };
-  } catch (err) {
-    console.error('Error updating user:', err);
-    return { error: 'Gagal memperbarui data user.' };
-  }
-}
+    return { message: `User "${data.username}" berhasil diperbarui.` };
+  },
+});
 
-export async function deleteUserAction(prevState, formData) {
-  const adminSession = await checkAdminAuth();
-  if (!adminSession) {
-    return { error: 'Akses ditolak. Fitur ini hanya dapat diakses oleh Admin.' };
-  }
+export const deleteUserAction = defineAction({
+  operasi: 'users:crud',
+  schema: deleteSchema,
+  revalidate: ['/dashboard/users'],
+  execute: async (data, ctx) => {
+    if (data.id === ctx.user.id) {
+      return { error: 'Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif.' };
+    }
 
-  const id = formData.get('id')?.toString();
+    await db.delete(users).where(eq(users.id, data.id));
 
-  if (!id) {
-    return { error: 'ID user tidak valid.' };
-  }
-
-  if (id === adminSession.id) {
-    return { error: 'Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif.' };
-  }
-
-  try {
-    await db.delete(users).where(eq(users.id, id));
-
-    revalidatePath('/dashboard/users');
-    return { success: true, message: 'User berhasil dihapus.' };
-  } catch (err) {
-    console.error('Error deleting user:', err);
-    return { error: 'Gagal menghapus user.' };
-  }
-}
+    return { message: 'User berhasil dihapus.' };
+  },
+});

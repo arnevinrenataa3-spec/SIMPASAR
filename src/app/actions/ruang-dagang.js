@@ -1,76 +1,52 @@
 'use server';
 
 /**
- * @file src/app/actions/ruang-dagang.js
  * @description Server Action untuk manajemen Master Data Ruang Dagang (CRUD & Validasi).
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Muhamad Hazmi Alfarizqi
  */
 
-import { revalidatePath } from 'next/cache';
 import { eq, sql } from 'drizzle-orm';
+import { z } from 'zod';
 import { db } from '../../db/index.js';
 import { ruangDagang, perizinan } from '../../db/schema.js';
-import { getSession } from '../../lib/auth.js';
+import { defineAction } from '../../lib/pipeline.js';
 
-/**
- * Ensures user is authenticated before executing action.
- */
-async function checkAuth() {
-  const session = await getSession();
-  if (!session) {
-    return null;
-  }
-  return session;
+const createSchema = z.object({
+  kodeRuang: z.string().min(1, 'Kode ruang dagang wajib diisi.'),
+  jenis: z.enum(['kios', 'los', 'lapak', 'toko'], {
+    message: 'Jenis ruang dagang tidak valid. Pilih antara Kios, Meja, Lapak, atau Toko.',
+  }),
+  status: z.enum(['kosong', 'terisi'], {
+    message: 'Status ruang dagang tidak valid. Pilih antara Kosong atau Terisi.',
+  }).optional().default('kosong'),
+  panjang: z.string().optional().default(''),
+  lebar: z.string().optional().default(''),
+  pasarId: z.string().optional().default(''),
+});
+
+const updateSchema = createSchema.extend({
+  id: z.string().min(1, 'ID ruang dagang tidak valid.'),
+});
+
+const deleteSchema = z.object({
+  id: z.string().min(1, 'ID ruang dagang tidak valid.'),
+});
+
+function parseNumber(val) {
+  if (!val || val.trim() === '') return null;
+  const n = parseFloat(val);
+  return isNaN(n) || n <= 0 ? null : n;
 }
 
-/**
- * Server Action: Create new Ruang Dagang
- */
-export async function createRuangDagangAction(prevState, formData) {
-  const session = await checkAuth();
-  if (!session) {
-    return { error: 'Akses ditolak. Anda harus login untuk melakukan tindakan ini.' };
-  }
+export const createRuangDagangAction = defineAction({
+  operasi: 'ruang-dagang:crud',
+  scope: 'enforce',
+  schema: createSchema,
+  revalidate: ['/dashboard/ruang-dagang', '/dashboard'],
+  execute: async (data, ctx) => {
+    const kodeRuang = data.kodeRuang.toUpperCase();
 
-  const pasarId = formData.get('pasarId')?.toString();
-  const kodeRuangRaw = formData.get('kodeRuang')?.toString().trim();
-  const jenis = formData.get('jenis')?.toString().trim().toLowerCase();
-  const status = formData.get('status')?.toString().trim().toLowerCase() || 'kosong';
-
-  const panjangRaw = formData.get('panjang')?.toString().trim();
-  const lebarRaw = formData.get('lebar')?.toString().trim();
-
-  let luas = null;
-  if (panjangRaw && lebarRaw) {
-    const p = parseFloat(panjangRaw);
-    const l = parseFloat(lebarRaw);
-    if (!isNaN(p) && !isNaN(l) && p > 0 && l > 0) {
-      const totalArea = Math.round(p * l * 100) / 100;
-      luas = `${p} x ${l} m (${totalArea} m²)`;
-    }
-  }
-
-  if (!pasarId) {
-    return { error: 'Pasar wajib dipilih.' };
-  }
-
-  if (!kodeRuangRaw) {
-    return { error: 'Kode ruang dagang wajib diisi.' };
-  }
-
-  const kodeRuang = kodeRuangRaw.toUpperCase();
-
-  if (!['kios', 'los', 'lapak', 'toko'].includes(jenis)) {
-    return { error: 'Jenis ruang dagang tidak valid. Pilih antara Kios, Meja, Lapak, atau Toko.' };
-  }
-
-  if (!['kosong', 'terisi'].includes(status)) {
-    return { error: 'Status ruang dagang tidak valid. Pilih antara Kosong atau Terisi.' };
-  }
-
-  try {
-    // Check if kodeRuang already exists (case-insensitive check using LOWER SQL function)
     const existing = await db
       .select()
       .from(ruangDagang)
@@ -81,79 +57,30 @@ export async function createRuangDagangAction(prevState, formData) {
     }
 
     await db.insert(ruangDagang).values({
-      pasarId,
+      pasarId: ctx.pasarId,
       kodeRuang,
-      jenis,
-      luas,
-      status,
+      jenis: data.jenis,
+      panjang: parseNumber(data.panjang),
+      lebar: parseNumber(data.lebar),
+      status: data.status,
     });
 
-    revalidatePath('/dashboard/ruang-dagang');
-    revalidatePath('/dashboard');
+    return { message: `Ruang dagang "${kodeRuang}" berhasil ditambahkan.` };
+  },
+});
 
-    return { success: true, message: `Ruang dagang "${kodeRuang}" berhasil ditambahkan.` };
-  } catch (err) {
-    console.error('Error creating ruang dagang:', err);
-    return { error: 'Gagal menambahkan ruang dagang baru pada server.' };
-  }
-}
+export const updateRuangDagangAction = defineAction({
+  operasi: 'ruang-dagang:crud',
+  scope: 'enforce',
+  schema: updateSchema,
+  revalidate: ['/dashboard/ruang-dagang', '/dashboard'],
+  execute: async (data, ctx) => {
+    const kodeRuang = data.kodeRuang.toUpperCase();
 
-/**
- * Server Action: Update existing Ruang Dagang
- */
-export async function updateRuangDagangAction(prevState, formData) {
-  const session = await checkAuth();
-  if (!session) {
-    return { error: 'Akses ditolak. Anda harus login untuk melakukan tindakan ini.' };
-  }
-
-  const id = formData.get('id')?.toString();
-  const pasarId = formData.get('pasarId')?.toString();
-  const kodeRuangRaw = formData.get('kodeRuang')?.toString().trim();
-  const jenis = formData.get('jenis')?.toString().trim().toLowerCase();
-  const status = formData.get('status')?.toString().trim().toLowerCase() || 'kosong';
-
-  const panjangRaw = formData.get('panjang')?.toString().trim();
-  const lebarRaw = formData.get('lebar')?.toString().trim();
-
-  if (!id) {
-    return { error: 'ID ruang dagang tidak valid.' };
-  }
-
-  if (!pasarId) {
-    return { error: 'Pasar wajib dipilih.' };
-  }
-
-  if (!kodeRuangRaw) {
-    return { error: 'Kode ruang dagang wajib diisi.' };
-  }
-
-  const kodeRuang = kodeRuangRaw.toUpperCase();
-
-  if (!['kios', 'los', 'lapak', 'toko'].includes(jenis)) {
-    return { error: 'Jenis ruang dagang tidak valid. Pilih antara Kios, Meja, Lapak, atau Toko.' };
-  }
-
-  if (!['kosong', 'terisi'].includes(status)) {
-    return { error: 'Status ruang dagang tidak valid. Pilih antara Kosong atau Terisi.' };
-  }
-
-  let luas = null;
-  if (panjangRaw && lebarRaw) {
-    const p = parseFloat(panjangRaw);
-    const l = parseFloat(lebarRaw);
-    if (!isNaN(p) && !isNaN(l) && p > 0 && l > 0) {
-      const totalArea = Math.round(p * l * 100) / 100;
-      luas = `${p} x ${l} m (${totalArea} m²)`;
-    }
-  }
-
-  try {
-    // Check if kodeRuang belongs to another record
     const existing = await db
       .select()
       .from(ruangDagang)
-      .where(sql`LOWER(${ruangDagang.kodeRuang}) = LOWER(${kodeRuang}) AND ${ruangDagang.id} != ${id}`);
+      .where(sql`LOWER(${ruangDagang.kodeRuang}) = LOWER(${kodeRuang}) AND ${ruangDagang.id} != ${data.id}`);
 
     if (existing.length > 0) {
       return { error: `Kode ruang "${kodeRuang}" sudah digunakan oleh ruang dagang lain.` };
@@ -162,46 +89,30 @@ export async function updateRuangDagangAction(prevState, formData) {
     await db
       .update(ruangDagang)
       .set({
-        pasarId,
+        pasarId: ctx.pasarId,
         kodeRuang,
-        jenis,
-        luas,
-        status,
+        jenis: data.jenis,
+        panjang: parseNumber(data.panjang),
+        lebar: parseNumber(data.lebar),
+        status: data.status,
         updatedAt: new Date(),
       })
-      .where(eq(ruangDagang.id, id));
+      .where(eq(ruangDagang.id, data.id));
 
-    revalidatePath('/dashboard/ruang-dagang');
-    revalidatePath('/dashboard');
+    return { message: `Ruang dagang "${kodeRuang}" berhasil diperbarui.` };
+  },
+});
 
-    return { success: true, message: `Ruang dagang "${kodeRuang}" berhasil diperbarui.` };
-  } catch (err) {
-    console.error('Error updating ruang dagang:', err);
-    return { error: 'Gagal memperbarui data ruang dagang pada server.' };
-  }
-}
-
-/**
- * Server Action: Delete existing Ruang Dagang
- */
-export async function deleteRuangDagangAction(prevState, formData) {
-  const session = await checkAuth();
-  if (!session) {
-    return { error: 'Akses ditolak. Anda harus login untuk melakukan tindakan ini.' };
-  }
-
-  const id = formData.get('id')?.toString();
-
-  if (!id) {
-    return { error: 'ID ruang dagang tidak valid.' };
-  }
-
-  try {
-    // Check if ruang dagang is referenced in perizinan table
+export const deleteRuangDagangAction = defineAction({
+  operasi: 'ruang-dagang:crud',
+  scope: 'enforce',
+  schema: deleteSchema,
+  revalidate: ['/dashboard/ruang-dagang', '/dashboard'],
+  execute: async (data) => {
     const linkedPerizinan = await db
       .select({ id: perizinan.id })
       .from(perizinan)
-      .where(eq(perizinan.ruangDagangId, id))
+      .where(eq(perizinan.ruangDagangId, data.id))
       .limit(1);
 
     if (linkedPerizinan.length > 0) {
@@ -210,14 +121,8 @@ export async function deleteRuangDagangAction(prevState, formData) {
       };
     }
 
-    await db.delete(ruangDagang).where(eq(ruangDagang.id, id));
+    await db.delete(ruangDagang).where(eq(ruangDagang.id, data.id));
 
-    revalidatePath('/dashboard/ruang-dagang');
-    revalidatePath('/dashboard');
-
-    return { success: true, message: 'Ruang dagang berhasil dihapus.' };
-  } catch (err) {
-    console.error('Error deleting ruang dagang:', err);
-    return { error: 'Gagal menghapus ruang dagang dari database.' };
-  }
-}
+    return { message: 'Ruang dagang berhasil dihapus.' };
+  },
+});

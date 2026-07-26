@@ -1,5 +1,4 @@
 /**
- * @file src/db/init.js
  * @description Script inisialisasi migrasi & seeder otomatis pada startup server.
  * @author Muhamad Hazmi Alfarizqi
  */

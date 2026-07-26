@@ -1,35 +1,25 @@
 'use client';
 
 /**
- * @file src/components/Modal.js
- * @description Komponen Dialog Modal reusable dengan listener tombol Escape & Enter.
+ * @description Komponen Dialog Modal reusable — perilaku Enter eksplisit di interface.
  * @author Arnevin Renata Ahmad Barkah
  */
 
 import { useEffect, useRef } from 'react';
 
-export default function Modal({ isOpen, onClose, onSubmit, onEnter, title, children, maxWidth = 'max-w-md' }) {
+export default function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-md', submitOnEnter = true }) {
   const modalRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (onClose) {
-          onClose();
-        }
-      } else if (e.key === 'Enter') {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      } else if (e.key === 'Enter' && submitOnEnter) {
         const targetTagName = e.target?.tagName?.toLowerCase();
         if (targetTagName === 'textarea' || targetTagName === 'button') return;
-
-        if (onSubmit) {
-          e.preventDefault();
-          onSubmit(e);
-        } else if (onEnter) {
-          e.preventDefault();
-          onEnter(e);
-        } else if (targetTagName !== 'input' && modalRef.current) {
+        if (targetTagName !== 'input' && modalRef.current) {
           const form = modalRef.current.querySelector('form');
           if (form) {
             e.preventDefault();
@@ -50,10 +40,8 @@ export default function Modal({ isOpen, onClose, onSubmit, onEnter, title, child
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onClose, onSubmit, onEnter]);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose, submitOnEnter]);
 
   if (!isOpen) return null;
 

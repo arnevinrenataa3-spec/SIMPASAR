@@ -1,11 +1,10 @@
 /**
- * @file src/db/schema.js
  * @description Single source of truth skema database Drizzle ORM (users, pasar, ruangDagang, perizinan).
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */
 
-import { pgTable, pgEnum, uuid, varchar, text, timestamp, date } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, uuid, varchar, text, timestamp, date, real } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 export const roleEnum = pgEnum("role", ['admin', 'petugas']);
@@ -59,7 +58,8 @@ export const ruangDagang = pgTable("ruang_dagang", {
   pasarId: uuid("pasar_id").references(() => pasar.id).notNull(),
   kodeRuang: varchar("kode_ruang", { length: 50 }).notNull().unique(),
   jenis: ruangJenisEnum("jenis").notNull(),
-  luas: varchar("luas", { length: 50 }),
+  panjang: real("panjang"),
+  lebar: real("lebar"),
   status: ruangStatusEnum("status").default('kosong'),
 
   createdAt: timestamp("created_at").defaultNow(),

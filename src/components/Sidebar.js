@@ -1,19 +1,19 @@
 'use client';
 
 /**
- * @file src/components/Sidebar.js
  * @description Komponen Sidebar navigasi menu SIMPASAR.
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Muhamad Hazmi Alfarizqi
  */
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useSelectedLayoutSegment } from 'next/navigation';
 import { logoutAction } from '../app/actions/auth.js';
 
 const baseNavItems = [
   {
     name: 'Denah Ruang',
+    segment: null,
     href: '/dashboard',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,6 +23,7 @@ const baseNavItems = [
   },
   {
     name: 'Ruang Dagang',
+    segment: 'ruang-dagang',
     href: '/dashboard/ruang-dagang',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,6 +33,7 @@ const baseNavItems = [
   },
   {
     name: 'Data Pedagang',
+    segment: 'pedagang',
     href: '/dashboard/pedagang',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -41,6 +43,7 @@ const baseNavItems = [
   },
   {
     name: 'Perizinan',
+    segment: 'perizinan',
     href: '/dashboard/perizinan',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,6 +53,7 @@ const baseNavItems = [
   },
   {
     name: 'Surat Peringatan',
+    segment: 'teguran',
     href: '/dashboard/teguran',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,6 +66,7 @@ const baseNavItems = [
 const adminNavItems = [
   {
     name: 'Kelola Pasar',
+    segment: 'pasar',
     href: '/dashboard/pasar',
     isAdminOnly: true,
     icon: (
@@ -72,6 +77,7 @@ const adminNavItems = [
   },
   {
     name: 'Kelola User',
+    segment: 'users',
     href: '/dashboard/users',
     isAdminOnly: true,
     icon: (
@@ -83,7 +89,7 @@ const adminNavItems = [
 ];
 
 export default function Sidebar({ user }) {
-  const pathname = usePathname();
+  const segment = useSelectedLayoutSegment();
 
   const navItems = user?.role === 'admin' ? [...baseNavItems, ...adminNavItems] : baseNavItems;
 
@@ -111,15 +117,15 @@ export default function Sidebar({ user }) {
             Menu Utama
           </div>
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = item.segment === segment;
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 ${
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm ${
                   isActive
                     ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors duration-150'
                 }`}
               >
                 <div className="flex items-center gap-3">

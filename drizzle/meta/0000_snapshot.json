@@ -1,5 +1,5 @@
 {
-  "id": "6c5583af-2254-4f66-9f23-5cd6276b4b35",
+  "id": "8afe10f5-fa2b-44b8-b1a7-21f7b4ffd71e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -279,9 +279,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "luas": {
-          "name": "luas",
-          "type": "varchar(50)",
+        "panjang": {
+          "name": "panjang",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lebar": {
+          "name": "lebar",
+          "type": "real",
           "primaryKey": false,
           "notNull": false
         },

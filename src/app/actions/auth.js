@@ -1,7 +1,6 @@
 'use server';
 
 /**
- * @file src/app/actions/auth.js
  * @description Server Action untuk alur autentikasi (login dan logout session).
  * @author Muhamad Hazmi Alfarizqi
  */

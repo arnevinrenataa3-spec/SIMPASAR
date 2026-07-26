@@ -1,5 +1,4 @@
 /**
- * @file src/instrumentation.js
  * @description Next.js instrumentation hook untuk auto-run migrasi & init server saat runtime Node.js siap.
  * @author Muhamad Hazmi Alfarizqi
  */

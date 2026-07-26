@@ -1,14 +1,12 @@
 /**
- * @file src/app/dashboard/users/page.js
  * @description Halaman server-side Manajemen Pengguna (Admin & Petugas Pasar).
  * @author Arnevin Renata Ahmad Barkah
  */
 
 import { getSession } from '../../../lib/auth.js';
-import { getEffectivePasarScope } from '../../../lib/scope.js';
 import { db } from '../../../db/index.js';
 import { users, pasar } from '../../../db/schema.js';
-import { eq, asc, or, isNull } from 'drizzle-orm';
+import { eq, asc } from 'drizzle-orm';
 import UserManagementClient from './UserManagementClient.js';
 
 export default async function UsersPage() {
@@ -30,13 +28,6 @@ export default async function UsersPage() {
     );
   }
 
-  const scope = await getEffectivePasarScope(session);
-
-  let whereClause = undefined;
-  if (scope && scope !== 'all') {
-    whereClause = or(eq(users.pasarId, scope), isNull(users.pasarId));
-  }
-
   const userList = await db
     .select({
       id: users.id,
@@ -49,7 +40,6 @@ export default async function UsersPage() {
     })
     .from(users)
     .leftJoin(pasar, eq(users.pasarId, pasar.id))
-    .where(whereClause)
     .orderBy(asc(users.name));
 
   const pasars = await db
@@ -65,7 +55,7 @@ export default async function UsersPage() {
       users={userList}
       pasars={pasars}
       currentUserId={session.id}
-      selectedScope={scope}
+      selectedScope={'all'}
     />
   );
 }

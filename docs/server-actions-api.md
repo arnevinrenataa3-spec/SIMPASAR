@@ -56,14 +56,14 @@ Karena aplikasi dibangun menggunakan **Next.js v16**, kita menggunakan **Server 
 - **Output:** `{ success: true, message: '...' }` atau `{ error: '...' }`
 
 #### 7. `createRuangDagangAction(formData)` / `updateRuangDagangAction(formData)` / `deleteRuangDagangAction(formData)`
-- **Aktor:** Admin
+- **Aktor:** Admin, Petugas (scoped ke Pasar-nya — pasarId di-derive server-side, formData diabaikan untuk Petugas)
 - **Tujuan:** Mengelola data master Ruang Dagang (Kios, Meja, Lapak, Toko).
-- **Input:** `pasarId`, `kodeRuang`, `jenis`, `panjang`, `lebar`, `status` (beserta `id` untuk update/delete)
+- **Input:** `pasarId` (Admin), `kodeRuang`, `jenis`, `panjang`, `lebar`, `status` (beserta `id` untuk update/delete)
 - **Output:** `{ success: true, message: '...' }` atau `{ error: '...' }`
 
 #### 8. `createUserAction(formData)` / `updateUserAction(formData)` / `deleteUserAction(formData)`
 - **Aktor:** Admin
-- **Tujuan:** Mengelola akun pengguna (Admin & Petugas) dan penempatan petugas ke Pasar.
+- **Tujuan:** Mengelola akun pengguna (Admin & Petugas) dan penempatan petugas ke Pasar. Halaman ini **tanpa scope** — menampilkan seluruh pengguna.
 - **Input:** `name`, `username`, `password`, `role`, `pasarId` (untuk petugas)
 - **Output:** `{ success: true, message: '...' }` atau `{ error: '...' }`
 
@@ -72,3 +72,12 @@ Karena aplikasi dibangun menggunakan **Next.js v16**, kita menggunakan **Server 
 - **Tujuan:** Mengubah dan menyimpan cookie `simpasar_scope_pasar` untuk mengontrol scope aktif seluruh dashboard & CRUD.
 - **Input:** `pasarId` ('all' atau UUID pasar spesifik)
 - **Output:** Memicu `revalidatePath('/dashboard', 'layout')` untuk perbaruan data otomatis.
+
+### Pola Pipeline (`src/lib/pipeline.js`)
+Semua server action CRUD menggunakan `defineAction({ operasi, scope?, schema?, revalidate, execute })` dari modul pipeline. Pipeline menangani: getSession → cek `boleh()` → scope enforcement (derive server-side) → validasi Zod → eksekusi handler → revalidatePath. Lihat **ADR-0001** untuk spesifikasi lengkap.
+
+### Otorisasi (`src/lib/policy.js`)
+Aturan "siapa boleh apa" hidup di satu modul `boleh(user, operasi)`. Lihat **ADR-0002** untuk tabel aturan lengkap (Admin/Petugas per operasi).
+
+### Modul Perizinan (Issue #15–#18)
+Interface modul Perizinan didefinisikan oleh **ADR-0003**: `terbitkanIzin`, `perpanjangIzin`, `cabutIzin`, `statusTeguran` (murni), `statusPublik`. Implementasi milik anggota kelompok — action hanya adapter FormData ↔ interface. Handler logic dilarang tinggal di action.

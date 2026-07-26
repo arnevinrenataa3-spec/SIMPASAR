@@ -1,24 +1,19 @@
 /**
- * @file src/app/dashboard/page.js
  * @description Halaman Overview Dashboard SIMPASAR (Statistik Pasar, Ruang Dagang, & Quick Actions).
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { getSession } from '../../lib/auth.js';
-import { getEffectivePasarScope } from '../../lib/scope.js';
+import { resolveScope, buildScopeFilter } from '../../lib/scope.js';
 import { db } from '../../db/index.js';
 import { ruangDagang, pasar } from '../../db/schema.js';
 import { eq } from 'drizzle-orm';
 
 export default async function DashboardPage() {
   const user = await getSession();
-  const scope = await getEffectivePasarScope(user);
-
-  let whereClause = undefined;
-  if (scope && scope !== 'all') {
-    whereClause = eq(ruangDagang.pasarId, scope);
-  }
+  const scope = await resolveScope(user);
+  const whereClause = buildScopeFilter(scope, ruangDagang.pasarId);
 
   const allRuang = await db
     .select({

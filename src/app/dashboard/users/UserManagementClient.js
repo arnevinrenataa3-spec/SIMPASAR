@@ -1,14 +1,16 @@
 'use client';
 
 /**
- * @file src/app/dashboard/users/UserManagementClient.js
  * @description Komponen UI Client-side untuk Manajemen Pengguna (CRUD, Modal, Search & Filter).
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Muhamad Hazmi Alfarizqi
  */
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
+import { useCrudActions } from '../../../lib/useCrudActions.js';
 import Modal from '../../../components/Modal.js';
+import AlertBanner from '../../../components/AlertBanner.js';
+import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import { createUserAction, updateUserAction, deleteUserAction } from '../../actions/users.js';
 
 export default function UserManagementClient({ users, pasars = [], currentUserId, selectedScope = 'all' }) {
@@ -19,44 +21,14 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
   const [addRole, setAddRole] = useState('petugas');
   const [editRole, setEditRole] = useState('petugas');
 
-  const [createState, setCreateState] = useState(null);
-  const [isCreatePending, startCreateTransition] = useTransition();
-
-  const [updateState, setUpdateState] = useState(null);
-  const [isUpdatePending, startUpdateTransition] = useTransition();
-
-  const [deleteState, setDeleteState] = useState(null);
-  const [isDeletePending, startDeleteTransition] = useTransition();
-
-  const handleCreate = (formData) => {
-    startCreateTransition(async () => {
-      const res = await createUserAction(createState, formData);
-      setCreateState(res);
-      if (res?.success) {
-        setIsAddModalOpen(false);
-      }
-    });
-  };
-
-  const handleUpdate = (formData) => {
-    startUpdateTransition(async () => {
-      const res = await updateUserAction(updateState, formData);
-      setUpdateState(res);
-      if (res?.success) {
-        setEditingUser(null);
-      }
-    });
-  };
-
-  const handleDelete = (formData) => {
-    startDeleteTransition(async () => {
-      const res = await deleteUserAction(deleteState, formData);
-      setDeleteState(res);
-      if (res?.success) {
-        setDeletingUser(null);
-      }
-    });
-  };
+  const actions = useCrudActions({
+    create: createUserAction,
+    update: updateUserAction,
+    remove: deleteUserAction,
+    onCreateSuccess: () => setIsAddModalOpen(false),
+    onUpdateSuccess: () => setEditingUser(null),
+    onDeleteSuccess: () => setDeletingUser(null),
+  });
 
   return (
     <div className="space-y-6">
@@ -73,7 +45,7 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
 
         <button
           onClick={() => {
-            setCreateState(null);
+            actions.create.reset();
             setIsAddModalOpen(true);
           }}
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition duration-150 shadow-lg shadow-emerald-500/20 text-sm"
@@ -85,57 +57,10 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
         </button>
       </div>
 
-      {/* Global Alerts */}
-      {createState?.success && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm flex items-center gap-2">
-          <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <span>{createState.message}</span>
-        </div>
-      )}
-      {createState?.error && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center gap-2">
-          <svg className="w-5 h-5 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span>{createState.error}</span>
-        </div>
-      )}
-
-      {updateState?.success && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm flex items-center gap-2">
-          <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <span>{updateState.message}</span>
-        </div>
-      )}
-      {updateState?.error && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center gap-2">
-          <svg className="w-5 h-5 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span>{updateState.error}</span>
-        </div>
-      )}
-
-      {deleteState?.success && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm flex items-center gap-2">
-          <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <span>{deleteState.message}</span>
-        </div>
-      )}
-      {deleteState?.error && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center gap-2">
-          <svg className="w-5 h-5 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span>{deleteState.error}</span>
-        </div>
-      )}
+      {/* Alerts */}
+      <AlertBanner state={actions.create.state} />
+      <AlertBanner state={actions.update.state} />
+      <AlertBanner state={actions.delete.state} />
 
       {/* User Table */}
       <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl">
@@ -209,7 +134,7 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
                     <td className="px-6 py-4 text-right space-x-2">
                       <button
                         onClick={() => {
-                          setUpdateState(null);
+                          actions.update.reset();
                           setEditingUser(u);
                           setEditRole(u.role);
                         }}
@@ -221,7 +146,7 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
                       {!isSelf && (
                         <button
                           onClick={() => {
-                            setDeleteState(null);
+                            actions.delete.reset();
                             setDeletingUser(u);
                           }}
                           className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
@@ -244,13 +169,7 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
         onClose={() => setIsAddModalOpen(false)}
         title="Tambah User Baru"
       >
-        <form action={handleCreate} className="space-y-4">
-          {createState?.error && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
-              {createState.error}
-            </div>
-          )}
-
+        <form action={actions.create.action} className="space-y-4">
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
               Nama Lengkap
@@ -334,10 +253,10 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
             </button>
             <button
               type="submit"
-              disabled={isCreatePending}
+              disabled={actions.create.pending}
               className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
             >
-              {isCreatePending ? 'Menyimpan...' : 'Simpan User'}
+              {actions.create.pending ? 'Menyimpan...' : 'Simpan User'}
             </button>
           </div>
         </form>
@@ -350,14 +269,8 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
         title="Edit User"
       >
         {editingUser && (
-          <form action={handleUpdate} className="space-y-4">
+          <form action={actions.update.action} className="space-y-4">
             <input type="hidden" name="id" value={editingUser.id} />
-
-            {updateState?.error && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
-                {updateState.error}
-              </div>
-            )}
 
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
@@ -441,10 +354,10 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
               </button>
               <button
                 type="submit"
-                disabled={isUpdatePending}
+                disabled={actions.update.pending}
                 className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
               >
-                {isUpdatePending ? 'Memperbarui...' : 'Simpan Perubahan'}
+                {actions.update.pending ? 'Memperbarui...' : 'Simpan Perubahan'}
               </button>
             </div>
           </form>
@@ -452,54 +365,13 @@ export default function UserManagementClient({ users, pasars = [], currentUserId
       </Modal>
 
       {/* Delete Confirmation Modal */}
-      <Modal
+      <DeleteConfirmModal
         isOpen={Boolean(deletingUser)}
         onClose={() => setDeletingUser(null)}
-      >
-        {deletingUser && (
-          <div className="space-y-5 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center mx-auto">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-bold text-slate-100">Hapus User @{deletingUser.username}?</h3>
-              <p className="text-xs text-slate-400 mt-2">
-                Tindakan ini tidak dapat dibatalkan. Akun user ini akan dihapus permanen dari sistem SIMPASAR.
-              </p>
-            </div>
-
-            <form action={handleDelete} className="space-y-4">
-              <input type="hidden" name="id" value={deletingUser.id} />
-
-              {deleteState?.error && (
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs text-left">
-                  {deleteState.error}
-                </div>
-              )}
-
-              <div className="flex justify-center gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setDeletingUser(null)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={isDeletePending}
-                  className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-rose-500 text-slate-950 hover:bg-rose-400 disabled:opacity-50"
-                >
-                  {isDeletePending ? 'Menghapus...' : 'Ya, Hapus User'}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-      </Modal>
+        itemName={deletingUser && `@${deletingUser.username}`}
+        onConfirm={actions.delete.action}
+        isPending={actions.delete.pending}
+      />
     </div>
   );
 }

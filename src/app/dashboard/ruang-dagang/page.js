@@ -1,5 +1,4 @@
 /**
- * @file src/app/dashboard/ruang-dagang/page.js
  * @description Halaman server-side Master Data Ruang Dagang (Los / Meja / Kios / Toko).
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Muhamad Hazmi Alfarizqi
@@ -8,7 +7,8 @@
 import { redirect } from 'next/navigation';
 import { asc, eq } from 'drizzle-orm';
 import { getSession } from '../../../lib/auth.js';
-import { getEffectivePasarScope } from '../../../lib/scope.js';
+import { resolveScope, buildScopeFilter } from '../../../lib/scope.js';
+import { formatLuas, hitungLuas } from '../../../lib/luas.js';
 import { db } from '../../../db/index.js';
 import { ruangDagang, pasar } from '../../../db/schema.js';
 import RuangDagangClient from './RuangDagangClient.js';
@@ -20,21 +20,18 @@ export default async function RuangDagangPage() {
     redirect('/login');
   }
 
-  const scope = await getEffectivePasarScope(session);
+  const scope = await resolveScope(session);
+  const whereClause = buildScopeFilter(scope, ruangDagang.pasarId);
 
-  let whereClause = undefined;
-  if (scope && scope !== 'all') {
-    whereClause = eq(ruangDagang.pasarId, scope);
-  }
-
-  const ruangList = await db
+  const rawList = await db
     .select({
       id: ruangDagang.id,
       pasarId: ruangDagang.pasarId,
       namaPasar: pasar.namaPasar,
       kodeRuang: ruangDagang.kodeRuang,
       jenis: ruangDagang.jenis,
-      luas: ruangDagang.luas,
+      panjang: ruangDagang.panjang,
+      lebar: ruangDagang.lebar,
       status: ruangDagang.status,
       createdAt: ruangDagang.createdAt,
       updatedAt: ruangDagang.updatedAt,
@@ -43,6 +40,11 @@ export default async function RuangDagangPage() {
     .leftJoin(pasar, eq(ruangDagang.pasarId, pasar.id))
     .where(whereClause)
     .orderBy(asc(ruangDagang.kodeRuang));
+
+  const ruangList = rawList.map((row) => ({
+    ...row,
+    luas: formatLuas(row.panjang, row.lebar, hitungLuas(row.panjang, row.lebar)),
+  }));
 
   const pasars = await db
     .select({

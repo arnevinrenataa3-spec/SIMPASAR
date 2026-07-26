@@ -9,6 +9,7 @@ Berdasarkan diskusi tim, berikut adalah tumpukan teknologi (Tech Stack) yang aka
 ### 2. Framework (Next.js - Pure JavaScript)
 - Menggunakan **Next.js (App Router)** sebagai framework utama.
 - Next.js akan bertindak sebagai penyedia UI (React Server Components) sekaligus menampung logika *Backend* melalui **Server Actions** dan Route Handlers.
+- Server Actions dikelola melalui **pipeline terpusat** (`src/lib/pipeline.js` — `defineAction`) untuk konsistensi keamanan, validasi Zod, scope enforcement, dan revalidasi di seluruh modul. Lihat [ADR-0001](adr/ADR-0001-pipeline-action.md).
 - Untuk mengamankan nilai tugas dari dosen, kita **bermain aman dengan murni JavaScript (.js/.jsx)** dan tidak menggunakan TypeScript.
 
 ### 3. Database Layer (PostgreSQL v18 & Drizzle ORM)

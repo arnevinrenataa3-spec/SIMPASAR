@@ -1,7 +1,6 @@
 'use client';
 
 /**
- * @file src/components/Navbar.js
  * @description Komponen Navbar header dashboard (User Info & Scope Switcher).
  * @author Arnevin Renata Ahmad Barkah
  */

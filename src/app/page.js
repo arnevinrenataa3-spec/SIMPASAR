@@ -1,5 +1,4 @@
 /**
- * @file src/app/page.js
  * @description Root page redirector ke /dashboard.
  * @author Aditya Syahestiano
  */

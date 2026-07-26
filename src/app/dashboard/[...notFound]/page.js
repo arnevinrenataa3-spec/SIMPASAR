@@ -1,5 +1,4 @@
 /**
- * @file src/app/dashboard/[...notFound]/page.js
  * @description Catch-all route 404 Not Found khusus area Dashboard.
  * @author Aditya Syahestiano
  */

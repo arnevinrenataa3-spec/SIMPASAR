@@ -1,7 +1,6 @@
 'use client';
 
 /**
- * @file src/app/login/page.js
  * @description Halaman login pengguna SIMPASAR.
  * @author Muhamad Hazmi Alfarizqi
  */

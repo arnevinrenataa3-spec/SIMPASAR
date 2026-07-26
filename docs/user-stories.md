@@ -4,7 +4,7 @@
 Berdasarkan perubahan struktural terbaru, seluruh modul utama dalam SIMPASAR kini di-*scope* (dikelompokkan) berdasarkan **Pasar**.
 - **Admin** dapat mengelola data master Pasar (Nama, Nomor, Alamat).
 - **Ruang Dagang** kini terikat secara langsung dengan sebuah Pasar.
-- **Petugas** wajib ditugaskan ke salah satu Pasar tertentu dan (nantinya) hanya dapat mengelola Ruang Dagang, Pedagang, dan Perizinan yang berada di Pasar tempatnya bertugas.
+- **Petugas** wajib ditugaskan ke salah satu Pasar tertentu dan hanya dapat mengelola Ruang Dagang, Pedagang, dan Perizinan yang berada di Pasar tempatnya bertugas. Scope petugas terkunci ke Pasar-nya (derive server-side, tidak bisa diganti).
 
 ### User Story: Pengelolaan & Perpanjangan Kartu Pasar oleh Petugas
 * **Sebagai:** Petugas Pengelola Pasar,
@@ -52,3 +52,8 @@ Berdasarkan masukan lapangan, jika izin lewat masa berlaku, sistem akan menerapk
 - **SP1:** Dikeluarkan secara otomatis/manual setelah lewat 4 minggu dari tanggal kedaluwarsa.
 - **SP2:** Dikeluarkan setelah lewat 1 minggu dari SP1 (total 5 minggu kedaluwarsa).
 - **SP3:** Dikeluarkan setelah lewat 1 minggu dari SP2 (total 6 minggu kedaluwarsa).
+
+### Update Arsitektur (Lihat ADR di `docs/adr/`)
+- **Pipeline Server Action:** Semua aksi CRUD menggunakan `defineAction` dari `src/lib/pipeline.js`. Pipeline menangani: otentikasi → otorisasi (`boleh()`) → scope enforcement → validasi Zod → revalidasi. Lihat [ADR-0001](adr/ADR-0001-pipeline-action.md).
+- **Scope & Otorisasi:** Aturan scope pasar & "siapa boleh apa" hidup di `src/lib/scope.js` dan `src/lib/policy.js`. Lihat [ADR-0002](adr/ADR-0002-scope-dan-otorisasi.md).
+- **Modul Perizinan:** Interface dan invariant bisnis (terbit, perpanjang, cabut, SP, status publik) didefinisikan di [ADR-0003](adr/ADR-0003-seam-perizinan.md). Logic dilarang di server action — db harus di balik seam adapter.
