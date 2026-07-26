@@ -1,5 +1,11 @@
 # USER STORY
 
+### Update Khusus: Pengelompokan Berdasarkan Pasar (Multi-Pasar)
+Berdasarkan perubahan struktural terbaru, seluruh modul utama dalam SIMPASAR kini di-*scope* (dikelompokkan) berdasarkan **Pasar**.
+- **Admin** dapat mengelola data master Pasar (Nama, Nomor, Alamat).
+- **Ruang Dagang** kini terikat secara langsung dengan sebuah Pasar.
+- **Petugas** wajib ditugaskan ke salah satu Pasar tertentu dan (nantinya) hanya dapat mengelola Ruang Dagang, Pedagang, dan Perizinan yang berada di Pasar tempatnya bertugas.
+
 ### User Story: Pengelolaan & Perpanjangan Kartu Pasar oleh Petugas
 * **Sebagai:** Petugas Pengelola Pasar,
 * **Saya ingin:** Bisa memproses permohonan penerbitan atau perpanjangan kartu pasar (seperti SPTB atau SSTU) dengan cara menginput data persyaratan dari pedagang,
@@ -10,7 +16,7 @@
    * Pedagang datang membawa syarat-syarat administrasi (seperti salinan KTP, foto, atau data diri lainnya).
    * Petugas memverifikasi kelengkapan berkas tersebut.
 2. **Pengisian Data ke Sistem (Form Input):**
-   * **Memilih Ruang Dagang:** Petugas memilih nomor ruang atau petak yang tersedia (misalnya memilih petak yang statusnya masih kosong).
+   * **Memilih Ruang Dagang:** Petugas memilih nomor ruang atau petak yang tersedia di Pasar tempat ia bertugas.
    * **Input Data Pedagang:** Petugas memasukkan data diri pedagang sesuai KTP (seperti NIK, Nama Lengkap, Alamat, dan Nomor HP).
    * **Input Detail Usaha & Legalitas:** Petugas mencatat jenis dagangan (misalnya: Beras) serta Nomor Surat / SK Izin resmi.
    * **Pencatatan Masa Berlaku:** Petugas memasukkan tanggal terbit kartu dan menentukan tanggal kedaluwarsa (akhir masa berlaku kartu).
