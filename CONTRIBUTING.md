@@ -16,6 +16,7 @@ Terima kasih atas minat Anda untuk berkontribusi! Panduan ini mencakup alur kerj
 git clone git@github.com:arnevinrenataa3-spec/SIMPASAR.git
 cd SIMPASAR
 cp .env.example .env      # Windows (cmd): copy .env.example .env
+# isi DATABASE_URL di .env sesuai koneksi PostgreSQL lokal Anda
 npm install
 npm run dev                # auto-migrate + seed, server di http://localhost:3000
 ```
