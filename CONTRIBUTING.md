@@ -7,8 +7,7 @@ Terima kasih atas minat Anda untuk berkontribusi! Panduan ini mencakup alur kerj
 ## Prasyarat
 
 - **Node.js** (versi LTS terbaru)
-- **Docker & Docker Compose** (untuk menjalankan PostgreSQL secara lokal)
-- **PostgreSQL v18** (jika tidak menggunakan Docker)
+- **PostgreSQL v18**
 - **Git**
 
 ## Setup Awal
@@ -18,13 +17,12 @@ git clone git@github.com:arnevinrenataa3-spec/SIMPASAR.git
 cd SIMPASAR
 cp .env.example .env
 npm install
-docker compose up -d    # atau jalankan PostgreSQL v18 sendiri
 npm run dev             # auto-migrate + seed, server di http://localhost:3000
 ```
 
 Kredensial admin awal: `admin` / `admin123`
 
-Server development akan otomatis menjalankan migrasi database dan seeder saat startup (via `src/instrumentation.js`). Pastikan PostgreSQL sudah berjalan sebelum menjalankan dev server.
+Server development akan otomatis menjalankan migrasi database dan seeder saat startup (via `src/instrumentation.js`). Pastikan PostgreSQL v18 sudah berjalan dan `DATABASE_URL` di `.env` sudah benar sebelum menjalankan dev server. Sebagai opsi, `docker compose up -d` tersedia untuk menjalankan PostgreSQL via Docker.
 
 ## Alur Kerja Pengembangan
 
