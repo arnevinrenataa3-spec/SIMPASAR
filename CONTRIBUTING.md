@@ -15,9 +15,9 @@ Terima kasih atas minat Anda untuk berkontribusi! Panduan ini mencakup alur kerj
 ```bash
 git clone git@github.com:arnevinrenataa3-spec/SIMPASAR.git
 cd SIMPASAR
-cp .env.example .env
+cp .env.example .env      # Windows (cmd): copy .env.example .env
 npm install
-npm run dev             # auto-migrate + seed, server di http://localhost:3000
+npm run dev                # auto-migrate + seed, server di http://localhost:3000
 ```
 
 Kredensial admin awal: `admin` / `admin123`
