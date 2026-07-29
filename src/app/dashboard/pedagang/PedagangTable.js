@@ -20,12 +20,14 @@ const inputClass = 'w-full rounded-xl border border-slate-800 bg-slate-950/70 px
 function Fields({ item }) {
   return (
     <>
-      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">NIK
-        <input className={`${inputClass} mt-2 font-mono`} name="nik" inputMode="numeric" maxLength={16} required defaultValue={item?.nik} />
-      </label>
-      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">Nama lengkap
-        <input className={`${inputClass} mt-2`} name="namaLengkap" required defaultValue={item?.namaLengkap} />
-      </label>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">NIK
+          <input className={`${inputClass} mt-2 font-mono`} name="nik" inputMode="numeric" maxLength={16} required defaultValue={item?.nik} />
+        </label>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">Nama lengkap
+          <input className={`${inputClass} mt-2`} name="namaLengkap" required defaultValue={item?.namaLengkap} />
+        </label>
+      </div>
       <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">Nomor HP
         <input className={`${inputClass} mt-2`} name="nomorHp" inputMode="tel" required defaultValue={item?.nomorHp} />
       </label>
@@ -83,10 +85,10 @@ export default function PedagangTable({ initialData }) {
         </div>
       </section>
 
-      <Modal key={createModal.key} isOpen={createModal.isOpen} onClose={createModal.close} title="Tambah Pedagang">
+      <Modal key={createModal.key} isOpen={createModal.isOpen} onClose={createModal.close} title="Tambah Pedagang" maxWidth="max-w-xl">
         <form action={createModal.action} className="space-y-4"><Fields /><AlertBanner state={createModal.state} /><button disabled={createModal.pending} className="w-full rounded-xl bg-emerald-400 py-2.5 text-sm font-bold text-slate-950 disabled:opacity-50">{createModal.pending ? 'Menyimpan...' : 'Simpan Pedagang'}</button></form>
       </Modal>
-      <Modal key={editModal.key} isOpen={editModal.isOpen} onClose={editModal.close} title="Edit Pedagang">
+      <Modal key={editModal.key} isOpen={editModal.isOpen} onClose={editModal.close} title="Edit Pedagang" maxWidth="max-w-xl">
         {editModal.item && <form action={editModal.action} className="space-y-4"><input type="hidden" name="id" value={editModal.item.id} /><Fields item={editModal.item} /><AlertBanner state={editModal.state} /><button disabled={editModal.pending} className="w-full rounded-xl bg-cyan-400 py-2.5 text-sm font-bold text-slate-950 disabled:opacity-50">{editModal.pending ? 'Menyimpan...' : 'Simpan Perubahan'}</button></form>}
       </Modal>
       <Modal key={deleteModal.key} isOpen={deleteModal.isOpen} onClose={deleteModal.close} title="Hapus Pedagang" submitOnEnter={false}>

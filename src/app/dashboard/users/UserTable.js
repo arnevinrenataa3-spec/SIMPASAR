@@ -147,60 +147,65 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
         isOpen={createModal.isOpen}
         onClose={createModal.close}
         title="Tambah User Baru"
+        maxWidth="max-w-xl"
       >
         <form action={createModal.action} className="space-y-4">
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-              Nama Lengkap
-            </label>
-            <input
-              name="name"
-              type="text"
-              required
-              placeholder="Contoh: Ahmad Subagja"
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
+                Nama Lengkap
+              </label>
+              <input
+                name="name"
+                type="text"
+                required
+                placeholder="Contoh: Ahmad Subagja"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
+                Username
+              </label>
+              <input
+                name="username"
+                type="text"
+                required
+                placeholder="ahmad_petugas"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-              Username
-            </label>
-            <input
-              name="username"
-              type="text"
-              required
-              placeholder="ahmad_petugas"
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
+                Password
+              </label>
+              <input
+                name="password"
+                type="password"
+                required
+                placeholder="••••••••"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
 
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-              Password
-            </label>
-            <input
-              name="password"
-              type="password"
-              required
-              placeholder="••••••••"
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-              Role Akses
-            </label>
-            <select
-              name="role"
-              value={addRole}
-              onChange={(e) => setAddRole(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="petugas">Petugas (Operasional)</option>
-              <option value="admin">Admin (Akses Penuh)</option>
-            </select>
+            <div>
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
+                Role Akses
+              </label>
+              <select
+                name="role"
+                value={addRole}
+                onChange={(e) => setAddRole(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                <option value="petugas">Petugas (Operasional)</option>
+                <option value="admin">Admin (Akses Penuh)</option>
+              </select>
+            </div>
           </div>
 
           {addRole === 'petugas' && (
@@ -248,62 +253,67 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
         isOpen={editModal.isOpen}
         onClose={editModal.close}
         title="Edit User"
+        maxWidth="max-w-xl"
       >
         {editModal.item && (
           <form action={editModal.action} className="space-y-4">
             <input type="hidden" name="id" value={editModal.item.id} />
 
-            <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                Nama Lengkap
-              </label>
-              <input
-                name="name"
-                type="text"
-                required
-                defaultValue={editModal.item.name}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
+                  Nama Lengkap
+                </label>
+                <input
+                  name="name"
+                  type="text"
+                  required
+                  defaultValue={editModal.item.name}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
+                  Username
+                </label>
+                <input
+                  name="username"
+                  type="text"
+                  required
+                  defaultValue={editModal.item.username}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                Username
-              </label>
-              <input
-                name="username"
-                type="text"
-                required
-                defaultValue={editModal.item.username}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
+                  Password Baru <span className="text-slate-500 capitalize font-normal">(Kosongkan jika tidak ingin mengubah)</span>
+                </label>
+                <input
+                  name="password"
+                  type="password"
+                  placeholder="••••••••"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
 
-            <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                Password Baru <span className="text-slate-500 capitalize font-normal">(Kosongkan jika tidak ingin mengubah)</span>
-              </label>
-              <input
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                Role Akses
-              </label>
-              <select
-                name="role"
-                value={editRole}
-                onChange={(e) => setEditRole(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option value="petugas">Petugas (Operasional)</option>
-                <option value="admin">Admin (Akses Penuh)</option>
-              </select>
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
+                  Role Akses
+                </label>
+                <select
+                  name="role"
+                  value={editRole}
+                  onChange={(e) => setEditRole(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="petugas">Petugas (Operasional)</option>
+                  <option value="admin">Admin (Akses Penuh)</option>
+                </select>
+              </div>
             </div>
 
             {editRole === 'petugas' && (

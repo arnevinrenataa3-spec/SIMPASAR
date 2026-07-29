@@ -280,6 +280,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
         isOpen={createModal.isOpen}
         onClose={createModal.close}
         title="Tambah Ruang Dagang Baru"
+        maxWidth="max-w-xl"
       >
         <form action={createModal.action} className="space-y-4">
           {isAdmin && (
@@ -301,33 +302,35 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
             </div>
           )}
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              Kode Ruang Dagang <span className="text-rose-400">*</span>
-            </label>
-            <input
-              type="text"
-              name="kodeRuang"
-              required
-              placeholder="Contoh: KI-A-01"
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50"
-            />
-          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Kode Ruang Dagang <span className="text-rose-400">*</span>
+              </label>
+              <input
+                type="text"
+                name="kodeRuang"
+                required
+                placeholder="Contoh: KI-A-01"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50"
+              />
+            </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              Jenis Ruang Dagang
-            </label>
-            <select
-              name="jenis"
-              required
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
-            >
-              <option value="kios">Kios</option>
-              <option value="los">Meja</option>
-              <option value="lapak">Lapak</option>
-              <option value="toko">Toko</option>
-            </select>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Jenis Ruang Dagang
+              </label>
+              <select
+                name="jenis"
+                required
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
+              >
+                <option value="kios">Kios</option>
+                <option value="los">Meja</option>
+                <option value="lapak">Lapak</option>
+                <option value="toko">Toko</option>
+              </select>
+            </div>
           </div>
 
           <div>
@@ -420,6 +423,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
         isOpen={editModal.isOpen}
         onClose={editModal.close}
         title="Edit Data Ruang Dagang"
+        maxWidth="max-w-xl"
       >
         {editModal.item && (
           <form action={editModal.action} className="space-y-4">
@@ -445,34 +449,36 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
               </div>
             )}
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Kode Ruang Dagang <span className="text-rose-400">*</span>
-              </label>
-              <input
-                type="text"
-                name="kodeRuang"
-                required
-                defaultValue={editModal.item.kodeRuang}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 uppercase font-mono"
-              />
-            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                  Kode Ruang Dagang <span className="text-rose-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="kodeRuang"
+                  required
+                  defaultValue={editModal.item.kodeRuang}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 uppercase font-mono"
+                />
+              </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Jenis Ruang Dagang
-              </label>
-              <select
-                name="jenis"
-                required
-                defaultValue={editModal.item.jenis}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
-              >
-                <option value="kios">Kios</option>
-                <option value="los">Meja</option>
-                <option value="lapak">Lapak</option>
-                <option value="toko">Toko</option>
-              </select>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                  Jenis Ruang Dagang
+                </label>
+                <select
+                  name="jenis"
+                  required
+                  defaultValue={editModal.item.jenis}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
+                >
+                  <option value="kios">Kios</option>
+                  <option value="los">Meja</option>
+                  <option value="lapak">Lapak</option>
+                  <option value="toko">Toko</option>
+                </select>
+              </div>
             </div>
 
             <div>
