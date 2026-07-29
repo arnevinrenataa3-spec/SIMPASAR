@@ -7,6 +7,7 @@
  */
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCrudModal } from '../../../lib/useCrudModal.js';
 import { hitungLuas, formatLuas } from '../../../lib/luas.js';
 import Modal from '../../../components/Modal.js';
@@ -20,6 +21,8 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
   const [lebar, setLebar] = useState('');
   const [editPanjang, setEditPanjang] = useState('');
   const [editLebar, setEditLebar] = useState('');
+
+  const router = useRouter();
 
   const createModal = useCrudModal({
     action: createRuangDagangAction,
@@ -41,7 +44,9 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
     const kosong = fisik.filter((item) => item.status === 'kosong').length;
     const terisi = fisik.filter((item) => item.status === 'terisi').length;
     const nonFisik = initialData.filter((item) => item.status === 'non-fisik').length;
-    return { total, kios, los, lapak, toko, kosong, terisi, nonFisik };
+    const expiringSoon = initialData.filter((item) => item.isExpiringSoon).length;
+    const expired = initialData.filter((item) => item.isExpired).length;
+    return { total, kios, los, lapak, toko, kosong, terisi, nonFisik, expiringSoon, expired };
   }, [initialData]);
 
   const getJenisBadge = (jenis) => {
@@ -137,7 +142,20 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-4">
+      {stats.expiringSoon > 0 && (
+        <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200 flex items-center gap-3">
+          <svg className="w-5 h-5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>
+            <strong>{stats.expiringSoon} ruang dagang</strong> akan kadaluwarsa dalam ≤ 7 hari.
+            {stats.expired > 0 && (
+              <span> <strong>{stats.expired} ruang</strong> sudah kadaluwarsa.</span>
+            )}
+          </span>
+        </div>
+      )}
+      <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-10 gap-4">
         {[
           { label: 'Total', value: stats.total, color: 'text-slate-100' },
           { label: 'Kios', value: stats.kios, color: 'text-indigo-400' },
@@ -147,6 +165,8 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
           { label: 'Kosong', value: stats.kosong, color: 'text-emerald-400' },
           { label: 'Terisi', value: stats.terisi, color: 'text-rose-400' },
           { label: 'Non-fisik', value: stats.nonFisik, color: 'text-slate-400' },
+          { label: 'Mendekati Kadaluwarsa', value: stats.expiringSoon, color: 'text-amber-400' },
+          { label: 'Kadaluwarsa', value: stats.expired, color: 'text-rose-400' },
         ].map((s) => (
           <div
             key={s.label}
@@ -161,7 +181,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
       <DataTable
         cellPadding="px-4 py-3.5"
         syncSearchParams
-        searchPlaceholder="Cari kode ruang atau nama pedagang..."
+        searchPlaceholder="Cari kode ruang, nama pasar, atau nama pedagang..."
         columns={[
           {
             header: 'Pasar',
@@ -179,16 +199,6 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
             render: (item) => getJenisBadge(item.jenis),
           },
           {
-            header: 'Luas (P x L)',
-            accessor: 'luas',
-            render: (item) =>
-              item.luas ? (
-                <span className="font-mono text-xs text-slate-300">{item.luas}</span>
-              ) : (
-                <span className="text-slate-500 font-mono text-xs">-</span>
-              ),
-          },
-          {
             header: 'Status',
             accessor: 'status',
             render: (item) => getStatusBadge(item.status),
@@ -196,12 +206,31 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
           {
             header: 'Pedagang',
             accessor: 'namaPedagang',
-            render: (item) =>
-              item.namaPedagang ? (
-                <span className="text-xs text-slate-300 max-w-[160px] truncate block" title={item.namaPedagang}>{item.namaPedagang}</span>
-              ) : (
-                <span className="text-xs text-slate-500">&mdash;</span>
-              ),
+            render: (item) => (
+              <div className="flex items-center gap-2">
+                {item.namaPedagang ? (
+                  <span className="text-xs text-slate-300 max-w-[140px] truncate block" title={item.namaPedagang}>{item.namaPedagang}</span>
+                ) : (
+                  <span className="text-xs text-slate-500">&mdash;</span>
+                )}
+                {item.isExpiringSoon && (
+                  <span className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30" title={`Kadaluwarsa ${item.kadaluwarsa}`}>
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    {item.kadaluwarsa}
+                  </span>
+                )}
+                {item.isExpired && (
+                  <span className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30" title={`Kadaluwarsa ${item.kadaluwarsa}`}>
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Kadaluwarsa
+                  </span>
+                )}
+              </div>
+            ),
           },
           {
             header: 'Aksi',
@@ -209,6 +238,12 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
             tdClassName: 'text-right',
             render: (item) => (
               <div className="flex items-center justify-end gap-2">
+                <button
+                  onClick={() => router.push(`/dashboard/ruang-dagang/${item.id}`)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 transition cursor-pointer"
+                >
+                  Detail
+                </button>
                 <button
                   onClick={() => {
                     editModal.open(item);

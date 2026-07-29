@@ -19,33 +19,38 @@ export default function DataTable({
   keyAccessor = 'id',
   syncSearchParams = false,
 }) {
-  const urlSearchParams = syncSearchParams ? useSearchParams() : null;
-  const router = syncSearchParams ? useRouter() : null;
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const syncTimeout = useRef(null);
 
-  const urlQ = syncSearchParams ? (urlSearchParams.get('q') || '') : '';
-  const urlFilters = {};
-  if (syncSearchParams) {
+  const searchParamsKey = syncSearchParams ? searchParams?.toString() : null;
+
+  const urlQ = syncSearchParams ? (searchParams.get('q') || '') : '';
+  const urlFilters = useMemo(() => {
+    if (!syncSearchParams) return {};
+    const fv = {};
     for (const f of filters) {
-      urlFilters[f.accessor] = urlSearchParams.get(f.accessor) || '';
+      fv[f.accessor] = searchParams.get(f.accessor) || '';
     }
-  }
+    return fv;
+  }, [syncSearchParams, searchParamsKey, filters]);
 
   const [searchQuery, setSearchQuery] = useState(urlQ);
   const [filterValues, setFilterValues] = useState(urlFilters);
 
   useEffect(() => {
-    if (syncSearchParams) {
-      setSearchQuery(urlQ);
-      setFilterValues(urlFilters);
-    }
-  }, [syncSearchParams ? urlSearchParams?.toString() : null]);
+    if (!syncSearchParams) return;
+    /* eslint-disable react-hooks/set-state-in-effect -- Syncing URL params to local state is the standard Next.js pattern for debounced search/filter */
+    setSearchQuery(urlQ);
+    setFilterValues(urlFilters);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [searchParamsKey, urlQ, urlFilters]);
 
   const syncToUrl = useCallback((q, fv) => {
     if (!syncSearchParams || !router) return;
     if (syncTimeout.current) clearTimeout(syncTimeout.current);
     syncTimeout.current = setTimeout(() => {
-      const params = new URLSearchParams(urlSearchParams.toString());
+      const params = new URLSearchParams(searchParams.toString());
       if (q) params.set('q', q); else params.delete('q');
       for (const filter of filters) {
         const val = fv[filter.accessor];
@@ -54,7 +59,7 @@ export default function DataTable({
       }
       router.replace(`?${params.toString()}`, { scroll: false });
     }, 300);
-  }, [syncSearchParams, router, urlSearchParams, filters]);
+  }, [syncSearchParams, router, searchParams, filters]);
 
   function handleSearchChange(value) {
     setSearchQuery(value);

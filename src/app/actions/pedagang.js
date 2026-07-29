@@ -50,7 +50,7 @@ export const updatePedagangAction = defineAction({
   operasi: 'pedagang:crud',
   scope: 'enforce',
   schema: updateSchema,
-  revalidate: ['/dashboard/pedagang', '/dashboard/perizinan'],
+  revalidate: ['/dashboard/pedagang', 'layout:/dashboard/ruang-dagang'],
   execute: async (data, ctx) => {
     const allowed = await db.select({ id: pedagang.id }).from(pedagang).where(scopedPedagang(data.id, ctx.pasarId)).limit(1);
     if (!allowed.length) return { error: 'Pedagang tidak ditemukan dalam scope Pasar aktif.' };

@@ -78,7 +78,11 @@ export function defineAction({ operasi, scope, schema, revalidate = [], execute 
       }
 
       for (const path of revalidate) {
-        revalidatePath(path);
+        if (path.startsWith('layout:')) {
+          revalidatePath(path.slice(7), 'layout');
+        } else {
+          revalidatePath(path);
+        }
       }
 
       return { success: true, message: result?.message };

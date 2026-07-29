@@ -36,7 +36,7 @@ export const terbitkanIzinAction = defineAction({
   operasi: 'perizinan:ops',
   scope: 'enforce',
   schema,
-  revalidate: ['/dashboard/perizinan', '/dashboard/ruang-dagang', '/dashboard'],
+  revalidate: ['layout:/dashboard/ruang-dagang', '/dashboard'],
   execute: async (data, ctx) => {
     try {
       const activeScope = await resolveScope(ctx.user);
@@ -90,7 +90,7 @@ const perpanjangSchema = z.object({
 export const perpanjangIzinAction = defineAction({
   operasi: 'perizinan:ops',
   schema: perpanjangSchema,
-  revalidate: ['/dashboard/perizinan', '/dashboard'],
+  revalidate: ['layout:/dashboard/ruang-dagang', '/dashboard'],
   execute: async (data, ctx) => {
     try {
       const result = await perpanjangIzin(data.perizinanId, {
@@ -113,7 +113,7 @@ const cabutSchema = z.object({
 export const cabutIzinAction = defineAction({
   operasi: 'perizinan:ops',
   schema: cabutSchema,
-  revalidate: ['/dashboard/perizinan', '/dashboard/ruang-dagang', '/dashboard'],
+  revalidate: ['layout:/dashboard/ruang-dagang', '/dashboard'],
   execute: async (data, ctx) => {
     try {
       const result = await cabutIzin(data.perizinanId, perizinanDbAdapter);

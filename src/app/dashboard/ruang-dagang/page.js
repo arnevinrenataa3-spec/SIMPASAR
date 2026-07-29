@@ -36,6 +36,7 @@ export default async function RuangDagangPage() {
       namaPedagang: pedagang.namaLengkap,
       createdAt: ruangDagang.createdAt,
       updatedAt: ruangDagang.updatedAt,
+      tanggalKedaluwarsa: perizinan.tanggalKedaluwarsa,
     })
     .from(ruangDagang)
     .leftJoin(pasar, eq(ruangDagang.pasarId, pasar.id))
@@ -47,10 +48,23 @@ export default async function RuangDagangPage() {
     .where(whereClause)
     .orderBy(asc(ruangDagang.kodeRuang));
 
-  const ruangList = rawList.map((row) => ({
-    ...row,
-    luas: formatLuas(row.panjang, row.lebar, hitungLuas(row.panjang, row.lebar)),
-  }));
+  const today = new Date().toISOString().slice(0, 10);
+
+  const ruangList = rawList.map((row) => {
+    const kadaluwarsa = row.tanggalKedaluwarsa
+      ? String(row.tanggalKedaluwarsa).slice(0, 10)
+      : null;
+    const daysLeft = kadaluwarsa
+      ? Math.ceil((new Date(kadaluwarsa) - new Date(today)) / 86400000)
+      : null;
+    return {
+      ...row,
+      luas: formatLuas(row.panjang, row.lebar, hitungLuas(row.panjang, row.lebar)),
+      kadaluwarsa,
+      isExpiringSoon: daysLeft != null && daysLeft >= 0 && daysLeft <= 7,
+      isExpired: daysLeft != null && daysLeft < 0,
+    };
+  });
 
   const pasars = await db
     .select({
