@@ -4,7 +4,7 @@
  * @contributor Arnevin Renata Ahmad Barkah
  */
 
-import { pgTable, pgEnum, uuid, varchar, text, timestamp, date, real, unique } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, uuid, varchar, text, timestamp, date, real, unique, serial } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 export const roleEnum = pgEnum("role", ['admin', 'petugas']);
@@ -73,6 +73,7 @@ export const perizinan = pgTable("perizinan", {
 
   ruangDagangId: uuid("ruang_dagang_id").references(() => ruangDagang.id).notNull(),
   pedagangId: uuid("pedagang_id").references(() => pedagang.id).notNull(),
+  nomorUrut: serial("nomor_urut").notNull(),
   nomorKartu: varchar("nomor_kartu", { length: 100 }).notNull().unique(),
 
   jenisDagangan: varchar("jenis_dagangan", { length: 255 }).notNull(),

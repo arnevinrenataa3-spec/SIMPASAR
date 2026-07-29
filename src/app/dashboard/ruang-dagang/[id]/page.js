@@ -57,6 +57,7 @@ export default async function RuangDagangDetailPage({ params }) {
       statusTeguran: perizinan.statusTeguran,
       tanggalTeguran: perizinan.tanggalTeguran,
       namaPedagang: pedagang.namaLengkap,
+      nik: pedagang.nik,
       pedagangId: pedagang.id,
       createdAt: perizinan.createdAt,
     })

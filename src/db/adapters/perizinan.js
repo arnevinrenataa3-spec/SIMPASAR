@@ -23,7 +23,32 @@ function adapterFor(executor) {
       const where = pasarId
         ? and(eq(ruangDagang.id, id), eq(ruangDagang.pasarId, pasarId))
         : eq(ruangDagang.id, id);
-      const rows = await executor.select().from(ruangDagang).where(where).limit(1);
+      const rows = await executor
+        .select({
+          id: ruangDagang.id,
+          pasarId: ruangDagang.pasarId,
+          kodeRuang: ruangDagang.kodeRuang,
+          jenis: ruangDagang.jenis,
+          panjang: ruangDagang.panjang,
+          lebar: ruangDagang.lebar,
+          status: ruangDagang.status,
+          createdAt: ruangDagang.createdAt,
+          updatedAt: ruangDagang.updatedAt,
+          nomorPasar: pasar.nomorPasar,
+        })
+        .from(ruangDagang)
+        .innerJoin(pasar, eq(ruangDagang.pasarId, pasar.id))
+        .where(where)
+        .limit(1);
+      return rows[0] ?? null;
+    },
+    findRuangById: async (id) => {
+      const rows = await executor
+        .select({ kodeRuang: ruangDagang.kodeRuang, nomorPasar: pasar.nomorPasar })
+        .from(ruangDagang)
+        .innerJoin(pasar, eq(ruangDagang.pasarId, pasar.id))
+        .where(eq(ruangDagang.id, id))
+        .limit(1);
       return rows[0] ?? null;
     },
     markRuangTerisi: async (id, pasarId) => {
@@ -60,6 +85,14 @@ function adapterFor(executor) {
       const rows = await executor
         .update(perizinan)
         .set({ statusIzin, updatedAt: new Date() })
+        .where(eq(perizinan.id, id))
+        .returning({ id: perizinan.id });
+      return rows.length === 1;
+    },
+    updateNomorKartu: async (id, nomorKartu) => {
+      const rows = await executor
+        .update(perizinan)
+        .set({ nomorKartu, updatedAt: new Date() })
         .where(eq(perizinan.id, id))
         .returning({ id: perizinan.id });
       return rows.length === 1;

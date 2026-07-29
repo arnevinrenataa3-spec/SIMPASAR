@@ -12,6 +12,7 @@ import { formatLuas, hitungLuas } from '../../../../lib/luas.js';
 import AlertBanner from '../../../../components/AlertBanner.js';
 import Modal from '../../../../components/Modal.js';
 import DataTable from '../../../../components/DataTable.js';
+import SearchableSelect from '../../../../components/SearchableSelect.js';
 import { terbitkanIzinAction, perpanjangIzinAction, cabutIzinAction } from '../../../actions/perizinan.js';
 
 const inputClass = 'w-full rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 outline-none focus:border-emerald-500/60';
@@ -92,6 +93,10 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
   });
 
   const trader = traders.find((item) => item.id === selectedTrader);
+  const traderOptions = useMemo(() => [
+    { value: 'new', label: 'Pedagang baru' },
+    ...traders.map((item) => ({ value: item.id, label: `${item.nik} - ${item.namaLengkap}` })),
+  ], [traders]);
   const ruangKosong = ruang.status === 'kosong';
   const izinAktif = izins.find((i) => i.statusIzin === 'aktif');
   const adaNonAktif = izins.some((i) => i.statusIzin !== 'aktif');
@@ -178,6 +183,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
               <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Pedagang Aktif</span>
               <p className="text-sm font-semibold text-slate-100 mt-1">{pedagangAktif.namaPedagang}</p>
               <p className="text-xs text-slate-400 mt-0.5">{pedagangAktif.jenisDagangan} &bull; Kartu: {pedagangAktif.nomorKartu}</p>
+              <p className="text-xs text-slate-400 mt-0.5">NIK: {pedagangAktif.nik}</p>
             </div>
           )}
         </div>
@@ -240,6 +246,10 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
               <p className="text-sm font-semibold text-slate-100 mt-1">{izinAktif.namaPedagang}</p>
             </div>
             <div>
+              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">NIK</span>
+              <p className="text-sm font-mono text-slate-100 mt-1">{izinAktif.nik}</p>
+            </div>
+            <div>
               <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Jenis Dagangan</span>
               <p className="text-sm text-slate-300 mt-1">{izinAktif.jenisDagangan}</p>
             </div>
@@ -273,6 +283,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
                   <tr>
                     <th className="px-4 py-3.5">Nomor Kartu</th>
                     <th className="px-4 py-3.5">Pedagang</th>
+                    <th className="px-4 py-3.5">NIK</th>
                     <th className="px-4 py-3.5">Dagangan</th>
                     <th className="px-4 py-3.5">Masa Berlaku</th>
                     <th className="px-4 py-3.5">Status Izin</th>
@@ -284,6 +295,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
                     <tr key={izin.id} className="hover:bg-slate-800/40 transition duration-150">
                       <td className="px-4 py-3.5 font-mono text-emerald-300">{izin.nomorKartu}</td>
                       <td className="px-4 py-3.5 text-slate-200">{izin.namaPedagang || '-'}</td>
+                      <td className="px-4 py-3.5 font-mono text-slate-400">{izin.nik || '-'}</td>
                       <td className="px-4 py-3.5 text-slate-400">{izin.jenisDagangan}</td>
                       <td className="px-4 py-3.5 text-xs text-slate-400">{formatDate(izin.tanggalTerbit)} - {formatDate(izin.tanggalKedaluwarsa)}</td>
                       <td className="px-4 py-3.5">{statusIzinBadge(izin)}</td>
@@ -360,18 +372,12 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
           </div>
           <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 sm:col-span-2">
             Pedagang
-            <select
+            <SearchableSelect
+              options={traderOptions}
               value={selectedTrader}
-              onChange={(event) => setSelectedTrader(event.target.value)}
-              className={`${inputClass} mt-2`}
-            >
-              <option value="new">Pedagang baru</option>
-              {traders.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.nik} - {item.namaLengkap}
-                </option>
-              ))}
-            </select>
+              onChange={setSelectedTrader}
+              placeholder="Cari pedagang..."
+            />
           </label>
           <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
             NIK
@@ -422,10 +428,9 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
               defaultValue={trader?.alamat ?? ''}
             />
           </label>
-          <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 sm:col-span-2">
-            Nomor kartu
-            <input name="nomorKartu" required className={`${inputClass} mt-2 font-mono`} placeholder="SPTB-2026-001" />
-          </label>
+          <div className="sm:col-span-2 bg-slate-950/50 rounded-xl border border-slate-800 p-3 text-sm text-slate-400">
+            Nomor kartu akan dibuat otomatis oleh sistem sesuai format resmi setelah izin diterbitkan.
+          </div>
           <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
             Tanggal terbit
             <input type="date" name="tanggalTerbit" required className={`${inputClass} mt-2`} />

@@ -18,7 +18,6 @@ const schema = z.object({
   namaLengkap: z.string().trim().min(2, 'Nama lengkap wajib diisi.'),
   alamat: z.string().trim().min(3, 'Alamat wajib diisi.'),
   nomorHp: z.string().trim().regex(/^\+?[0-9]{8,15}$/, 'Nomor HP tidak valid.'),
-  nomorKartu: z.string().trim().min(3, 'Nomor kartu wajib diisi.'),
   jenisDagangan: z.string().trim().min(2, 'Jenis dagangan wajib diisi.'),
   tanggalTerbit: z.iso.date('Tanggal terbit tidak valid.'),
   tanggalKedaluwarsa: z.iso.date('Tanggal kedaluwarsa tidak valid.'),

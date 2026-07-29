@@ -43,6 +43,20 @@ export default function TeguranPanel({ teguranList }) {
       {teguranList.length > 0 && (
         <DataTable
           cellPadding="px-5 py-4"
+          searchPlaceholder="Cari nomor kartu..."
+          filters={[
+            {
+              accessor: 'statusTeguran',
+              placeholder: 'Semua Status',
+              options: [
+                { label: 'Semua Status', value: '' },
+                { label: 'Belum SP', value: 'none' },
+                { label: spLabel.sp1, value: 'sp1' },
+                { label: spLabel.sp2, value: 'sp2' },
+                { label: spLabel.sp3, value: 'sp3' },
+              ],
+            },
+          ]}
           columns={[
             {
               header: 'Nomor Kartu',

@@ -3,12 +3,23 @@
  * @author Muhamad Hazmi Alfarizqi
  */
 
+import crypto from 'crypto';
 import { temukanAtauBuatPedagang } from './pedagang.js';
 
 function asDateOnly(value) {
   if (value instanceof Date) return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
   const parsed = new Date(`${String(value).slice(0, 10)}T00:00:00Z`);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+const ROMAN_MONTHS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+
+export function buildNomorKartu({ nomorUrut, nomorPasar, kodeRuang, jenis, tanggal }) {
+  const date = asDateOnly(tanggal);
+  const seq = String(nomorUrut).padStart(5, '0');
+  const romanBulan = ROMAN_MONTHS[date.getUTCMonth()];
+  const tahun = date.getUTCFullYear();
+  return `503/${seq}/${nomorPasar}/${kodeRuang}/${jenis}/${romanBulan}/${tahun}`;
 }
 
 export function statusTeguran(tanggalKedaluwarsa, sekarang = new Date()) {
@@ -40,14 +51,23 @@ export async function terbitkanIzin(input, dbAdapter) {
     const perizinan = await tx.insertPerizinan({
       ruangDagangId: ruang.id,
       pedagangId: pedagang.id,
-      nomorKartu: String(input.nomorKartu).trim(),
+      nomorKartu: crypto.randomUUID(),
       jenisDagangan: String(input.jenisDagangan).trim(),
       tanggalTerbit: String(input.tanggalTerbit).slice(0, 10),
       tanggalKedaluwarsa: String(input.tanggalKedaluwarsa).slice(0, 10),
       statusIzin: 'aktif',
     });
 
-    return { ok: true, perizinan };
+    const nomorKartu = buildNomorKartu({
+      nomorUrut: perizinan.nomorUrut,
+      nomorPasar: ruang.nomorPasar,
+      kodeRuang: ruang.kodeRuang,
+      jenis: 'IB',
+      tanggal: input.tanggalTerbit,
+    });
+    await tx.updateNomorKartu(perizinan.id, nomorKartu);
+
+    return { ok: true, perizinan: { ...perizinan, nomorKartu } };
   });
 }
 
@@ -93,20 +113,31 @@ export async function perpanjangIzin(perizinanId, { tanggalTerbit, tanggalKedalu
       return { ok: false, reason: 'izin_tidak_aktif' };
     }
 
+    const ruang = await tx.findRuangById(izin.ruangDagangId);
+    if (!ruang) return { ok: false, reason: 'ruang_tidak_tersedia' };
+
     await tx.updatePerizinanStatus(perizinanId, 'diperpanjang');
 
-    const suffix = String(Date.now()).slice(-6);
     const perizinan = await tx.insertPerizinan({
       ruangDagangId: izin.ruangDagangId,
       pedagangId: izin.pedagangId,
-      nomorKartu: `${izin.nomorKartu}-PP-${suffix}`,
+      nomorKartu: crypto.randomUUID(),
       jenisDagangan: izin.jenisDagangan,
       tanggalTerbit: String(tanggalTerbit).slice(0, 10),
       tanggalKedaluwarsa: String(tanggalKedaluwarsa).slice(0, 10),
       statusIzin: 'aktif',
     });
 
-    return { ok: true, perizinan };
+    const nomorKartu = buildNomorKartu({
+      nomorUrut: perizinan.nomorUrut,
+      nomorPasar: ruang.nomorPasar,
+      kodeRuang: ruang.kodeRuang,
+      jenis: 'PKB',
+      tanggal: tanggalTerbit,
+    });
+    await tx.updateNomorKartu(perizinan.id, nomorKartu);
+
+    return { ok: true, perizinan: { ...perizinan, nomorKartu } };
   });
 }
 

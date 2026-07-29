@@ -116,9 +116,15 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
     }
   };
 
+  const formatDate = (value) => {
+    if (!value) return '-';
+    return new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${String(value).slice(0, 10)}T00:00:00Z`));
+  };
+
   const luasPreviewCreat = hitungLuas(panjang, lebar);
   const luasPreviewEdit = hitungLuas(editPanjang, editLebar);
   const isAdmin = user?.role === 'admin';
+  const today = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="space-y-6">
@@ -155,27 +161,64 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
           </span>
         </div>
       )}
-      <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-10 gap-4">
-        {[
-          { label: 'Total', value: stats.total, color: 'text-slate-100' },
-          { label: 'Kios', value: stats.kios, color: 'text-indigo-400' },
-          { label: 'Meja', value: stats.los, color: 'text-cyan-400' },
-          { label: 'Lapak', value: stats.lapak, color: 'text-emerald-400' },
-          { label: 'Toko', value: stats.toko, color: 'text-amber-400' },
-          { label: 'Kosong', value: stats.kosong, color: 'text-emerald-400' },
-          { label: 'Terisi', value: stats.terisi, color: 'text-rose-400' },
-          { label: 'Non-fisik', value: stats.nonFisik, color: 'text-slate-400' },
-          { label: 'Mendekati Kadaluwarsa', value: stats.expiringSoon, color: 'text-amber-400' },
-          { label: 'Kadaluwarsa', value: stats.expired, color: 'text-rose-400' },
-        ].map((s) => (
-          <div
-            key={s.label}
-            className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center"
-          >
-            <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
-            <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
+      <div className="space-y-4">
+        <div>
+          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Ringkasan Ruang</span>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+            {[
+              { label: 'Total', value: stats.total, color: 'text-slate-100' },
+              { label: 'Kios', value: stats.kios, color: 'text-indigo-400' },
+              { label: 'Meja', value: stats.los, color: 'text-cyan-400' },
+              { label: 'Lapak', value: stats.lapak, color: 'text-emerald-400' },
+              { label: 'Toko', value: stats.toko, color: 'text-amber-400' },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center"
+              >
+                <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
+                <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+
+        <div>
+          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Status Ruang</span>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { label: 'Kosong', value: stats.kosong, color: 'text-emerald-400' },
+              { label: 'Terisi', value: stats.terisi, color: 'text-rose-400' },
+              { label: 'Non-fisik', value: stats.nonFisik, color: 'text-slate-400' },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center"
+              >
+                <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
+                <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Kedaluwarsaan</span>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { label: 'Mendekati Kadaluwarsa', value: stats.expiringSoon, color: 'text-amber-400' },
+              { label: 'Kadaluwarsa', value: stats.expired, color: 'text-rose-400' },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center"
+              >
+                <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
+                <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <DataTable
@@ -207,30 +250,44 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
             header: 'Pedagang',
             accessor: 'namaPedagang',
             render: (item) => (
-              <div className="flex items-center gap-2">
-                {item.namaPedagang ? (
-                  <span className="text-xs text-slate-300 max-w-[140px] truncate block" title={item.namaPedagang}>{item.namaPedagang}</span>
-                ) : (
-                  <span className="text-xs text-slate-500">&mdash;</span>
-                )}
-                {item.isExpiringSoon && (
-                  <span className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30" title={`Kadaluwarsa ${item.kadaluwarsa}`}>
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    {item.kadaluwarsa}
-                  </span>
-                )}
-                {item.isExpired && (
-                  <span className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30" title={`Kadaluwarsa ${item.kadaluwarsa}`}>
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Kadaluwarsa
-                  </span>
-                )}
-              </div>
+              item.namaPedagang ? (
+                <span className="text-xs text-slate-300 max-w-[140px] truncate block" title={item.namaPedagang}>{item.namaPedagang}</span>
+              ) : (
+                <span className="text-xs text-slate-500">&mdash;</span>
+              )
             ),
+          },
+          {
+            header: 'Kadaluwarsa',
+            accessor: 'kadaluwarsa',
+            render: (item) => {
+              if (!item.kadaluwarsa) {
+                return <span className="text-xs text-slate-500">&mdash;</span>;
+              }
+              const daysLeft = Math.ceil((new Date(item.kadaluwarsa) - new Date(today)) / 86400000);
+              if (item.isExpired) {
+                return (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                    {`Kadaluwarsa ${Math.abs(daysLeft)} hari lalu`}
+                  </span>
+                );
+              }
+              if (daysLeft === 0) {
+                return (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                    Kadaluwarsa hari ini
+                  </span>
+                );
+              }
+              if (item.isExpiringSoon) {
+                return (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                    {`${daysLeft} hari lagi`}
+                  </span>
+                );
+              }
+              return <span className="text-xs text-slate-400">{formatDate(item.kadaluwarsa)}</span>;
+            },
           },
           {
             header: 'Aksi',

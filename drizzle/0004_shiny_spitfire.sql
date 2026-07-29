@@ -1,0 +1,1 @@
+ALTER TABLE "perizinan" ADD COLUMN "nomor_urut" serial NOT NULL;
