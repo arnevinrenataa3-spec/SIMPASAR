@@ -6,26 +6,16 @@
  * @contributor Muhamad Hazmi Alfarizqi
  */
 
-import { useState } from 'react';
-import { useCrudActions } from '../../../lib/useCrudActions.js';
+import { useCrudModal } from '../../../lib/useCrudModal.js';
 import Modal from '../../../components/Modal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import { createPasarAction, updatePasarAction, deletePasarAction } from '../../actions/pasar.js';
 
 export default function PasarTable({ pasars }) {
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingPasar, setEditingPasar] = useState(null);
-  const [deletingPasar, setDeletingPasar] = useState(null);
-
-  const actions = useCrudActions({
-    create: createPasarAction,
-    update: updatePasarAction,
-    remove: deletePasarAction,
-    onCreateSuccess: () => setIsAddModalOpen(false),
-    onUpdateSuccess: () => setEditingPasar(null),
-    onDeleteSuccess: () => setDeletingPasar(null),
-  });
+  const createModal = useCrudModal({ action: createPasarAction });
+  const editModal = useCrudModal({ action: updatePasarAction });
+  const deleteModal = useCrudModal({ action: deletePasarAction });
 
   return (
     <div className="space-y-6">
@@ -41,10 +31,7 @@ export default function PasarTable({ pasars }) {
         </div>
 
         <button
-          onClick={() => {
-            actions.create.reset();
-            setIsAddModalOpen(true);
-          }}
+          onClick={createModal.open}
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition duration-150 shadow-lg shadow-emerald-500/20 text-sm"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -53,11 +40,6 @@ export default function PasarTable({ pasars }) {
           <span>Tambah Pasar Baru</span>
         </button>
       </div>
-
-      {/* Alerts */}
-      <AlertBanner state={actions.create.state} />
-      <AlertBanner state={actions.update.state} />
-      <AlertBanner state={actions.delete.state} />
 
       {/* Pasar Table */}
       <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl">
@@ -116,20 +98,14 @@ export default function PasarTable({ pasars }) {
 
                       <td className="px-6 py-4 text-right space-x-2">
                         <button
-                          onClick={() => {
-                            actions.update.reset();
-                            setEditingPasar(p);
-                          }}
+                          onClick={() => editModal.open(p)}
                           className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
                         >
                           Edit
                         </button>
 
                         <button
-                          onClick={() => {
-                            actions.delete.reset();
-                            setDeletingPasar(p);
-                          }}
+                          onClick={() => deleteModal.open(p)}
                           className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
                         >
                           Hapus
@@ -146,11 +122,12 @@ export default function PasarTable({ pasars }) {
 
       {/* Add Pasar Modal */}
       <Modal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        key={createModal.key}
+        isOpen={createModal.isOpen}
+        onClose={createModal.close}
         title="Tambah Pasar Baru"
       >
-        <form action={actions.create.action} className="space-y-4">
+        <form action={createModal.action} className="space-y-4">
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
               Nama Pasar
@@ -190,20 +167,21 @@ export default function PasarTable({ pasars }) {
             />
           </div>
 
+          <AlertBanner state={createModal.state} />
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
             <button
               type="button"
-              onClick={() => setIsAddModalOpen(false)}
+              onClick={createModal.close}
               className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
             >
               Batal
             </button>
             <button
               type="submit"
-              disabled={actions.create.pending}
+              disabled={createModal.pending}
               className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
             >
-              {actions.create.pending ? 'Menyimpan...' : 'Simpan Pasar'}
+              {createModal.pending ? 'Menyimpan...' : 'Simpan Pasar'}
             </button>
           </div>
         </form>
@@ -211,13 +189,14 @@ export default function PasarTable({ pasars }) {
 
       {/* Edit Pasar Modal */}
       <Modal
-        isOpen={Boolean(editingPasar)}
-        onClose={() => setEditingPasar(null)}
+        key={editModal.key}
+        isOpen={editModal.isOpen}
+        onClose={editModal.close}
         title="Edit Pasar"
       >
-        {editingPasar && (
-          <form action={actions.update.action} className="space-y-4">
-            <input type="hidden" name="id" value={editingPasar.id} />
+        {editModal.item && (
+          <form action={editModal.action} className="space-y-4">
+            <input type="hidden" name="id" value={editModal.item.id} />
 
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
@@ -227,7 +206,7 @@ export default function PasarTable({ pasars }) {
                 name="namaPasar"
                 type="text"
                 required
-                defaultValue={editingPasar.namaPasar}
+                defaultValue={editModal.item.namaPasar}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
@@ -240,7 +219,7 @@ export default function PasarTable({ pasars }) {
                 name="nomorPasar"
                 type="text"
                 required
-                defaultValue={editingPasar.nomorPasar}
+                defaultValue={editModal.item.nomorPasar}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
@@ -253,25 +232,26 @@ export default function PasarTable({ pasars }) {
                 name="alamat"
                 required
                 rows={3}
-                defaultValue={editingPasar.alamat}
+                defaultValue={editModal.item.alamat}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
+            <AlertBanner state={editModal.state} />
             <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
               <button
                 type="button"
-                onClick={() => setEditingPasar(null)}
+                onClick={editModal.close}
                 className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
               >
                 Batal
               </button>
               <button
                 type="submit"
-                disabled={actions.update.pending}
+                disabled={editModal.pending}
                 className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
               >
-                {actions.update.pending ? 'Memperbarui...' : 'Simpan Perubahan'}
+                {editModal.pending ? 'Memperbarui...' : 'Simpan Perubahan'}
               </button>
             </div>
           </form>
@@ -280,11 +260,13 @@ export default function PasarTable({ pasars }) {
 
       {/* Delete Confirmation Modal */}
       <DeleteConfirmModal
-        isOpen={Boolean(deletingPasar)}
-        onClose={() => setDeletingPasar(null)}
-        itemName={deletingPasar?.namaPasar}
-        onConfirm={actions.delete.action}
-        isPending={actions.delete.pending}
+        isOpen={deleteModal.isOpen}
+        onClose={deleteModal.close}
+        itemName={deleteModal.item?.namaPasar}
+        onConfirm={deleteModal.action}
+        isPending={deleteModal.pending}
+        itemId={deleteModal.item?.id}
+        state={deleteModal.state}
       />
     </div>
   );

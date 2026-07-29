@@ -7,8 +7,8 @@
 import { getSession } from '../../lib/auth.js';
 import { resolveScope, buildScopeFilter } from '../../lib/scope.js';
 import { db } from '../../db/index.js';
-import { ruangDagang, pasar } from '../../db/schema.js';
-import { eq } from 'drizzle-orm';
+import { pasar, perizinan, ruangDagang } from '../../db/schema.js';
+import { and, eq, lt, sql } from 'drizzle-orm';
 
 export default async function DashboardPage() {
   const user = await getSession();
@@ -26,6 +26,33 @@ export default async function DashboardPage() {
 
   const terisiCount = allRuang.filter((r) => r.status === 'terisi').length;
   const kosongCount = allRuang.filter((r) => r.status === 'kosong').length;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const expiredBase = and(
+    sql`${perizinan.statusIzin} IN ('aktif', 'kedaluwarsa')`,
+    lt(perizinan.tanggalKedaluwarsa, today),
+  );
+  const expiredWhere = whereClause ? and(whereClause, expiredBase) : expiredBase;
+
+  const [expiredResult] = await db
+    .select({ count: sql`count(*)`.mapWith(Number) })
+    .from(perizinan)
+    .innerJoin(ruangDagang, eq(perizinan.ruangDagangId, ruangDagang.id))
+    .where(expiredWhere);
+
+  const kedaluwarsaCount = expiredResult?.count ?? 0;
+
+  const teguranWhere = whereClause
+    ? and(whereClause, sql`${perizinan.statusTeguran} != 'none'`)
+    : sql`${perizinan.statusTeguran} != 'none'`;
+
+  const [teguranResult] = await db
+    .select({ count: sql`count(*)`.mapWith(Number) })
+    .from(perizinan)
+    .innerJoin(ruangDagang, eq(perizinan.ruangDagangId, ruangDagang.id))
+    .where(teguranWhere);
+
+  const teguranCount = teguranResult?.count ?? 0;
 
   let activeScopeLabel = 'Semua Pasar';
   if (scope && scope !== 'all') {
@@ -106,7 +133,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-slate-100">0</span>
+            <span className="text-3xl font-bold text-slate-100">{kedaluwarsaCount}</span>
             <span className="text-xs text-rose-400 font-medium">Perlu Tindakan</span>
           </div>
         </div>
@@ -123,7 +150,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-slate-100">0</span>
+            <span className="text-3xl font-bold text-slate-100">{teguranCount}</span>
             <span className="text-xs text-amber-400 font-medium">Surat Diterbitkan</span>
           </div>
         </div>

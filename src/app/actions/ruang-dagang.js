@@ -50,7 +50,7 @@ export const createRuangDagangAction = defineAction({
     const existing = await db
       .select()
       .from(ruangDagang)
-      .where(sql`LOWER(${ruangDagang.kodeRuang}) = LOWER(${kodeRuang})`);
+      .where(sql`LOWER(${ruangDagang.kodeRuang}) = LOWER(${kodeRuang}) AND ${ruangDagang.pasarId} = ${ctx.pasarId}`);
 
     if (existing.length > 0) {
       return { error: `Kode ruang "${kodeRuang}" sudah terdaftar di sistem. Gunakan kode lain.` };
@@ -80,7 +80,7 @@ export const updateRuangDagangAction = defineAction({
     const existing = await db
       .select()
       .from(ruangDagang)
-      .where(sql`LOWER(${ruangDagang.kodeRuang}) = LOWER(${kodeRuang}) AND ${ruangDagang.id} != ${data.id}`);
+      .where(sql`LOWER(${ruangDagang.kodeRuang}) = LOWER(${kodeRuang}) AND ${ruangDagang.pasarId} = ${ctx.pasarId} AND ${ruangDagang.id} != ${data.id}`);
 
     if (existing.length > 0) {
       return { error: `Kode ruang "${kodeRuang}" sudah digunakan oleh ruang dagang lain.` };

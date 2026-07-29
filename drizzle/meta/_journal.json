@@ -8,6 +8,20 @@
       "when": 1785055829289,
       "tag": "0000_strong_the_initiative",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1785316005127,
+      "tag": "0001_remarkable_gwen_stacy",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785321386591,
+      "tag": "0002_perfect_maelstrom",
+      "breakpoints": true
     }
   ]
 }

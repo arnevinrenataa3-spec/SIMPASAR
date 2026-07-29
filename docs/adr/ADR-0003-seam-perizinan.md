@@ -58,8 +58,11 @@ statusPublik(nomorKartu)
 ### Model Surat Peringatan (SP)
 
 **Status teguran dihitung (derived) dari tanggal** — fungsi murni `statusTeguran()`.
-**Penerbitan/cetak SP dicatat** di tabel `teguran` terpisah (schema sudah punya
-`teguranStatusEnum`; tabel `teguran` belum dibuat — menjadi bagian issue #18).
+**Penerbitan/cetak SP dicatat** di tabel `teguran` terpisah (dibuat di Issue #18).
+
+`terbitkanTeguran(perizinanId, userId)` → `{ ok: true, level } | { ok: false, reason }`
+// Cek perizinan aktif, hitung level SP via statusTeguran(), insert ke tabel teguran + update perizinan.statusTeguran.
+// Satu transaksi atomik. Menolak jika level yang sama sudah diterbitkan.
 
 Ini menjamin:
 - Status SP untuk monitoring selalu konsisten dengan tanggal (tidak mungkin lupa update).

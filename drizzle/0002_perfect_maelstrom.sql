@@ -1,0 +1,2 @@
+ALTER TABLE "ruang_dagang" DROP CONSTRAINT "ruang_dagang_kode_ruang_unique";--> statement-breakpoint
+ALTER TABLE "ruang_dagang" ADD CONSTRAINT "ruang_dagang_pasar_id_kode_ruang_unique" UNIQUE("pasar_id","kode_ruang");

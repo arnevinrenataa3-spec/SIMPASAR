@@ -63,10 +63,21 @@ erDiagram
         datetime updated_at
     }
 
+    TEGURAN {
+        uuid id PK "UUIDv7"
+        uuid perizinan_id FK
+        string status "'sp1', 'sp2', 'sp3'"
+        date tanggal_terbit
+        uuid user_id FK "Petugas pencetak"
+        datetime created_at
+    }
+
     PASAR ||--o{ USERS : "memiliki petugas"
     PASAR ||--o{ RUANG_DAGANG : "memiliki ruang"
     PEDAGANG ||--o{ PERIZINAN : "mengajukan"
     RUANG_DAGANG ||--o{ PERIZINAN : "ditempati"
+    PERIZINAN ||--o{ TEGURAN : "audit trail SP"
+    USERS ||--o{ TEGURAN : "penerbit teguran"
 ```
 
 ### Penjelasan Relasi & Keputusan Teknis
@@ -77,4 +88,4 @@ erDiagram
    **Relasi ke Pasar bersifat derived:** Tabel `PEDAGANG` tidak memiliki `pasar_id`. Relasi Pedagang ke Pasar dihitung melalui `PEDAGANG → PERIZINAN → RUANG_DAGANG → PASAR`. Satu Pedagang dapat memiliki izin di beberapa Pasar berbeda. Pedagang yang belum memiliki Perizinan tidak terkait Pasar mana pun (data global).
 4. **One-to-Many (`RUANG_DAGANG` -> `PERIZINAN`)**: 1 Ruang Dagang memiliki banyak `PERIZINAN` karena history penyewa sebelumnya atau history perpanjangan izin tetap tersimpan.
 5. **Pencarian Publik (QR Code)**: Kolom `nomor_kartu` pada tabel `PERIZINAN` adalah parameter unik (string *random* atau nomor register) yang digunakan saat Penghuni melakukan scan QR Code di halaman publik.
-6. **Surat Peringatan (SP)**: Kolom `status_teguran` dan `tanggal_teguran` di tabel `PERIZINAN` untuk melacak status SP terbaru. Status SP **dihitung (derived) dari tanggal** sebagai fungsi murni. Penerbitan SP dicatat di **tabel `teguran`** terpisah (audit trail, direncanakan di Issue #18). Lihat **ADR-0003**.
+6. **Surat Peringatan (SP)**: Kolom `status_teguran` dan `tanggal_teguran` di tabel `PERIZINAN` untuk melacak status SP terbaru. Status SP **dihitung (derived) dari tanggal** sebagai fungsi murni. Setiap penerbitan SP dicatat di **tabel `teguran`** sebagai audit trail (siapa, kapan, level berapa). Lihat **ADR-0003**.

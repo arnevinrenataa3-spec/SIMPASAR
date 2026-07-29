@@ -49,7 +49,7 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
       <div
         ref={modalRef}
-        className={`w-full ${maxWidth} bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-5`}
+        className={`w-full ${maxWidth} max-h-[85vh] overflow-y-auto bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-5`}
       >
         {title && (
           <div className="flex items-center justify-between border-b border-slate-800 pb-4">

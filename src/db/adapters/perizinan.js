@@ -5,7 +5,7 @@
 
 import { and, eq } from 'drizzle-orm';
 import { db } from '../index.js';
-import { pasar, pedagang, perizinan, ruangDagang } from '../schema.js';
+import { pasar, pedagang, perizinan, ruangDagang, teguran } from '../schema.js';
 
 function adapterFor(executor) {
   return {
@@ -39,6 +39,38 @@ function adapterFor(executor) {
     insertPerizinan: async (values) => {
       const rows = await executor.insert(perizinan).values(values).returning();
       return rows[0];
+    },
+    findPerizinanById: async (id) => {
+      const rows = await executor.select().from(perizinan).where(eq(perizinan.id, id)).limit(1);
+      return rows[0] ?? null;
+    },
+    insertTeguran: async (values) => {
+      const rows = await executor.insert(teguran).values(values).returning();
+      return rows[0];
+    },
+    updatePerizinanTeguran: async (id, statusTeguran, tanggalTeguran) => {
+      const rows = await executor
+        .update(perizinan)
+        .set({ statusTeguran, tanggalTeguran, updatedAt: new Date() })
+        .where(eq(perizinan.id, id))
+        .returning({ id: perizinan.id });
+      return rows.length === 1;
+    },
+    updatePerizinanStatus: async (id, statusIzin) => {
+      const rows = await executor
+        .update(perizinan)
+        .set({ statusIzin, updatedAt: new Date() })
+        .where(eq(perizinan.id, id))
+        .returning({ id: perizinan.id });
+      return rows.length === 1;
+    },
+    markRuangKosong: async (id) => {
+      const rows = await executor
+        .update(ruangDagang)
+        .set({ status: 'kosong', updatedAt: new Date() })
+        .where(eq(ruangDagang.id, id))
+        .returning({ id: ruangDagang.id });
+      return rows.length === 1;
     },
   };
 }

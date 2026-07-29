@@ -4,7 +4,7 @@
  * @contributor Arnevin Renata Ahmad Barkah
  */
 
-import { pgTable, pgEnum, uuid, varchar, text, timestamp, date, real } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, uuid, varchar, text, timestamp, date, real, unique } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 export const roleEnum = pgEnum("role", ['admin', 'petugas']);
@@ -56,7 +56,7 @@ export const ruangDagang = pgTable("ruang_dagang", {
   id: uuid("id").primaryKey().default(defaultUuidV7),
 
   pasarId: uuid("pasar_id").references(() => pasar.id).notNull(),
-  kodeRuang: varchar("kode_ruang", { length: 50 }).notNull().unique(),
+  kodeRuang: varchar("kode_ruang", { length: 50 }).notNull(),
   jenis: ruangJenisEnum("jenis").notNull(),
   panjang: real("panjang"),
   lebar: real("lebar"),
@@ -64,7 +64,9 @@ export const ruangDagang = pgTable("ruang_dagang", {
 
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (t) => ({
+  unqPasarKodeRuang: unique().on(t.pasarId, t.kodeRuang),
+}));
 
 export const perizinan = pgTable("perizinan", {
   id: uuid("id").primaryKey().default(defaultUuidV7),
@@ -83,4 +85,15 @@ export const perizinan = pgTable("perizinan", {
 
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const teguran = pgTable("teguran", {
+  id: uuid("id").primaryKey().default(defaultUuidV7),
+
+  perizinanId: uuid("perizinan_id").references(() => perizinan.id).notNull(),
+  status: teguranStatusEnum("status").notNull(),
+  tanggalTerbit: date("tanggal_terbit").notNull(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+
+  createdAt: timestamp("created_at").defaultNow(),
 });

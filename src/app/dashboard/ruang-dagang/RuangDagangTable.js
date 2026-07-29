@@ -7,7 +7,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { useCrudActions } from '../../../lib/useCrudActions.js';
+import { useCrudModal } from '../../../lib/useCrudModal.js';
 import { hitungLuas, formatLuas } from '../../../lib/luas.js';
 import Modal from '../../../components/Modal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
@@ -15,35 +15,23 @@ import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import { createRuangDagangAction, updateRuangDagangAction, deleteRuangDagangAction } from '../../actions/ruang-dagang.js';
 
 export default function RuangDagangTable({ initialData = [], pasars = [], user, selectedScope = 'all' }) {
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
-  const [deletingItem, setDeletingItem] = useState(null);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [filterJenis, setFilterJenis] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
-
   const [panjang, setPanjang] = useState('');
   const [lebar, setLebar] = useState('');
   const [editPanjang, setEditPanjang] = useState('');
   const [editLebar, setEditLebar] = useState('');
 
-  const actions = useCrudActions({
-    create: createRuangDagangAction,
-    update: updateRuangDagangAction,
-    remove: deleteRuangDagangAction,
-    onCreateSuccess: () => {
-      setIsAddModalOpen(false);
-      setPanjang('');
-      setLebar('');
-    },
-    onUpdateSuccess: () => {
-      setEditingItem(null);
-      setEditPanjang('');
-      setEditLebar('');
-    },
-    onDeleteSuccess: () => setDeletingItem(null),
+  const createModal = useCrudModal({
+    action: createRuangDagangAction,
+    onSuccess: () => { setPanjang(''); setLebar(''); },
   });
+  const editModal = useCrudModal({
+    action: updateRuangDagangAction,
+    onSuccess: () => { setEditPanjang(''); setEditLebar(''); },
+  });
+  const deleteModal = useCrudModal({ action: deleteRuangDagangAction });
 
   const stats = useMemo(() => {
     const total = initialData.length;
@@ -139,8 +127,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
         </div>
         <button
           onClick={() => {
-            actions.create.reset();
-            setIsAddModalOpen(true);
+            createModal.open();
           }}
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition duration-150 shadow-lg shadow-emerald-500/20 text-sm"
         >
@@ -150,11 +137,6 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
           <span>Tambah Ruang Dagang</span>
         </button>
       </div>
-
-      {/* Alerts */}
-      <AlertBanner state={actions.create.state} />
-      <AlertBanner state={actions.update.state} />
-      <AlertBanner state={actions.delete.state} />
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
@@ -266,8 +248,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => {
-                            actions.update.reset();
-                            setEditingItem(item);
+                            editModal.open(item);
                             if (item.panjang != null) setEditPanjang(String(item.panjang));
                             else setEditPanjang('');
                             if (item.lebar != null) setEditLebar(String(item.lebar));
@@ -278,10 +259,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
                           Edit
                         </button>
                         <button
-                          onClick={() => {
-                            actions.delete.reset();
-                            setDeletingItem(item);
-                          }}
+                          onClick={() => deleteModal.open(item)}
                           className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 transition cursor-pointer"
                         >
                           Hapus
@@ -298,11 +276,12 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
 
       {/* Add Modal */}
       <Modal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        key={createModal.key}
+        isOpen={createModal.isOpen}
+        onClose={createModal.close}
         title="Tambah Ruang Dagang Baru"
       >
-        <form action={actions.create.action} className="space-y-4">
+        <form action={createModal.action} className="space-y-4">
           {isAdmin && (
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
@@ -415,20 +394,21 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
             </select>
           </div>
 
+          <AlertBanner state={createModal.state} />
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
             <button
               type="button"
-              onClick={() => setIsAddModalOpen(false)}
+              onClick={createModal.close}
               className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 transition"
             >
               Batal
             </button>
             <button
               type="submit"
-              disabled={actions.create.pending}
+              disabled={createModal.pending}
               className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition shadow-lg shadow-emerald-500/20 cursor-pointer"
             >
-              {actions.create.pending ? 'Menyimpan...' : 'Simpan Ruang Dagang'}
+              {createModal.pending ? 'Menyimpan...' : 'Simpan Ruang Dagang'}
             </button>
           </div>
         </form>
@@ -436,14 +416,15 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
 
       {/* Edit Modal */}
       <Modal
-        isOpen={Boolean(editingItem)}
-        onClose={() => setEditingItem(null)}
+        key={editModal.key}
+        isOpen={editModal.isOpen}
+        onClose={editModal.close}
         title="Edit Data Ruang Dagang"
       >
-        {editingItem && (
-          <form action={actions.update.action} className="space-y-4">
-            <input type="hidden" name="id" value={editingItem.id} />
-            <input type="hidden" name="pasarId" value={editingItem.pasarId} />
+        {editModal.item && (
+          <form action={editModal.action} className="space-y-4">
+            <input type="hidden" name="id" value={editModal.item.id} />
+            <input type="hidden" name="pasarId" value={editModal.item.pasarId} />
 
             {isAdmin && (
               <div>
@@ -453,7 +434,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
                 <select
                   name="pasarId"
                   required
-                  defaultValue={editingItem.pasarId}
+                  defaultValue={editModal.item.pasarId}
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
                 >
                   <option value="">-- Pilih Pasar --</option>
@@ -472,7 +453,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
                 type="text"
                 name="kodeRuang"
                 required
-                defaultValue={editingItem.kodeRuang}
+                defaultValue={editModal.item.kodeRuang}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 uppercase font-mono"
               />
             </div>
@@ -484,7 +465,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
               <select
                 name="jenis"
                 required
-                defaultValue={editingItem.jenis}
+                defaultValue={editModal.item.jenis}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
               >
                 <option value="kios">Kios</option>
@@ -550,7 +531,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
               </label>
               <select
                 name="status"
-                defaultValue={editingItem.status}
+                defaultValue={editModal.item.status}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
               >
                 <option value="kosong">Kosong (Tersedia untuk disewa)</option>
@@ -558,20 +539,21 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
               </select>
             </div>
 
+            <AlertBanner state={editModal.state} />
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
               <button
                 type="button"
-                onClick={() => setEditingItem(null)}
+                onClick={editModal.close}
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 transition"
               >
                 Batal
               </button>
               <button
                 type="submit"
-                disabled={actions.update.pending}
+                disabled={editModal.pending}
                 className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition shadow-lg shadow-emerald-500/20 cursor-pointer"
               >
-                {actions.update.pending ? 'Menyimpan...' : 'Simpan Perubahan'}
+                {editModal.pending ? 'Menyimpan...' : 'Simpan Perubahan'}
               </button>
             </div>
           </form>
@@ -580,11 +562,13 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
 
       {/* Delete Confirmation Modal */}
       <DeleteConfirmModal
-        isOpen={Boolean(deletingItem)}
-        onClose={() => setDeletingItem(null)}
-        itemName={deletingItem?.kodeRuang}
-        onConfirm={actions.delete.action}
-        isPending={actions.delete.pending}
+        isOpen={deleteModal.isOpen}
+        onClose={deleteModal.close}
+        itemName={deleteModal.item?.kodeRuang}
+        onConfirm={deleteModal.action}
+        isPending={deleteModal.pending}
+        itemId={deleteModal.item?.id}
+        state={deleteModal.state}
       />
     </div>
   );

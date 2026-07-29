@@ -51,6 +51,81 @@ export async function terbitkanIzin(input, dbAdapter) {
   });
 }
 
+export async function terbitkanTeguran(perizinanId, userId, dbAdapter, sekarang = new Date()) {
+  if (!dbAdapter?.transaction) throw new Error('Adapter Perizinan tidak lengkap.');
+
+  const now = asDateOnly(sekarang);
+  if (!now) return { ok: false, reason: 'tanggal_tidak_valid' };
+
+  return dbAdapter.transaction(async (tx) => {
+    const izin = await tx.findPerizinanById(perizinanId);
+    if (!izin || izin.statusIzin === 'dicabut' || izin.statusIzin === 'diperpanjang') {
+      return { ok: false, reason: 'izin_tidak_aktif' };
+    }
+
+    const level = statusTeguran(izin.tanggalKedaluwarsa, now);
+    if (!level) return { ok: false, reason: 'belum_waktunya' };
+
+    if (izin.statusTeguran === level) return { ok: false, reason: 'sudah_diterbitkan' };
+
+    await tx.insertTeguran({
+      perizinanId,
+      status: level,
+      tanggalTerbit: now.toISOString().slice(0, 10),
+      userId,
+    });
+
+    await tx.updatePerizinanTeguran(perizinanId, level, now.toISOString().slice(0, 10));
+
+    return { ok: true, level };
+  });
+}
+
+export async function perpanjangIzin(perizinanId, { tanggalTerbit, tanggalKedaluwarsa }, dbAdapter) {
+  if (!dbAdapter?.transaction) throw new Error('Adapter Perizinan tidak lengkap.');
+  const start = asDateOnly(tanggalTerbit);
+  const expiry = asDateOnly(tanggalKedaluwarsa);
+  if (!start || !expiry || expiry <= start) return { ok: false, reason: 'tanggal_tidak_valid' };
+
+  return dbAdapter.transaction(async (tx) => {
+    const izin = await tx.findPerizinanById(perizinanId);
+    if (!izin || izin.statusIzin === 'dicabut' || izin.statusIzin === 'diperpanjang') {
+      return { ok: false, reason: 'izin_tidak_aktif' };
+    }
+
+    await tx.updatePerizinanStatus(perizinanId, 'diperpanjang');
+
+    const suffix = String(Date.now()).slice(-6);
+    const perizinan = await tx.insertPerizinan({
+      ruangDagangId: izin.ruangDagangId,
+      pedagangId: izin.pedagangId,
+      nomorKartu: `${izin.nomorKartu}-PP-${suffix}`,
+      jenisDagangan: izin.jenisDagangan,
+      tanggalTerbit: String(tanggalTerbit).slice(0, 10),
+      tanggalKedaluwarsa: String(tanggalKedaluwarsa).slice(0, 10),
+      statusIzin: 'aktif',
+    });
+
+    return { ok: true, perizinan };
+  });
+}
+
+export async function cabutIzin(perizinanId, dbAdapter) {
+  if (!dbAdapter?.transaction) throw new Error('Adapter Perizinan tidak lengkap.');
+
+  return dbAdapter.transaction(async (tx) => {
+    const izin = await tx.findPerizinanById(perizinanId);
+    if (!izin || izin.statusIzin === 'dicabut' || izin.statusIzin === 'diperpanjang') {
+      return { ok: false, reason: 'izin_tidak_aktif' };
+    }
+
+    await tx.updatePerizinanStatus(perizinanId, 'dicabut');
+    await tx.markRuangKosong(izin.ruangDagangId);
+
+    return { ok: true };
+  });
+}
+
 export async function statusPublik(nomorKartu, dbAdapter, sekarang = new Date()) {
   const normalized = String(nomorKartu ?? '').trim();
   if (!normalized || !dbAdapter?.findPerizinanByNomorKartu) return null;

@@ -7,28 +7,18 @@
  */
 
 import { useState } from 'react';
-import { useCrudActions } from '../../../lib/useCrudActions.js';
+import { useCrudModal } from '../../../lib/useCrudModal.js';
 import Modal from '../../../components/Modal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import { createUserAction, updateUserAction, deleteUserAction } from '../../actions/users.js';
 
 export default function UserTable({ users, pasars = [], currentUserId, selectedScope = 'all' }) {
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
-  const [deletingUser, setDeletingUser] = useState(null);
-
   const [addRole, setAddRole] = useState('petugas');
   const [editRole, setEditRole] = useState('petugas');
-
-  const actions = useCrudActions({
-    create: createUserAction,
-    update: updateUserAction,
-    remove: deleteUserAction,
-    onCreateSuccess: () => setIsAddModalOpen(false),
-    onUpdateSuccess: () => setEditingUser(null),
-    onDeleteSuccess: () => setDeletingUser(null),
-  });
+  const createModal = useCrudModal({ action: createUserAction });
+  const editModal = useCrudModal({ action: updateUserAction });
+  const deleteModal = useCrudModal({ action: deleteUserAction });
 
   return (
     <div className="space-y-6">
@@ -44,10 +34,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
         </div>
 
         <button
-          onClick={() => {
-            actions.create.reset();
-            setIsAddModalOpen(true);
-          }}
+          onClick={createModal.open}
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition duration-150 shadow-lg shadow-emerald-500/20 text-sm"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,11 +43,6 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
           <span>Tambah User Baru</span>
         </button>
       </div>
-
-      {/* Alerts */}
-      <AlertBanner state={actions.create.state} />
-      <AlertBanner state={actions.update.state} />
-      <AlertBanner state={actions.delete.state} />
 
       {/* User Table */}
       <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl">
@@ -132,25 +114,21 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
                     </td>
 
                     <td className="px-6 py-4 text-right space-x-2">
-                      <button
-                        onClick={() => {
-                          actions.update.reset();
-                          setEditingUser(u);
-                          setEditRole(u.role);
-                        }}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
-                      >
-                        Edit
-                      </button>
-
-                      {!isSelf && (
                         <button
                           onClick={() => {
-                            actions.delete.reset();
-                            setDeletingUser(u);
+                            editModal.open(u);
+                            setEditRole(u.role);
                           }}
-                          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
+                          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
                         >
+                          Edit
+                        </button>
+
+                        {!isSelf && (
+                          <button
+                            onClick={() => deleteModal.open(u)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
+                          >
                           Hapus
                         </button>
                       )}
@@ -165,11 +143,12 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
 
       {/* Add User Modal */}
       <Modal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        key={createModal.key}
+        isOpen={createModal.isOpen}
+        onClose={createModal.close}
         title="Tambah User Baru"
       >
-        <form action={actions.create.action} className="space-y-4">
+        <form action={createModal.action} className="space-y-4">
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
               Nama Lengkap
@@ -243,20 +222,21 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
             </div>
           )}
 
+          <AlertBanner state={createModal.state} />
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
             <button
               type="button"
-              onClick={() => setIsAddModalOpen(false)}
+              onClick={createModal.close}
               className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
             >
               Batal
             </button>
             <button
               type="submit"
-              disabled={actions.create.pending}
+              disabled={createModal.pending}
               className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
             >
-              {actions.create.pending ? 'Menyimpan...' : 'Simpan User'}
+              {createModal.pending ? 'Menyimpan...' : 'Simpan User'}
             </button>
           </div>
         </form>
@@ -264,13 +244,14 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
 
       {/* Edit User Modal */}
       <Modal
-        isOpen={Boolean(editingUser)}
-        onClose={() => setEditingUser(null)}
+        key={editModal.key}
+        isOpen={editModal.isOpen}
+        onClose={editModal.close}
         title="Edit User"
       >
-        {editingUser && (
-          <form action={actions.update.action} className="space-y-4">
-            <input type="hidden" name="id" value={editingUser.id} />
+        {editModal.item && (
+          <form action={editModal.action} className="space-y-4">
+            <input type="hidden" name="id" value={editModal.item.id} />
 
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
@@ -280,7 +261,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
                 name="name"
                 type="text"
                 required
-                defaultValue={editingUser.name}
+                defaultValue={editModal.item.name}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
@@ -293,7 +274,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
                 name="username"
                 type="text"
                 required
-                defaultValue={editingUser.username}
+                defaultValue={editModal.item.username}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
@@ -333,7 +314,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
                 <select
                   name="pasarId"
                   required
-                  defaultValue={editingUser.pasarId}
+                  defaultValue={editModal.item.pasarId}
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="">-- Pilih Pasar --</option>
@@ -344,20 +325,21 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
               </div>
             )}
 
+            <AlertBanner state={editModal.state} />
             <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
               <button
                 type="button"
-                onClick={() => setEditingUser(null)}
+                onClick={editModal.close}
                 className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
               >
                 Batal
               </button>
               <button
                 type="submit"
-                disabled={actions.update.pending}
+                disabled={editModal.pending}
                 className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
               >
-                {actions.update.pending ? 'Memperbarui...' : 'Simpan Perubahan'}
+                {editModal.pending ? 'Memperbarui...' : 'Simpan Perubahan'}
               </button>
             </div>
           </form>
@@ -366,11 +348,13 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
 
       {/* Delete Confirmation Modal */}
       <DeleteConfirmModal
-        isOpen={Boolean(deletingUser)}
-        onClose={() => setDeletingUser(null)}
-        itemName={deletingUser && `@${deletingUser.username}`}
-        onConfirm={actions.delete.action}
-        isPending={actions.delete.pending}
+        isOpen={deleteModal.isOpen}
+        onClose={deleteModal.close}
+        itemName={deleteModal.item && `@${deleteModal.item.username}`}
+        onConfirm={deleteModal.action}
+        isPending={deleteModal.pending}
+        itemId={deleteModal.item?.id}
+        state={deleteModal.state}
       />
     </div>
   );
