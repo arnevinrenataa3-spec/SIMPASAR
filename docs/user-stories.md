@@ -1,59 +1,68 @@
-# USER STORY
+# User Stories
 
-### Update Khusus: Pengelompokan Berdasarkan Pasar (Multi-Pasar)
-Berdasarkan perubahan struktural terbaru, seluruh modul utama dalam SIMPASAR kini di-*scope* (dikelompokkan) berdasarkan **Pasar**.
-- **Admin** dapat mengelola data master Pasar (Nama, Nomor, Alamat).
-- **Ruang Dagang** kini terikat secara langsung dengan sebuah Pasar.
-- **Petugas** wajib ditugaskan ke salah satu Pasar tertentu dan hanya dapat mengelola Ruang Dagang, Pedagang, dan Perizinan yang berada di Pasar tempatnya bertugas. Scope petugas terkunci ke Pasar-nya (derive server-side, tidak bisa diganti).
+## Aktor
 
-### User Story: Pengelolaan & Perpanjangan Kartu Pasar oleh Petugas
-* **Sebagai:** Petugas Pengelola Pasar,
-* **Saya ingin:** Bisa memproses permohonan penerbitan atau perpanjangan kartu pasar (seperti SPTB atau SSTU) dengan cara menginput data persyaratan dari pedagang,
-* **Sehingga:** Sistem dapat mencatat kepemilikan ruang dagang dengan valid dan memantau masa berlaku kartu secara akurat.
+| Aktor | Hak Akses | Scope |
+|-------|-----------|-------|
+| **Admin** | Kelola Pasar, User, Ruang Dagang, Pedagang, Perizinan, SP | Semua Pasar (bisa filter via cookie) |
+| **Petugas** | Kelola Ruang Dagang, Pedagang, Perizinan, SP | Hanya Pasar tempat bertugas |
+| **Penghuni / Pedagang** | Cek status izin via halaman publik (tanpa login) | Hanya izin milik sendiri (by nomor kartu) |
 
-### Skenario Alur Kerja (Sesuai Praktik di Lapangan):
-1. **Penerimaan Berkas & Syarat:**
-   * Pedagang datang membawa syarat-syarat administrasi (seperti salinan KTP, foto, atau data diri lainnya).
-   * Petugas memverifikasi kelengkapan berkas tersebut.
-2. **Pengisian Data ke Sistem (Form Input):**
-   * **Memilih Ruang Dagang:** Petugas memilih nomor ruang atau petak yang tersedia di Pasar tempat ia bertugas.
-   * **Input Data Pedagang:** Petugas memasukkan data diri pedagang sesuai KTP (seperti NIK, Nama Lengkap, Alamat, dan Nomor HP).
-   * **Input Detail Usaha & Legalitas:** Petugas mencatat jenis dagangan (misalnya: Beras) serta Nomor Surat / SK Izin resmi.
-   * **Pencatatan Masa Berlaku:** Petugas memasukkan tanggal terbit kartu dan menentukan tanggal kedaluwarsa (akhir masa berlaku kartu).
-3. **Penyimpanan & Perubahan Status:**
-   * Setelah form disubmit, sistem akan menyimpan data perizinan tersebut secara permanen ke database.
-   * Status ruang dagang yang tadinya **"Kosong"** akan otomatis berubah menjadi **"Terisi"** agar tidak bisa disewa atau dipakai orang lain.
-   * Data pemegang kartu akan langsung masuk ke tabel monitoring/riwayat agar masa berlakunya bisa dipantau (terutama saat nanti kartu tersebut harus diperpanjang kembali).
+## Pedoman Arsitektur
 
-### Acceptance Criteria & Aturan Bisnis (Technical Requirements):
-
-1. **Relasi Pedagang & Ruang Dagang (One-to-Many):**
-   - Satu pedagang (berdasarkan NIK KTP yang unik) dapat mendaftar dan menyewa **lebih dari satu** Ruang Dagang. Sistem tidak boleh menduplikasi data master pedagang, melainkan menambah relasi perizinan baru untuk NIK tersebut.
-
-2. **Perpanjangan Kartu (Renewal History):**
-   - Saat dilakukan perpanjangan kartu (SPTB/SSTU), sistem harus membuat *record* riwayat baru (*insert*) untuk mendata siklus perpanjangan (tanggal mulai & kedaluwarsa yang baru). Data perpanjangan sebelumnya tidak dihapus untuk keperluan audit/riwayat.
-
-3. **Status Ruang Dagang & Kedaluwarsa:**
-   - Jika masa berlaku kartu telah lewat, ruang dagang **tidak otomatis** dikembalikan ke status "Kosong" (untuk mentolerir keterlambatan pembayaran/perpanjangan).
-   - Sebaliknya, sistem memberikan indikator visual "Kedaluwarsa / Menunggak" (Warna Merah) di tabel *monitoring*.
-   - Pencabutan izin sehingga ruang menjadi "Kosong" kembali, hanya bisa dilakukan secara manual oleh Petugas.
-
-4. **Validasi Ketersediaan:**
-   - Ruang Dagang yang berstatus "Terisi" tidak akan pernah muncul dan tidak bisa dipilih pada saat petugas membuka form "Penerbitan Izin Baru".
-
-### User Story Khusus Sisi Penghuni (Pedagang / Publik):
-
-1. Sebagai **Penghuni**, saya ingin **mengecek status izin melalui halaman publik (tanpa login) menggunakan Nomor Kartu/QR Code**, sehingga privasi data saya tetap aman namun saya mudah mengaksesnya.
-2. Sebagai **Penghuni**, saya ingin **melihat detail izin saya (Nomor Ruang, Masa Berlaku, Status Aktif)**, sehingga saya yakin data saya tercatat dengan valid di pengelola pasar.
-3. Sebagai **Penghuni**, saya ingin **melihat peringatan mencolok (warna merah) beserta instruksi ke kantor jika izin saya telah kedaluwarsa**, sehingga saya tahu bahwa saya harus segera mengurus perpanjangan.
-
-### Update Khusus: Alur Surat Peringatan (SP)
-Berdasarkan masukan lapangan, jika izin lewat masa berlaku, sistem akan menerapkan status Surat Peringatan berjenjang:
-- **SP1:** Dikeluarkan secara otomatis/manual setelah lewat 4 minggu dari tanggal kedaluwarsa.
-- **SP2:** Dikeluarkan setelah lewat 1 minggu dari SP1 (total 5 minggu kedaluwarsa).
-- **SP3:** Dikeluarkan setelah lewat 1 minggu dari SP2 (total 6 minggu kedaluwarsa).
-
-### Update Arsitektur (Lihat ADR di `docs/adr/`)
 - **Pipeline Server Action:** Semua aksi CRUD menggunakan `defineAction` dari `src/lib/pipeline.js`. Pipeline menangani: otentikasi → otorisasi (`boleh()`) → scope enforcement → validasi Zod → revalidasi. Lihat [ADR-0001](adr/ADR-0001-pipeline-action.md).
 - **Scope & Otorisasi:** Aturan scope pasar & "siapa boleh apa" hidup di `src/lib/scope.js` dan `src/lib/policy.js`. Lihat [ADR-0002](adr/ADR-0002-scope-dan-otorisasi.md).
-- **Modul Perizinan:** Interface dan invariant bisnis (terbit, perpanjang, cabut, SP, status publik) didefinisikan di [ADR-0003](adr/ADR-0003-seam-perizinan.md). Logic dilarang di server action — db harus di balik seam adapter.
+- **Relasi Pedagang-Pasar bersifat derived:** Tabel `pedagang` tidak memiliki `pasar_id`. Relasi ke Pasar dihitung melalui `pedagang → perizinan → ruang_dagang → pasar`. Pedagang yang belum memiliki Perizinan tidak terkait Pasar mana pun. Lihat [ADR-0003](adr/ADR-0003-seam-perizinan.md).
+
+## Master Data Pedagang
+
+**Sebagai** Petugas, **saya ingin** mencatat data identitas Pedagang (NIK, Nama, Alamat, No HP) **sehingga** data tersebut dapat digunakan saat penerbitan izin.
+
+- NIK bersifat unik global. Satu Pedagang tidak boleh tercatat dua kali.
+- Satu Pedagang dapat memiliki izin di beberapa Ruang Dagang, baik dalam Pasar yang sama maupun berbeda.
+- Relasi ke Pasar diturunkan dari Perizinan, bukan dari tabel tersendiri.
+- Pedagang tanpa Perizinan bersifat global (belum terkait Pasar mana pun).
+- Petugas dapat mengelola data Pedagang yang sudah memiliki Perizinan di Pasar-nya.
+
+## Penerbitan Izin Baru
+
+**Sebagai** Petugas, **saya ingin** menerbitkan izin dengan memilih Ruang Dagang kosong di Pasar saya dan mengisi data Pedagang, **sehingga** status ruang berubah menjadi Terisi dan izin tercatat.
+
+1. **Penerimaan Berkas & Syarat:**
+   - Pedagang datang membawa syarat-syarat administrasi (KTP, foto, data diri).
+   - Petugas memverifikasi kelengkapan berkas.
+2. **Pengisian Data ke Sistem:**
+   - Petugas memilih Ruang Dagang yang tersedia di Pasar tempat bertugas.
+   - Petugas mengisi data Pedagang (NIK, Nama, Alamat, No HP).
+   - Petugas mencatat jenis dagangan dan nomor kartu.
+   - Petugas memasukkan tanggal terbit dan tanggal kedaluwarsa.
+3. **Penyimpanan:**
+   - Status Ruang Dagang berubah dari **Kosong** menjadi **Terisi** (dalam satu transaksi dengan Perizinan).
+   - Jika NIK sudah ada, data Pedagang digunakan kembali.
+   - Data Perizinan baru tercatat untuk pemantauan masa berlaku.
+
+## Perpanjangan & Pencabutan Izin
+
+**Sebagai** Petugas, **saya ingin** memperpanjang atau mencabut izin yang sudah ada **sehingga** data riwayat tetap utuh dan status ruang terkini.
+
+- Perpanjangan: baris lama berstatus `diperpanjang`, baris baru di-insert — **satu transaksi**.
+- Pencabutan: status izin menjadi `dicabut`, Ruang Dagang kembali menjadi `kosong` — **satu transaksi**.
+- Data lama tidak pernah dihapus (audit trail).
+
+## Pengecekan Publik / Digital ID
+
+**Sebagai** Penghuni, **saya ingin** mengecek status izin melalui halaman publik (tanpa login) menggunakan Nomor Kartu, **sehingga** privasi data saya tetap aman namun saya mudah mengaksesnya.
+
+- Input: nomor kartu.
+- Output: nomor ruang, nama pasar, tanggal terbit, kedaluwarsa, status (aktif/kedaluwarsa/dicabut/diperpanjang), peringatan SP.
+- Tidak menampilkan NIK, alamat, nomor HP, atau data sensitif lainnya.
+
+## Surat Peringatan (SP)
+
+Jika izin lewat masa berlaku, sistem menghitung status SP berjenjang sebagai fungsi murni dari tanggal:
+
+- **SP1:** 28 hari (4 minggu) setelah tanggal kedaluwarsa.
+- **SP2:** 35 hari (5 minggu) setelah tanggal kedaluwarsa.
+- **SP3:** 42 hari (6 minggu) setelah tanggal kedaluwarsa.
+
+Status SP dihitung, tidak disimpan — kecuali penerbitan surat fisik yang dicatat di tabel `teguran` (audit trail, Issue #18).
