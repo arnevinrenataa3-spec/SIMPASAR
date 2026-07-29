@@ -52,7 +52,8 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
               <tr>
                 <th className="px-6 py-4">Pengguna</th>
                 <th className="px-6 py-4">Username</th>
-                <th className="px-6 py-4">Role & Penempatan</th>
+                <th className="px-6 py-4">Role</th>
+                <th className="px-6 py-4">Penempatan</th>
                 <th className="px-6 py-4">Tanggal Dibuat</th>
                 <th className="px-6 py-4 text-right">Aksi</th>
               </tr>
@@ -97,15 +98,20 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
                           Admin
                         </span>
                       ) : (
-                        <div className="flex flex-col gap-1.5 items-start">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-xs font-medium uppercase tracking-wider">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                            Petugas
-                          </span>
-                          <span className="text-[10px] text-slate-400 max-w-[120px] truncate" title={u.namaPasar}>
-                            {u.namaPasar || 'Belum ditugaskan'}
-                          </span>
-                        </div>
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-xs font-medium uppercase tracking-wider">
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                          Petugas
+                        </span>
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {u.namaPasar ? (
+                        <span className="text-xs text-slate-300 max-w-[160px] truncate block" title={u.namaPasar}>
+                          {u.namaPasar}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-slate-500">&mdash;</span>
                       )}
                     </td>
 
