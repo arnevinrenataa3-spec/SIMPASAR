@@ -6,7 +6,7 @@
  * @contributor Muhamad Hazmi Alfarizqi
  */
 
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db/index.js';
 import { ruangDagang, perizinan } from '../../db/schema.js';
@@ -17,9 +17,7 @@ const createSchema = z.object({
   jenis: z.enum(['kios', 'los', 'lapak', 'toko'], {
     message: 'Jenis ruang dagang tidak valid. Pilih antara Kios, Meja, Lapak, atau Toko.',
   }),
-  status: z.enum(['kosong', 'terisi'], {
-    message: 'Status ruang dagang tidak valid. Pilih antara Kosong atau Terisi.',
-  }).optional().default('kosong'),
+  status: z.enum(['kosong', 'non-fisik']).optional().default('kosong'),
   panjang: z.string().optional().default(''),
   lebar: z.string().optional().default(''),
   pasarId: z.string().optional().default(''),
@@ -60,9 +58,9 @@ export const createRuangDagangAction = defineAction({
       pasarId: ctx.pasarId,
       kodeRuang,
       jenis: data.jenis,
+      status: data.status,
       panjang: parseNumber(data.panjang),
       lebar: parseNumber(data.lebar),
-      status: data.status,
     });
 
     return { message: `Ruang dagang "${kodeRuang}" berhasil ditambahkan.` };
@@ -86,15 +84,40 @@ export const updateRuangDagangAction = defineAction({
       return { error: `Kode ruang "${kodeRuang}" sudah digunakan oleh ruang dagang lain.` };
     }
 
+    const [currentRuang] = await db
+      .select({ status: ruangDagang.status })
+      .from(ruangDagang)
+      .where(eq(ruangDagang.id, data.id))
+      .limit(1);
+
+    if (!currentRuang) {
+      return { error: 'Ruang dagang tidak ditemukan.' };
+    }
+
+    if (data.status !== currentRuang.status) {
+      const [activePerizinan] = await db
+        .select({ id: perizinan.id })
+        .from(perizinan)
+        .where(and(
+          eq(perizinan.ruangDagangId, data.id),
+          eq(perizinan.statusIzin, 'aktif')
+        ))
+        .limit(1);
+
+      if (activePerizinan) {
+        return { error: 'Status tidak dapat diubah karena ruang dagang ini masih memiliki perizinan aktif. Cabut perizinan terlebih dahulu.' };
+      }
+    }
+
     await db
       .update(ruangDagang)
       .set({
         pasarId: ctx.pasarId,
         kodeRuang,
         jenis: data.jenis,
+        status: data.status,
         panjang: parseNumber(data.panjang),
         lebar: parseNumber(data.lebar),
-        status: data.status,
         updatedAt: new Date(),
       })
       .where(eq(ruangDagang.id, data.id));

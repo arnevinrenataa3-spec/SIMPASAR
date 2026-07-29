@@ -7,6 +7,7 @@
 
 import { useCrudModal } from '../../../lib/useCrudModal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
+import DataTable from '../../../components/DataTable.js';
 import { terbitkanTeguranAction } from '../../actions/perizinan.js';
 
 const spLabel = { sp1: 'SP 1', sp2: 'SP 2', sp3: 'SP 3' };
@@ -40,55 +41,67 @@ export default function TeguranPanel({ teguranList }) {
       )}
 
       {teguranList.length > 0 && (
-        <section className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px] text-left text-sm">
-              <thead className="bg-slate-950/50 text-xs uppercase tracking-wider text-slate-500">
-                <tr>
-                  <th className="px-5 py-4">Nomor Kartu</th>
-                  <th className="px-5 py-4">Ruang / Pasar</th>
-                  <th className="px-5 py-4">Pedagang</th>
-                  <th className="px-5 py-4">Kedaluwarsa</th>
-                  <th className="px-5 py-4">Status SP</th>
-                  <th className="px-5 py-4">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/70">
-                {teguranList.map((item) => {
-                  const needsSP = item.computedSP && item.statusTeguran !== item.computedSP;
-                  return (
-                    <tr key={item.id}>
-                      <td className="px-5 py-4 font-mono text-emerald-300">{item.nomorKartu}</td>
-                      <td className="px-5 py-4">
-                        <strong className="text-slate-100">{item.kodeRuang}</strong>
-                        <span className="block text-xs text-slate-500">{item.namaPasar}</span>
-                      </td>
-                      <td className="px-5 py-4 text-slate-200">{item.namaPedagang}</td>
-                      <td className="px-5 py-4 text-xs text-rose-300">{formatDate(item.tanggalKedaluwarsa)}</td>
-                      <td className="px-5 py-4">
-                        <span className={`rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${item.statusTeguran !== 'none' && spBadgeClass[item.statusTeguran] ? spBadgeClass[item.statusTeguran] : 'border-slate-700 bg-slate-800 text-slate-400'}`}>
-                          {item.statusTeguran !== 'none' ? spLabel[item.statusTeguran] : 'Belum SP'}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <form action={modal.action}>
-                          <input type="hidden" name="perizinanId" value={item.id} />
-                          <button
-                            type="submit"
-                            disabled={!needsSP}
-                            className="rounded-lg bg-amber-500/20 border border-amber-500/30 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition disabled:cursor-not-allowed disabled:opacity-30"
-                          >
-                            {needsSP ? `Terbitkan ${spLabel[item.computedSP]}` : 'Sudah Diterbitkan'}
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <DataTable
+          cellPadding="px-5 py-4"
+          columns={[
+            {
+              header: 'Nomor Kartu',
+              accessor: 'nomorKartu',
+              tdClassName: 'font-mono text-emerald-300',
+            },
+            {
+              header: 'Ruang / Pasar',
+              accessor: 'kodeRuang',
+              render: (item) => (
+                <div>
+                  <strong className="text-slate-100">{item.kodeRuang}</strong>
+                  <span className="block text-xs text-slate-500">{item.namaPasar}</span>
+                </div>
+              ),
+            },
+            {
+              header: 'Pedagang',
+              accessor: 'namaPedagang',
+              tdClassName: 'text-slate-200',
+            },
+            {
+              header: 'Kedaluwarsa',
+              accessor: 'tanggalKedaluwarsa',
+              render: (item) => <span className="text-xs text-rose-300">{formatDate(item.tanggalKedaluwarsa)}</span>,
+            },
+            {
+              header: 'Status SP',
+              accessor: 'statusTeguran',
+              render: (item) => (
+                <span className={`rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${item.statusTeguran !== 'none' && spBadgeClass[item.statusTeguran] ? spBadgeClass[item.statusTeguran] : 'border-slate-700 bg-slate-800 text-slate-400'}`}>
+                  {item.statusTeguran !== 'none' ? spLabel[item.statusTeguran] : 'Belum SP'}
+                </span>
+              ),
+            },
+            {
+              header: 'Aksi',
+              thClassName: 'text-right',
+              tdClassName: 'text-right',
+              render: (item) => {
+                const needsSP = item.computedSP && item.statusTeguran !== item.computedSP;
+                return (
+                  <form action={modal.action}>
+                    <input type="hidden" name="perizinanId" value={item.id} />
+                    <button
+                      type="submit"
+                      disabled={!needsSP}
+                      className="rounded-lg bg-amber-500/20 border border-amber-500/30 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition disabled:cursor-not-allowed disabled:opacity-30"
+                    >
+                      {needsSP ? `Terbitkan ${spLabel[item.computedSP]}` : 'Sudah Diterbitkan'}
+                    </button>
+                  </form>
+                );
+              },
+            },
+          ]}
+          data={teguranList}
+          emptyMessage="Tidak ada izin yang memerlukan Surat Peringatan."
+        />
       )}
 
       <AlertBanner state={modal.state} />

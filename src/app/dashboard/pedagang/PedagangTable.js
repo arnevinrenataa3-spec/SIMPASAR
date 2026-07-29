@@ -5,10 +5,10 @@
  */
 
 
-import { useDeferredValue, useState } from 'react';
 import { useCrudModal } from '../../../lib/useCrudModal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import Modal from '../../../components/Modal.js';
+import DataTable from '../../../components/DataTable.js';
 import {
   createPedagangAction,
   deletePedagangAction,
@@ -39,17 +39,9 @@ function Fields({ item }) {
 }
 
 export default function PedagangTable({ initialData }) {
-  const [query, setQuery] = useState('');
-  const deferredQuery = useDeferredValue(query.toLowerCase().trim());
   const createModal = useCrudModal({ action: createPedagangAction });
   const editModal = useCrudModal({ action: updatePedagangAction });
   const deleteModal = useCrudModal({ action: deletePedagangAction });
-
-  const rows = initialData.filter((item) => (
-    item.nik.includes(deferredQuery)
-    || item.namaLengkap.toLowerCase().includes(deferredQuery)
-    || item.nomorHp.includes(deferredQuery)
-  ));
 
   return (
     <div className="space-y-6">
@@ -62,28 +54,53 @@ export default function PedagangTable({ initialData }) {
         <button onClick={createModal.open} className="rounded-xl bg-emerald-400 px-4 py-2.5 text-sm font-bold text-slate-950 hover:bg-emerald-300">Tambah Pedagang</button>
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60">
-        <div className="border-b border-slate-800 p-4">
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari NIK, nama, atau nomor HP..." className={inputClass} />
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-sm">
-            <thead className="bg-slate-950/50 text-xs uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-4">NIK</th><th className="px-5 py-4">Nama</th><th className="px-5 py-4">Kontak</th><th className="px-5 py-4">Alamat</th><th className="px-5 py-4 text-right">Aksi</th></tr></thead>
-            <tbody className="divide-y divide-slate-800/70">
-              {rows.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-800/30">
-                  <td className="px-5 py-4 font-mono text-emerald-300">{item.nik}</td>
-                  <td className="px-5 py-4 font-semibold text-slate-100">{item.namaLengkap}</td>
-                  <td className="px-5 py-4 text-slate-300">{item.nomorHp}</td>
-                  <td className="max-w-xs truncate px-5 py-4 text-slate-400">{item.alamat}</td>
-                  <td className="px-5 py-4 text-right"><button onClick={() => editModal.open(item)} className="mr-2 rounded-lg border border-cyan-500/30 px-3 py-1.5 text-xs font-semibold text-cyan-300">Edit</button><button onClick={() => deleteModal.open(item)} className="rounded-lg border border-rose-500/30 px-3 py-1.5 text-xs font-semibold text-rose-300">Hapus</button></td>
-                </tr>
-              ))}
-              {!rows.length && <tr><td colSpan={5} className="px-5 py-14 text-center text-slate-500">Tidak ada Pedagang yang cocok.</td></tr>}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <DataTable
+        cellPadding="px-5 py-4"
+        syncSearchParams
+        searchPlaceholder="Cari NIK, nama, atau nomor HP..."
+        columns={[
+          {
+            header: 'NIK',
+            accessor: 'nik',
+            tdClassName: 'font-mono text-emerald-300',
+          },
+          {
+            header: 'Nama',
+            accessor: 'namaLengkap',
+            tdClassName: 'font-semibold text-slate-100',
+          },
+          {
+            header: 'Kontak',
+            accessor: 'nomorHp',
+          },
+          {
+            header: 'Alamat',
+            accessor: 'alamat',
+            tdClassName: 'max-w-xs truncate text-slate-400',
+          },
+          {
+            header: 'Aksi',
+            thClassName: 'text-right',
+            tdClassName: 'text-right',
+            render: (item) => (
+              <div className="flex items-center justify-end gap-2">
+                <a
+                  href={`/dashboard/ruang-dagang?q=${encodeURIComponent(item.namaLengkap)}`}
+                  className="rounded-lg border border-emerald-500/30 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/10 transition"
+                  title="Lihat Ruang Dagang yang dimiliki"
+                >
+                  Ruang
+                </a>
+                <button onClick={() => editModal.open(item)} className="rounded-lg border border-cyan-500/30 px-3 py-1.5 text-xs font-semibold text-cyan-300">Edit</button>
+                <button onClick={() => deleteModal.open(item)} className="rounded-lg border border-rose-500/30 px-3 py-1.5 text-xs font-semibold text-rose-300">Hapus</button>
+              </div>
+            ),
+          },
+        ]}
+        data={initialData}
+        emptyMessage="Belum ada Pedagang."
+        filterEmptyMessage="Tidak ada Pedagang yang cocok."
+      />
 
       <Modal key={createModal.key} isOpen={createModal.isOpen} onClose={createModal.close} title="Tambah Pedagang" maxWidth="max-w-xl">
         <form action={createModal.action} className="space-y-4"><Fields /><AlertBanner state={createModal.state} /><button disabled={createModal.pending} className="w-full rounded-xl bg-emerald-400 py-2.5 text-sm font-bold text-slate-950 disabled:opacity-50">{createModal.pending ? 'Menyimpan...' : 'Simpan Pedagang'}</button></form>

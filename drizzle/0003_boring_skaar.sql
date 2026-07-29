@@ -1,0 +1,1 @@
+ALTER TYPE "public"."status_ruang" ADD VALUE 'non-fisik';

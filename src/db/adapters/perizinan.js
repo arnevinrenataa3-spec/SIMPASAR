@@ -68,7 +68,7 @@ function adapterFor(executor) {
       const rows = await executor
         .update(ruangDagang)
         .set({ status: 'kosong', updatedAt: new Date() })
-        .where(eq(ruangDagang.id, id))
+        .where(and(eq(ruangDagang.id, id), eq(ruangDagang.status, 'terisi')))
         .returning({ id: ruangDagang.id });
       return rows.length === 1;
     },

@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useCrudModal } from '../../../lib/useCrudModal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import Modal from '../../../components/Modal.js';
+import DataTable from '../../../components/DataTable.js';
 import { terbitkanIzinAction, perpanjangIzinAction, cabutIzinAction } from '../../actions/perizinan.js';
 
 const inputClass = 'w-full rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 outline-none focus:border-emerald-500/60';
@@ -56,14 +57,68 @@ export default function PerizinanPanel({ permits, spaces, traders }) {
       <AlertBanner state={perpanjangModal.state} />
       <AlertBanner state={cabutModal.state} />
 
-      <section className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60">
-        <div className="overflow-x-auto"><table className="w-full min-w-[1100px] text-left text-sm"><thead className="bg-slate-950/50 text-xs uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-4">Nomor Kartu</th><th className="px-5 py-4">Ruang / Pasar</th><th className="px-5 py-4">Pedagang</th><th className="px-5 py-4">Dagangan</th><th className="px-5 py-4">Masa Berlaku</th><th className="px-5 py-4">Status</th><th className="px-5 py-4">Aksi</th></tr></thead>
-          <tbody className="divide-y divide-slate-800/70">{permits.map((permit) => {
-            const isActive = permit.statusIzin === 'aktif' || (permit.statusIzin === 'aktif' && permit.tanggalKedaluwarsa < new Date().toISOString().slice(0, 10));
-            const canModify = permit.statusIzin === 'aktif' || (permit.statusIzin === 'aktif' && permit.tanggalKedaluwarsa < new Date().toISOString().slice(0, 10));
-            return <tr key={permit.id}><td className="px-5 py-4 font-mono text-emerald-300">{permit.nomorKartu}</td><td className="px-5 py-4"><strong className="text-slate-100">{permit.kodeRuang}</strong><span className="block text-xs text-slate-500">{permit.namaPasar}</span></td><td className="px-5 py-4 text-slate-200">{permit.namaPedagang}</td><td className="px-5 py-4 text-slate-400">{permit.jenisDagangan}</td><td className="px-5 py-4 text-xs text-slate-400">{formatDate(permit.tanggalTerbit)} - {formatDate(permit.tanggalKedaluwarsa)}</td><td className="px-5 py-4">{statusBadge(permit)}</td><td className="px-5 py-4">
-              {canModify && (
-                <div className="flex items-center gap-2">
+      <DataTable
+        cellPadding="px-5 py-4"
+        syncSearchParams
+        searchPlaceholder="Cari nomor kartu, nama pedagang, atau ruang..."
+        filters={[
+          {
+            accessor: 'statusIzin',
+            placeholder: 'Semua Status',
+            options: [
+              { label: 'Semua Status', value: '' },
+              { label: 'Aktif', value: 'aktif' },
+              { label: 'Kedaluwarsa', value: 'kedaluwarsa' },
+              { label: 'Dicabut', value: 'dicabut' },
+              { label: 'Diperpanjang', value: 'diperpanjang' },
+            ],
+          },
+        ]}
+        columns={[
+          {
+            header: 'Nomor Kartu',
+            accessor: 'nomorKartu',
+            tdClassName: 'font-mono text-emerald-300',
+          },
+          {
+            header: 'Ruang / Pasar',
+            accessor: 'kodeRuang',
+            render: (permit) => (
+              <div>
+                <strong className="text-slate-100">{permit.kodeRuang}</strong>
+                <span className="block text-xs text-slate-500">{permit.namaPasar}</span>
+              </div>
+            ),
+          },
+          {
+            header: 'Pedagang',
+            accessor: 'namaPedagang',
+            tdClassName: 'text-slate-200',
+          },
+          {
+            header: 'Dagangan',
+            accessor: 'jenisDagangan',
+            tdClassName: 'text-slate-400',
+          },
+          {
+            header: 'Masa Berlaku',
+            render: (permit) => (
+              <span className="text-xs text-slate-400">{formatDate(permit.tanggalTerbit)} - {formatDate(permit.tanggalKedaluwarsa)}</span>
+            ),
+          },
+          {
+            header: 'Status',
+            render: (permit) => statusBadge(permit),
+          },
+          {
+            header: 'Aksi',
+            thClassName: 'text-right',
+            tdClassName: 'text-right',
+            render: (permit) => {
+              const canModify = permit.statusIzin === 'aktif';
+              if (!canModify) return <span className="text-xs text-slate-500">—</span>;
+              return (
+                <div className="flex items-center justify-end gap-2">
                   <button
                     onClick={() => {
                       setPerpanjangTarget(permit);
@@ -80,12 +135,13 @@ export default function PerizinanPanel({ permits, spaces, traders }) {
                     <button type="submit" className="rounded-lg bg-rose-500/20 border border-rose-500/30 px-3 py-1.5 text-xs font-bold text-rose-300 hover:bg-rose-500/30 transition">Cabut</button>
                   </form>
                 </div>
-              )}
-              {!canModify && <span className="text-xs text-slate-500">—</span>}
-            </td></tr>;
-          })}
-          {!permits.length && <tr><td colSpan={7} className="py-14 text-center text-slate-500">Belum ada Perizinan dalam scope aktif.</td></tr>}</tbody></table></div>
-      </section>
+              );
+            },
+          },
+        ]}
+        data={permits}
+        emptyMessage="Belum ada Perizinan dalam scope aktif."
+      />
 
       <Modal key={terbitkanModal.key} isOpen={terbitkanModal.isOpen} onClose={terbitkanModal.close} title="Penerbitan Izin Baru" maxWidth="max-w-2xl">
         <form action={terbitkanModal.action} className="grid gap-4 sm:grid-cols-2">

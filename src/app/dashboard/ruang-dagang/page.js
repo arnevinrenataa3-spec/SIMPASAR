@@ -5,12 +5,12 @@
  */
 
 import { redirect } from 'next/navigation';
-import { asc, eq } from 'drizzle-orm';
+import { asc, eq, and } from 'drizzle-orm';
 import { getSession } from '../../../lib/auth.js';
 import { resolveScope, buildScopeFilter } from '../../../lib/scope.js';
 import { formatLuas, hitungLuas } from '../../../lib/luas.js';
 import { db } from '../../../db/index.js';
-import { ruangDagang, pasar } from '../../../db/schema.js';
+import { ruangDagang, pasar, perizinan, pedagang } from '../../../db/schema.js';
 import RuangDagangTable from './RuangDagangTable.js';
 
 export default async function RuangDagangPage() {
@@ -33,11 +33,17 @@ export default async function RuangDagangPage() {
       panjang: ruangDagang.panjang,
       lebar: ruangDagang.lebar,
       status: ruangDagang.status,
+      namaPedagang: pedagang.namaLengkap,
       createdAt: ruangDagang.createdAt,
       updatedAt: ruangDagang.updatedAt,
     })
     .from(ruangDagang)
     .leftJoin(pasar, eq(ruangDagang.pasarId, pasar.id))
+    .leftJoin(perizinan, and(
+      eq(ruangDagang.id, perizinan.ruangDagangId),
+      eq(perizinan.statusIzin, 'aktif')
+    ))
+    .leftJoin(pedagang, eq(perizinan.pedagangId, pedagang.id))
     .where(whereClause)
     .orderBy(asc(ruangDagang.kodeRuang));
 

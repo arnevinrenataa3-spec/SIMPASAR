@@ -11,6 +11,7 @@ import { useCrudModal } from '../../../lib/useCrudModal.js';
 import Modal from '../../../components/Modal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
+import DataTable from '../../../components/DataTable.js';
 import { createUserAction, updateUserAction, deleteUserAction } from '../../actions/users.js';
 
 export default function UserTable({ users, pasars = [], currentUserId, selectedScope = 'all' }) {
@@ -44,108 +45,116 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
         </button>
       </div>
 
-      {/* User Table */}
-      <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
-              <tr>
-                <th className="px-6 py-4">Pengguna</th>
-                <th className="px-6 py-4">Username</th>
-                <th className="px-6 py-4">Role</th>
-                <th className="px-6 py-4">Penempatan</th>
-                <th className="px-6 py-4">Tanggal Dibuat</th>
-                <th className="px-6 py-4 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {users.map((u) => {
-                const isSelf = u.id === currentUserId;
-                const formattedDate = u.createdAt
-                  ? new Date(u.createdAt).toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })
-                  : '-';
-
-                return (
-                  <tr key={u.id} className="hover:bg-slate-800/40 transition duration-150">
-                    <td className="px-6 py-4 font-medium text-slate-100 flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-sm shrink-0">
-                        {u.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span>{u.name}</span>
-                          {isSelf && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase">
-                              Saya
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4 text-slate-300 font-mono text-xs">
-                      @{u.username}
-                    </td>
-
-                    <td className="px-6 py-4">
-                      {u.role === 'admin' ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-semibold uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                          Admin
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-xs font-medium uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                          Petugas
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="px-6 py-4">
-                      {u.namaPasar ? (
-                        <span className="text-xs text-slate-300 max-w-[160px] truncate block" title={u.namaPasar}>
-                          {u.namaPasar}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-slate-500">&mdash;</span>
-                      )}
-                    </td>
-
-                    <td className="px-6 py-4 text-slate-400 text-xs">
-                      {formattedDate}
-                    </td>
-
-                    <td className="px-6 py-4 text-right space-x-2">
-                        <button
-                          onClick={() => {
-                            editModal.open(u);
-                            setEditRole(u.role);
-                          }}
-                          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
-                        >
-                          Edit
-                        </button>
-
-                        {!isSelf && (
-                          <button
-                            onClick={() => deleteModal.open(u)}
-                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
-                          >
-                          Hapus
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={[
+          {
+            header: 'Pengguna',
+            accessor: 'name',
+            render: (u) => (
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-sm shrink-0">
+                  {u.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-slate-100">{u.name}</span>
+                    {u.id === currentUserId && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase">Saya</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ),
+          },
+          {
+            header: 'Username',
+            accessor: 'username',
+            render: (u) => <span className="font-mono text-xs">@{u.username}</span>,
+          },
+          {
+            header: 'Role',
+            accessor: 'role',
+            render: (u) =>
+              u.role === 'admin' ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-semibold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Admin
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-xs font-medium uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                  Petugas
+                </span>
+              ),
+          },
+          {
+            header: 'Penempatan',
+            accessor: 'namaPasar',
+            render: (u) =>
+              u.namaPasar ? (
+                <span className="text-xs max-w-[160px] truncate block" title={u.namaPasar}>{u.namaPasar}</span>
+              ) : (
+                <span className="text-xs text-slate-500">&mdash;</span>
+              ),
+          },
+          {
+            header: 'Tanggal Dibuat',
+            accessor: 'createdAt',
+            render: (u) => {
+              const fmt = u.createdAt
+                ? new Date(u.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                : '-';
+              return <span className="text-xs text-slate-400">{fmt}</span>;
+            },
+          },
+          {
+            header: 'Aksi',
+            thClassName: 'text-right',
+            tdClassName: 'text-right',
+            render: (u) => (
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  onClick={() => { editModal.open(u); setEditRole(u.role); }}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
+                >
+                  Edit
+                </button>
+                {u.id !== currentUserId && (
+                  <button
+                    onClick={() => deleteModal.open(u)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
+                  >
+                    Hapus
+                  </button>
+                )}
+              </div>
+            ),
+          },
+        ]}
+        data={users}
+        searchPlaceholder="Cari nama, username, peran, atau penempatan..."
+        filters={[
+          {
+            accessor: 'role',
+            placeholder: 'Semua Role',
+            options: [
+              { label: 'Semua Role', value: '' },
+              { label: 'Admin', value: 'admin' },
+              { label: 'Petugas', value: 'petugas' },
+            ],
+          },
+          {
+            accessor: 'pasarId',
+            placeholder: 'Semua Penempatan',
+            options: [
+              { label: 'Semua Penempatan', value: '' },
+              ...pasars.map((p) => ({ label: p.namaPasar, value: p.id })),
+            ],
+          },
+        ]}
+        emptyMessage="Belum ada data pengguna."
+        filterEmptyMessage="Tidak ada pengguna yang cocok dengan filter."
+      />
 
       {/* Add User Modal */}
       <Modal

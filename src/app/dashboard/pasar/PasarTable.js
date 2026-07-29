@@ -10,6 +10,7 @@ import { useCrudModal } from '../../../lib/useCrudModal.js';
 import Modal from '../../../components/Modal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
+import DataTable from '../../../components/DataTable.js';
 import { createPasarAction, updatePasarAction, deletePasarAction } from '../../actions/pasar.js';
 
 export default function PasarTable({ pasars }) {
@@ -41,84 +42,68 @@ export default function PasarTable({ pasars }) {
         </button>
       </div>
 
-      {/* Pasar Table */}
-      <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
-              <tr>
-                <th className="px-6 py-4">Nama Pasar</th>
-                <th className="px-6 py-4">Nomor Pasar</th>
-                <th className="px-6 py-4">Alamat</th>
-                <th className="px-6 py-4">Tanggal Dibuat</th>
-                <th className="px-6 py-4 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {pasars.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="px-6 py-8 text-center text-slate-500">
-                    Belum ada data pasar. Silakan tambahkan pasar baru.
-                  </td>
-                </tr>
-              ) : (
-                pasars.map((p) => {
-                  const formattedDate = p.createdAt
-                    ? new Date(p.createdAt).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })
-                    : '-';
-
-                  return (
-                    <tr key={p.id} className="hover:bg-slate-800/40 transition duration-150">
-                      <td className="px-6 py-4 font-medium text-slate-100 flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-sm shrink-0 uppercase">
-                          {p.namaPasar.charAt(0)}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span>{p.namaPasar}</span>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="px-6 py-4 text-slate-300 font-mono text-xs">
-                        {p.nomorPasar}
-                      </td>
-
-                      <td className="px-6 py-4 text-slate-300 text-xs max-w-xs truncate">
-                        {p.alamat}
-                      </td>
-
-                      <td className="px-6 py-4 text-slate-400 text-xs">
-                        {formattedDate}
-                      </td>
-
-                      <td className="px-6 py-4 text-right space-x-2">
-                        <button
-                          onClick={() => editModal.open(p)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() => deleteModal.open(p)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
-                        >
-                          Hapus
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={[
+          {
+            header: 'Nama Pasar',
+            accessor: 'namaPasar',
+            render: (p) => (
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-sm shrink-0 uppercase">
+                  {p.namaPasar.charAt(0)}
+                </div>
+                <span className="font-medium text-slate-100">{p.namaPasar}</span>
+              </div>
+            ),
+          },
+          {
+            header: 'Nomor Pasar',
+            accessor: 'nomorPasar',
+            tdClassName: 'font-mono text-xs',
+          },
+          {
+            header: 'Alamat',
+            accessor: 'alamat',
+            tdClassName: 'text-xs max-w-xs truncate',
+          },
+          {
+            header: 'Tanggal Dibuat',
+            accessor: 'createdAt',
+            render: (p) => (
+              <span className="text-xs text-slate-400">
+                {p.createdAt
+                  ? new Date(p.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                  : '-'}
+              </span>
+            ),
+          },
+          {
+            header: 'Aksi',
+            thClassName: 'text-right',
+            tdClassName: 'text-right',
+            render: (p) => (
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  onClick={() => editModal.open(p)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => deleteModal.open(p)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
+                >
+                  Hapus
+                </button>
+              </div>
+            ),
+          },
+        ]}
+        data={pasars}
+        searchPlaceholder="Cari nama, nomor, atau alamat pasar..."
+        emptyMessage="Belum ada data pasar. Silakan tambahkan pasar baru."
+        filterEmptyMessage="Tidak ada pasar yang cocok dengan pencarian."
+      />
 
       {/* Add Pasar Modal */}
       <Modal
