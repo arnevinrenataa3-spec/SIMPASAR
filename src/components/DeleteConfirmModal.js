@@ -6,6 +6,7 @@
 
 import Modal from './Modal.js';
 import AlertBanner from './AlertBanner.js';
+import Button from './Button.js';
 
 export default function DeleteConfirmModal({ isOpen, onClose, itemName, onConfirm, isPending, itemId, state }) {
   if (!isOpen) return null;
@@ -29,20 +30,12 @@ export default function DeleteConfirmModal({ isOpen, onClose, itemName, onConfir
         <AlertBanner state={state} />
 
         <div className="flex gap-3 justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 bg-slate-800 border border-slate-700 hover:bg-slate-700 transition"
-          >
+          <Button type="button" variant="secondary" size="md" onClick={onClose}>
             Batal
-          </button>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="px-4 py-2 rounded-xl text-sm font-semibold bg-rose-600 text-white border border-rose-500 hover:bg-rose-500 transition disabled:opacity-50"
-          >
+          </Button>
+          <Button type="submit" variant="danger" size="md" pending={isPending}>
             {isPending ? 'Menghapus...' : 'Ya, Hapus'}
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>

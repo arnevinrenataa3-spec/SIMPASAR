@@ -14,6 +14,8 @@ import Modal from '../../../components/Modal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import DataTable from '../../../components/DataTable.js';
+import Button from '../../../components/Button.js';
+import Badge from '../../../components/Badge.js';
 import { createRuangDagangAction, updateRuangDagangAction, deleteRuangDagangAction } from '../../actions/ruang-dagang.js';
 
 export default function RuangDagangTable({ initialData = [], pasars = [], user, selectedScope = 'all' }) {
@@ -52,67 +54,28 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
   const getJenisBadge = (jenis) => {
     switch (jenis) {
       case 'kios':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider">
-            Kios
-          </span>
-        );
+        return <Badge color="indigo">Kios</Badge>;
       case 'los':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
-            Meja
-          </span>
-        );
+        return <Badge color="cyan">Meja</Badge>;
       case 'lapak':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
-            Lapak
-          </span>
-        );
+        return <Badge color="emerald">Lapak</Badge>;
       case 'toko':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
-            Toko
-          </span>
-        );
+        return <Badge color="amber">Toko</Badge>;
       default:
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/15 text-slate-300 border border-slate-500/30 uppercase tracking-wider">
-            {jenis}
-          </span>
-        );
+        return <Badge color="slate">{jenis}</Badge>;
     }
   };
 
   const getStatusBadge = (status) => {
     switch (status) {
       case 'terisi':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 text-xs font-semibold uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-            Terisi
-          </span>
-        );
+        return <Badge color="rose" dot>Terisi</Badge>;
       case 'kosong':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-semibold uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            Kosong
-          </span>
-        );
+        return <Badge color="emerald" dot>Kosong</Badge>;
       case 'non-fisik':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-500/15 text-slate-300 border border-slate-500/30 text-xs font-semibold uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-            Non-fisik
-          </span>
-        );
+        return <Badge color="slate" dot>Non-fisik</Badge>;
       default:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/15 text-slate-300 border border-slate-500/30 uppercase tracking-wider">
-            {status}
-          </span>
-        );
+        return <Badge color="slate">{status}</Badge>;
     }
   };
 
@@ -134,17 +97,16 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Kelola Ruang Dagang</h1>
           <p className="text-xs text-slate-400 mt-1">Daftar ruang dagang yang tersedia di scope pasar aktif.</p>
         </div>
-        <button
+        <Button
           onClick={() => {
             createModal.open();
           }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition duration-150 shadow-lg shadow-emerald-500/20 text-sm"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
           </svg>
           <span>Tambah Ruang Dagang</span>
-        </button>
+        </Button>
       </div>
 
       {/* Stats Row */}
@@ -266,25 +228,13 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
               }
               const daysLeft = Math.ceil((new Date(item.kadaluwarsa) - new Date(today)) / 86400000);
               if (item.isExpired) {
-                return (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30">
-                    {`Kadaluwarsa ${Math.abs(daysLeft)} hari lalu`}
-                  </span>
-                );
+                return <Badge color="rose">{`Kadaluwarsa ${Math.abs(daysLeft)} hari lalu`}</Badge>;
               }
               if (daysLeft === 0) {
-                return (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                    Kadaluwarsa hari ini
-                  </span>
-                );
+                return <Badge color="amber">Kadaluwarsa hari ini</Badge>;
               }
               if (item.isExpiringSoon) {
-                return (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                    {`${daysLeft} hari lagi`}
-                  </span>
-                );
+                return <Badge color="amber">{`${daysLeft} hari lagi`}</Badge>;
               }
               return <span className="text-xs text-slate-400">{formatDate(item.kadaluwarsa)}</span>;
             },
@@ -301,7 +251,9 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
                 >
                   Detail
                 </button>
-                <button
+                <Button
+                  variant="info"
+                  size="sm"
                   onClick={() => {
                     editModal.open(item);
                     if (item.panjang != null) setEditPanjang(String(item.panjang));
@@ -309,16 +261,16 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
                     if (item.lebar != null) setEditLebar(String(item.lebar));
                     else setEditLebar('');
                   }}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/20 transition cursor-pointer"
                 >
                   Edit
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
                   onClick={() => deleteModal.open(item)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 transition cursor-pointer"
                 >
                   Hapus
-                </button>
+                </Button>
               </div>
             ),
           },
@@ -462,20 +414,21 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
 
           <AlertBanner state={createModal.state} />
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={createModal.close}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 transition"
             >
               Batal
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={createModal.pending}
-              className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition shadow-lg shadow-emerald-500/20 cursor-pointer"
+              size="sm"
+              pending={createModal.pending}
             >
               {createModal.pending ? 'Menyimpan...' : 'Simpan Ruang Dagang'}
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>
@@ -612,20 +565,21 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
 
           <AlertBanner state={editModal.state} />
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 onClick={editModal.close}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 transition"
               >
                 Batal
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                disabled={editModal.pending}
-                className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition shadow-lg shadow-emerald-500/20 cursor-pointer"
+                size="sm"
+                pending={editModal.pending}
               >
                 {editModal.pending ? 'Menyimpan...' : 'Simpan Perubahan'}
-              </button>
+              </Button>
             </div>
           </form>
         )}

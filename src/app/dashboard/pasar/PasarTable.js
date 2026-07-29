@@ -11,6 +11,7 @@ import Modal from '../../../components/Modal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import DataTable from '../../../components/DataTable.js';
+import Button from '../../../components/Button.js';
 import { createPasarAction, updatePasarAction, deletePasarAction } from '../../actions/pasar.js';
 
 export default function PasarTable({ pasars }) {
@@ -31,15 +32,12 @@ export default function PasarTable({ pasars }) {
           </p>
         </div>
 
-        <button
-          onClick={createModal.open}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition duration-150 shadow-lg shadow-emerald-500/20 text-sm"
-        >
+        <Button variant="primary" onClick={createModal.open}>
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
           </svg>
           <span>Tambah Pasar Baru</span>
-        </button>
+        </Button>
       </div>
 
       <DataTable
@@ -83,18 +81,12 @@ export default function PasarTable({ pasars }) {
             tdClassName: 'text-right',
             render: (p) => (
               <div className="flex items-center justify-end gap-2">
-                <button
-                  onClick={() => editModal.open(p)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
-                >
+                <Button variant="secondary" size="sm" onClick={() => editModal.open(p)}>
                   Edit
-                </button>
-                <button
-                  onClick={() => deleteModal.open(p)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
-                >
+                </Button>
+                <Button variant="danger" size="sm" onClick={() => deleteModal.open(p)}>
                   Hapus
-                </button>
+                </Button>
               </div>
             ),
           },
@@ -154,20 +146,12 @@ export default function PasarTable({ pasars }) {
 
           <AlertBanner state={createModal.state} />
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
-            <button
-              type="button"
-              onClick={createModal.close}
-              className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
-            >
+            <Button type="button" variant="secondary" size="sm" onClick={createModal.close}>
               Batal
-            </button>
-            <button
-              type="submit"
-              disabled={createModal.pending}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
-            >
+            </Button>
+            <Button type="submit" variant="primary" size="sm" pending={createModal.pending}>
               {createModal.pending ? 'Menyimpan...' : 'Simpan Pasar'}
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>
@@ -224,20 +208,12 @@ export default function PasarTable({ pasars }) {
 
             <AlertBanner state={editModal.state} />
             <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
-              <button
-                type="button"
-                onClick={editModal.close}
-                className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
-              >
+              <Button type="button" variant="secondary" size="sm" onClick={editModal.close}>
                 Batal
-              </button>
-              <button
-                type="submit"
-                disabled={editModal.pending}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
-              >
+              </Button>
+              <Button type="submit" variant="primary" size="sm" pending={editModal.pending}>
                 {editModal.pending ? 'Memperbarui...' : 'Simpan Perubahan'}
-              </button>
+              </Button>
             </div>
           </form>
         )}

@@ -13,6 +13,8 @@ import AlertBanner from '../../../../components/AlertBanner.js';
 import Modal from '../../../../components/Modal.js';
 import DataTable from '../../../../components/DataTable.js';
 import SearchableSelect from '../../../../components/SearchableSelect.js';
+import Badge from '../../../../components/Badge.js';
+import Button from '../../../../components/Button.js';
 import { terbitkanIzinAction, perpanjangIzinAction, cabutIzinAction } from '../../../actions/perizinan.js';
 
 const inputClass = 'w-full rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 outline-none focus:border-emerald-500/60';
@@ -23,53 +25,38 @@ function formatDate(value) {
 }
 
 const spLabel = { sp1: 'SP 1', sp2: 'SP 2', sp3: 'SP 3' };
-const spBadgeClass = {
-  sp1: 'border-amber-500/30 bg-amber-500/10 text-amber-300',
-  sp2: 'border-orange-500/30 bg-orange-500/10 text-orange-300',
-  sp3: 'border-rose-500/30 bg-rose-500/10 text-rose-300',
-};
+const spColor = { sp1: 'amber', sp2: 'orange', sp3: 'rose' };
 
 function getJenisBadge(jenis) {
-  const map = {
-    kios: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
-    los: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
-    lapak: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
-    toko: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-  };
-  const cls = map[jenis] || 'bg-slate-500/15 text-slate-300 border-slate-500/30';
-  return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border uppercase tracking-wider ${cls}`}>{jenis}</span>;
+  const map = { kios: 'indigo', los: 'cyan', lapak: 'emerald', toko: 'amber' };
+  return <Badge color={map[jenis] || 'slate'}>{jenis}</Badge>;
 }
 
 function getStatusBadge(status) {
   switch (status) {
     case 'terisi':
-      return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 text-xs font-semibold uppercase tracking-wider"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" />Terisi</span>;
+      return <Badge color="rose" dot>Terisi</Badge>;
     case 'kosong':
-      return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-semibold uppercase tracking-wider"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />Kosong</span>;
+      return <Badge color="emerald" dot>Kosong</Badge>;
     case 'non-fisik':
-      return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-500/15 text-slate-300 border border-slate-500/30 text-xs font-semibold uppercase tracking-wider"><span className="w-1.5 h-1.5 rounded-full bg-slate-500" />Non-fisik</span>;
+      return <Badge color="slate" dot>Non-fisik</Badge>;
     default:
-      return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/15 text-slate-300 border border-slate-500/30 uppercase tracking-wider">{status}</span>;
+      return <Badge color="slate">{status}</Badge>;
   }
 }
 
 function statusIzinBadge(izin) {
   const expired = izin.statusIzin === 'aktif' && izin.tanggalKedaluwarsa < new Date().toISOString().slice(0, 10);
   const status = expired ? 'kedaluwarsa' : izin.statusIzin;
-  const cls = status === 'aktif'
-    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-    : status === 'diperpanjang'
-      ? 'border-blue-500/30 bg-blue-500/10 text-blue-300'
-      : 'border-rose-500/30 bg-rose-500/10 text-rose-300';
-  return <span className={`rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${cls}`}>{status}</span>;
+  const color = status === 'aktif' ? 'emerald' : status === 'diperpanjang' ? 'blue' : 'rose';
+  return <Badge color={color}>{status}</Badge>;
 }
 
 function statusTeguranBadge(izin) {
   if (!izin.statusTeguran || izin.statusTeguran === 'none') {
-    return <span className="rounded-full border border-slate-700 bg-slate-800 text-slate-400 px-2.5 py-1 text-xs font-bold uppercase">Tidak Ada</span>;
+    return <Badge color="slate">Tidak Ada</Badge>;
   }
-  const cls = spBadgeClass[izin.statusTeguran] || 'border-slate-700 bg-slate-800 text-slate-400';
-  return <span className={`rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${cls}`}>{spLabel[izin.statusTeguran]}</span>;
+  return <Badge color={spColor[izin.statusTeguran] || 'slate'}>{spLabel[izin.statusTeguran]}</Badge>;
 }
 
 export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders, teguranList, user }) {
@@ -115,15 +102,15 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
   return (
     <div className="space-y-6">
       {/* Back Button */}
-      <button
+      <Button
+        variant="ghost"
         onClick={() => router.push('/dashboard/ruang-dagang')}
-        className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 transition cursor-pointer"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
         </svg>
         Kembali ke Ruang Dagang
-      </button>
+      </Button>
 
       {/* Warning Banner */}
       {(isExpiringSoon || isExpired) && (
@@ -200,34 +187,34 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
           </div>
           <div className="flex items-center gap-2">
             {ruangKosong && (
-              <button
+              <Button
+                variant="primary"
                 onClick={terbitkanModal.open}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition duration-150 shadow-lg shadow-emerald-500/20 text-sm cursor-pointer"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                 </svg>
                 Terbitkan Izin
-              </button>
+              </Button>
             )}
             {izinAktif && (
               <>
-                <button
+                <Button
+                  variant="info"
                   onClick={() => {
                     setPerpanjangTarget(izinAktif);
                     setPerpanjangTanggalTerbit(new Date().toISOString().slice(0, 10));
                     setPerpanjangTanggalKedaluwarsa('');
                     perpanjangModal.open();
                   }}
-                  className="rounded-xl bg-blue-500/20 border border-blue-500/30 px-4 py-2.5 text-sm font-bold text-blue-300 hover:bg-blue-500/30 transition cursor-pointer"
                 >
                   Perpanjang Izin
-                </button>
+                </Button>
                 <form action={cabutModal.action} onSubmit={(e) => { if (!confirm('Cabut izin ini? Ruang akan dikosongkan.')) e.preventDefault(); }}>
                   <input type="hidden" name="perizinanId" value={izinAktif.id} />
-                  <button type="submit" className="rounded-xl bg-rose-500/20 border border-rose-500/30 px-4 py-2.5 text-sm font-bold text-rose-300 hover:bg-rose-500/30 transition cursor-pointer">
+                  <Button type="submit" variant="danger">
                     Cabut Izin
-                  </button>
+                  </Button>
                 </form>
               </>
             )}
@@ -331,9 +318,9 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
                     <tr key={t.id} className="hover:bg-slate-800/40 transition duration-150">
                       <td className="px-4 py-3.5 font-mono text-emerald-300">{t.nomorKartu || '-'}</td>
                       <td className="px-4 py-3.5">
-                        <span className={`rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${spBadgeClass[t.status] || 'border-slate-700 bg-slate-800 text-slate-400'}`}>
+                        <Badge color={spColor[t.status] || 'slate'}>
                           {spLabel[t.status] || t.status}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="px-4 py-3.5 text-xs text-slate-400">{formatDate(t.tanggalTerbit)}</td>
                     </tr>
@@ -439,12 +426,14 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
             Tanggal kedaluwarsa
             <input type="date" name="tanggalKedaluwarsa" required className={`${inputClass} mt-2`} />
           </label>
-          <button
-            disabled={terbitkanModal.pending}
-            className="rounded-xl bg-emerald-400 py-3 text-sm font-bold text-slate-950 disabled:opacity-50 sm:col-span-2 cursor-pointer"
+          <Button
+            type="submit"
+            variant="primary"
+            pending={terbitkanModal.pending}
+            className="sm:col-span-2"
           >
             {terbitkanModal.pending ? 'Menerbitkan...' : 'Terbitkan Izin'}
-          </button>
+          </Button>
         </form>
       </Modal>
 
@@ -487,12 +476,13 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
               onChange={(e) => setPerpanjangTanggalKedaluwarsa(e.target.value)}
             />
           </label>
-          <button
-            disabled={perpanjangModal.pending}
-            className="rounded-xl bg-blue-500 py-3 text-sm font-bold text-white disabled:opacity-50 cursor-pointer"
+          <Button
+            type="submit"
+            variant="info"
+            pending={perpanjangModal.pending}
           >
             {perpanjangModal.pending ? 'Memperpanjang...' : 'Perpanjang Izin'}
-          </button>
+          </Button>
         </form>
       </Modal>
 

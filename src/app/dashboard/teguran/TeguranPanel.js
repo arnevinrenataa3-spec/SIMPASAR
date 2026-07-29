@@ -8,14 +8,11 @@
 import { useCrudModal } from '../../../lib/useCrudModal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import DataTable from '../../../components/DataTable.js';
+import Badge from '../../../components/Badge.js';
 import { terbitkanTeguranAction } from '../../actions/perizinan.js';
 
 const spLabel = { sp1: 'SP 1', sp2: 'SP 2', sp3: 'SP 3' };
-const spBadgeClass = {
-  sp1: 'border-amber-500/30 bg-amber-500/10 text-amber-300',
-  sp2: 'border-orange-500/30 bg-orange-500/10 text-orange-300',
-  sp3: 'border-rose-500/30 bg-rose-500/10 text-rose-300',
-};
+const spColor = { sp1: 'amber', sp2: 'orange', sp3: 'rose' };
 
 function formatDate(value) {
   return new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`));
@@ -87,9 +84,9 @@ export default function TeguranPanel({ teguranList }) {
               header: 'Status SP',
               accessor: 'statusTeguran',
               render: (item) => (
-                <span className={`rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${item.statusTeguran !== 'none' && spBadgeClass[item.statusTeguran] ? spBadgeClass[item.statusTeguran] : 'border-slate-700 bg-slate-800 text-slate-400'}`}>
+                <Badge color={item.statusTeguran !== 'none' ? spColor[item.statusTeguran] : 'slate'}>
                   {item.statusTeguran !== 'none' ? spLabel[item.statusTeguran] : 'Belum SP'}
-                </span>
+                </Badge>
               ),
             },
             {

@@ -12,6 +12,8 @@ import Modal from '../../../components/Modal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import DeleteConfirmModal from '../../../components/DeleteConfirmModal.js';
 import DataTable from '../../../components/DataTable.js';
+import Button from '../../../components/Button.js';
+import Badge from '../../../components/Badge.js';
 import { createUserAction, updateUserAction, deleteUserAction } from '../../actions/users.js';
 
 export default function UserTable({ users, pasars = [], currentUserId, selectedScope = 'all' }) {
@@ -34,15 +36,12 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
           </p>
         </div>
 
-        <button
-          onClick={createModal.open}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition duration-150 shadow-lg shadow-emerald-500/20 text-sm"
-        >
+        <Button onClick={createModal.open}>
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
           </svg>
           <span>Tambah User Baru</span>
-        </button>
+        </Button>
       </div>
 
       <DataTable
@@ -76,15 +75,9 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
             accessor: 'role',
             render: (u) =>
               u.role === 'admin' ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-semibold uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Admin
-                </span>
+                <Badge color="cyan" dot>Admin</Badge>
               ) : (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-xs font-medium uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                  Petugas
-                </span>
+                <Badge color="slate" dot>Petugas</Badge>
               ),
           },
           {
@@ -113,19 +106,21 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
             tdClassName: 'text-right',
             render: (u) => (
               <div className="flex items-center justify-end gap-2">
-                <button
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={() => { editModal.open(u); setEditRole(u.role); }}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition duration-150"
                 >
                   Edit
-                </button>
+                </Button>
                 {u.id !== currentUserId && (
-                  <button
+                  <Button
+                    variant="danger"
+                    size="sm"
                     onClick={() => deleteModal.open(u)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition duration-150"
                   >
                     Hapus
-                  </button>
+                  </Button>
                 )}
               </div>
             ),
@@ -244,20 +239,21 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
 
           <AlertBanner state={createModal.state} />
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={createModal.close}
-              className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
             >
               Batal
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={createModal.pending}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
+              size="sm"
+              pending={createModal.pending}
             >
               {createModal.pending ? 'Menyimpan...' : 'Simpan User'}
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>
@@ -352,20 +348,21 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
 
             <AlertBanner state={editModal.state} />
             <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 onClick={editModal.close}
-                className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700"
               >
                 Batal
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                disabled={editModal.pending}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-400 text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
+                size="sm"
+                pending={editModal.pending}
               >
                 {editModal.pending ? 'Memperbarui...' : 'Simpan Perubahan'}
-              </button>
+              </Button>
             </div>
           </form>
         )}
