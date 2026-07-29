@@ -24,6 +24,10 @@ export default function DataTable({
   const syncTimeout = useRef(null);
 
   const searchParamsKey = syncSearchParams ? searchParams?.toString() : null;
+  // Depend on accessor names (a stable primitive), not the `filters` array reference itself —
+  // callers routinely pass `filters={[...]}` as a fresh inline literal on every render, which
+  // would otherwise make this key (and everything downstream of it) churn every render.
+  const filterAccessorsKey = filters.map((f) => f.accessor).join('|');
 
   const urlQ = syncSearchParams ? (searchParams.get('q') || '') : '';
   const urlFilters = useMemo(() => {
@@ -33,7 +37,8 @@ export default function DataTable({
       fv[f.accessor] = searchParams.get(f.accessor) || '';
     }
     return fv;
-  }, [syncSearchParams, searchParamsKey, filters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- filterAccessorsKey stands in for `filters`/`searchParams` identity on purpose, see comment above
+  }, [syncSearchParams, searchParamsKey, filterAccessorsKey]);
 
   const [searchQuery, setSearchQuery] = useState(urlQ);
   const [filterValues, setFilterValues] = useState(urlFilters);
@@ -41,8 +46,14 @@ export default function DataTable({
   useEffect(() => {
     if (!syncSearchParams) return;
     /* eslint-disable react-hooks/set-state-in-effect -- Syncing URL params to local state is the standard Next.js pattern for debounced search/filter */
-    setSearchQuery(urlQ);
-    setFilterValues(urlFilters);
+    // Bail out on value-equal updates so an upstream reference change (e.g. a caller passing a
+    // fresh `filters`/`urlFilters` literal) can never re-trigger this effect's own state updates.
+    setSearchQuery((prev) => (prev === urlQ ? prev : urlQ));
+    setFilterValues((prev) => {
+      const keys = Object.keys(urlFilters);
+      const same = keys.length === Object.keys(prev).length && keys.every((k) => prev[k] === urlFilters[k]);
+      return same ? prev : urlFilters;
+    });
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [searchParamsKey, urlQ, urlFilters]);
 
