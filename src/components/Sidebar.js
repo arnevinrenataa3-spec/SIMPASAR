@@ -12,7 +12,7 @@ import { logoutAction } from '../app/actions/auth.js';
 
 const baseNavItems = [
   {
-    name: 'Denah Ruang',
+    name: 'Overview',
     segment: null,
     href: '/dashboard',
     icon: (

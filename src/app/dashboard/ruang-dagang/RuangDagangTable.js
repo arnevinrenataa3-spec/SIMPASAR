@@ -37,18 +37,9 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
   const deleteModal = useCrudModal({ action: deleteRuangDagangAction });
 
   const stats = useMemo(() => {
-    const fisik = initialData.filter((item) => item.status !== 'non-fisik');
-    const total = fisik.length;
-    const kios = fisik.filter((item) => item.jenis === 'kios').length;
-    const los = fisik.filter((item) => item.jenis === 'los').length;
-    const lapak = fisik.filter((item) => item.jenis === 'lapak').length;
-    const toko = fisik.filter((item) => item.jenis === 'toko').length;
-    const kosong = fisik.filter((item) => item.status === 'kosong').length;
-    const terisi = fisik.filter((item) => item.status === 'terisi').length;
-    const nonFisik = initialData.filter((item) => item.status === 'non-fisik').length;
     const expiringSoon = initialData.filter((item) => item.isExpiringSoon).length;
     const expired = initialData.filter((item) => item.isExpired).length;
-    return { total, kios, los, lapak, toko, kosong, terisi, nonFisik, expiringSoon, expired };
+    return { expiringSoon, expired };
   }, [initialData]);
 
   const getJenisBadge = (jenis) => {
@@ -123,65 +114,6 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
           </span>
         </div>
       )}
-      <div className="space-y-4">
-        <div>
-          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Ringkasan Ruang</span>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-            {[
-              { label: 'Total', value: stats.total, color: 'text-slate-100' },
-              { label: 'Kios', value: stats.kios, color: 'text-indigo-400' },
-              { label: 'Meja', value: stats.los, color: 'text-cyan-400' },
-              { label: 'Lapak', value: stats.lapak, color: 'text-emerald-400' },
-              { label: 'Toko', value: stats.toko, color: 'text-amber-400' },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center"
-              >
-                <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
-                <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Status Ruang</span>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { label: 'Kosong', value: stats.kosong, color: 'text-emerald-400' },
-              { label: 'Terisi', value: stats.terisi, color: 'text-rose-400' },
-              { label: 'Non-fisik', value: stats.nonFisik, color: 'text-slate-400' },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center"
-              >
-                <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
-                <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Kedaluwarsaan</span>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: 'Mendekati Kadaluwarsa', value: stats.expiringSoon, color: 'text-amber-400' },
-              { label: 'Kadaluwarsa', value: stats.expired, color: 'text-rose-400' },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center"
-              >
-                <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
-                <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       <DataTable
         cellPadding="px-4 py-3.5"

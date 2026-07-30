@@ -19,15 +19,28 @@ export default async function DashboardPage() {
     .select({
       id: ruangDagang.id,
       status: ruangDagang.status,
+      jenis: ruangDagang.jenis,
       pasarId: ruangDagang.pasarId,
     })
     .from(ruangDagang)
     .where(whereClause);
 
-  const terisiCount = allRuang.filter((r) => r.status === 'terisi').length;
-  const kosongCount = allRuang.filter((r) => r.status === 'kosong').length;
+  const fisik = allRuang.filter((r) => r.status !== 'non-fisik');
+  const stats = {
+    total: fisik.length,
+    kios: fisik.filter((r) => r.jenis === 'kios').length,
+    los: fisik.filter((r) => r.jenis === 'los').length,
+    lapak: fisik.filter((r) => r.jenis === 'lapak').length,
+    toko: fisik.filter((r) => r.jenis === 'toko').length,
+    kosong: fisik.filter((r) => r.status === 'kosong').length,
+    terisi: fisik.filter((r) => r.status === 'terisi').length,
+    nonFisik: allRuang.filter((r) => r.status === 'non-fisik').length,
+  };
 
-  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
+  const sevenDaysLater = new Date(now.getTime() + 7 * 86400000).toISOString().slice(0, 10);
+
   const expiredBase = and(
     sql`${perizinan.statusIzin} IN ('aktif', 'kedaluwarsa')`,
     lt(perizinan.tanggalKedaluwarsa, today),
@@ -41,6 +54,20 @@ export default async function DashboardPage() {
     .where(expiredWhere);
 
   const kedaluwarsaCount = expiredResult?.count ?? 0;
+
+  const expiringSoonBase = and(
+    eq(perizinan.statusIzin, 'aktif'),
+    sql`${perizinan.tanggalKedaluwarsa} >= ${today} AND ${perizinan.tanggalKedaluwarsa} <= ${sevenDaysLater}`,
+  );
+  const expiringSoonWhere = whereClause ? and(whereClause, expiringSoonBase) : expiringSoonBase;
+
+  const [expiringSoonResult] = await db
+    .select({ count: sql`count(*)`.mapWith(Number) })
+    .from(perizinan)
+    .innerJoin(ruangDagang, eq(perizinan.ruangDagangId, ruangDagang.id))
+    .where(expiringSoonWhere);
+
+  const expiringSoonCount = expiringSoonResult?.count ?? 0;
 
   const teguranWhere = whereClause
     ? and(whereClause, sql`${perizinan.statusTeguran} != 'none'`)
@@ -85,73 +112,55 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* KPI Stats Overview Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 hover:border-slate-700/80 transition duration-200">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Ruang Dagang Terisi
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-slate-100">{terisiCount}</span>
-            <span className="text-xs text-emerald-400 font-medium">Ruang Dagang Aktif</span>
-          </div>
-        </div>
-
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 hover:border-slate-700/80 transition duration-200">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Ruang Dagang Kosong
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 flex items-center justify-center">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-          </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-slate-100">{kosongCount}</span>
-            <span className="text-xs text-slate-400 font-medium">Tersedia</span>
+      {/* Stats Overview */}
+      <div className="space-y-4">
+        <div>
+          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Ringkasan Ruang</span>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+            {[
+              { label: 'Total', value: stats.total, color: 'text-slate-100' },
+              { label: 'Kios', value: stats.kios, color: 'text-indigo-400' },
+              { label: 'Meja', value: stats.los, color: 'text-cyan-400' },
+              { label: 'Lapak', value: stats.lapak, color: 'text-emerald-400' },
+              { label: 'Toko', value: stats.toko, color: 'text-amber-400' },
+            ].map((s) => (
+              <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center">
+                <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
+                <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 hover:border-slate-700/80 transition duration-200">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Kedaluwarsa
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-slate-100">{kedaluwarsaCount}</span>
-            <span className="text-xs text-rose-400 font-medium">Perlu Tindakan</span>
+        <div>
+          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Status Ruang</span>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { label: 'Kosong', value: stats.kosong, color: 'text-emerald-400' },
+              { label: 'Terisi', value: stats.terisi, color: 'text-rose-400' },
+              { label: 'Non-fisik', value: stats.nonFisik, color: 'text-slate-400' },
+            ].map((s) => (
+              <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center">
+                <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
+                <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 hover:border-slate-700/80 transition duration-200">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Teguran (SP)
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-          </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-slate-100">{teguranCount}</span>
-            <span className="text-xs text-amber-400 font-medium">Surat Diterbitkan</span>
+        <div>
+          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Kedaluwarsaan &amp; Peneguran</span>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { label: 'Mendekati Kadaluwarsa', value: expiringSoonCount, color: 'text-amber-400' },
+              { label: 'Kadaluwarsa', value: kedaluwarsaCount, color: 'text-rose-400' },
+              { label: 'Teguran (SP)', value: teguranCount, color: 'text-amber-400' },
+            ].map((s) => (
+              <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center">
+                <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
+                <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
