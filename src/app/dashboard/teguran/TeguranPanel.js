@@ -9,6 +9,7 @@ import { useCrudModal } from '../../../lib/useCrudModal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import DataTable from '../../../components/DataTable.js';
 import Badge from '../../../components/Badge.js';
+import Button from '../../../components/Button.js';
 import { terbitkanTeguranAction } from '../../actions/perizinan.js';
 
 const spLabel = { sp1: 'SP 1', sp2: 'SP 2', sp3: 'SP 3' };
@@ -98,13 +99,9 @@ export default function TeguranPanel({ teguranList }) {
                 return (
                   <form action={modal.action}>
                     <input type="hidden" name="perizinanId" value={item.id} />
-                    <button
-                      type="submit"
-                      disabled={!needsSP}
-                      className="rounded-lg bg-amber-500/20 border border-amber-500/30 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition disabled:cursor-not-allowed disabled:opacity-30"
-                    >
+                    <Button type="submit" variant="warning" size="sm" disabled={!needsSP}>
                       {needsSP ? `Terbitkan ${spLabel[item.computedSP]}` : 'Sudah Diterbitkan'}
-                    </button>
+                    </Button>
                   </form>
                 );
               },

@@ -71,7 +71,7 @@ export const updateRuangDagangAction = defineAction({
   operasi: 'ruang-dagang:crud',
   scope: 'enforce',
   schema: updateSchema,
-  revalidate: ['/dashboard/ruang-dagang', '/dashboard'],
+  revalidate: ['layout:/dashboard/ruang-dagang', '/dashboard'],
   execute: async (data, ctx) => {
     const kodeRuang = data.kodeRuang.toUpperCase();
 

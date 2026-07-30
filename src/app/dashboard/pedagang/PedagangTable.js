@@ -52,7 +52,12 @@ export default function PedagangTable({ initialData }) {
           <h1 className="mt-1 text-2xl font-bold text-slate-100">Pedagang</h1>
           <p className="mt-1 text-sm text-slate-400">Identitas unik Pedagang berdasarkan NIK.</p>
         </div>
-        <Button variant="primary" onClick={createModal.open}>Tambah Pedagang</Button>
+        <Button variant="primary" onClick={createModal.open}>
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Tambah Pedagang</span>
+        </Button>
       </section>
 
       <DataTable
@@ -85,13 +90,20 @@ export default function PedagangTable({ initialData }) {
             tdClassName: 'text-right',
             render: (item) => (
               <div className="flex items-center justify-end gap-2">
-                <a
-                  href={`/dashboard/ruang-dagang?q=${encodeURIComponent(item.namaLengkap)}`}
-                  className="rounded-lg border border-emerald-500/30 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/10 transition"
-                  title="Lihat Ruang Dagang yang dimiliki"
-                >
-                  Ruang
-                </a>
+                {item.ruangDagangId ? (
+                  <Button
+                    href={`/dashboard/ruang-dagang/${item.ruangDagangId}`}
+                    variant="success"
+                    size="sm"
+                    title="Lihat Ruang Dagang yang dimiliki"
+                  >
+                    Ruang
+                  </Button>
+                ) : (
+                  <Button variant="success" size="sm" disabled title="Belum memiliki Ruang Dagang aktif">
+                    Ruang
+                  </Button>
+                )}
                 <Button variant="info" size="sm" onClick={() => editModal.open(item)}>Edit</Button>
                 <Button variant="danger" size="sm" onClick={() => deleteModal.open(item)}>Hapus</Button>
               </div>

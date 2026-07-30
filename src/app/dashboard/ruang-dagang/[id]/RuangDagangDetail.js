@@ -15,7 +15,9 @@ import DataTable from '../../../../components/DataTable.js';
 import SearchableSelect from '../../../../components/SearchableSelect.js';
 import Badge from '../../../../components/Badge.js';
 import Button from '../../../../components/Button.js';
+import EditRuangDagangModal from '../../../../components/EditRuangDagangModal.js';
 import { terbitkanIzinAction, perpanjangIzinAction, cabutIzinAction } from '../../../actions/perizinan.js';
+import { updateRuangDagangAction } from '../../../actions/ruang-dagang.js';
 
 const inputClass = 'w-full rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 outline-none focus:border-emerald-500/60';
 
@@ -78,6 +80,10 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
     action: cabutIzinAction,
     onSuccess: () => router.refresh(),
   });
+  const editModal = useCrudModal({
+    action: updateRuangDagangAction,
+    onSuccess: () => router.refresh(),
+  });
 
   const trader = traders.find((item) => item.id === selectedTrader);
   const traderOptions = useMemo(() => [
@@ -135,8 +141,11 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
             <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Detail Ruang Dagang</h1>
             <p className="text-xs text-slate-400 mt-1">Informasi lengkap dan kelola perizinan untuk ruang ini.</p>
           </div>
-          <div>
+          <div className="flex items-center gap-3">
             {getStatusBadge(ruang.status)}
+            <Button variant="info" size="sm" onClick={() => editModal.open(ruang)}>
+              Edit
+            </Button>
           </div>
         </div>
 
@@ -487,6 +496,12 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
       </Modal>
 
       <AlertBanner state={cabutModal.state} />
+
+      <EditRuangDagangModal
+        modal={editModal}
+        pasars={[{ id: ruang.pasarId, namaPasar: ruang.namaPasar }]}
+        isAdmin={user?.role === 'admin'}
+      />
     </div>
   );
 }

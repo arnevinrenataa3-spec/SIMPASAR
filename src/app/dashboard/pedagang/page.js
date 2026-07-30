@@ -24,5 +24,15 @@ export default async function PedagangPage() {
   );
   const rows = await db.select().from(pedagang).where(where).orderBy(asc(pedagang.namaLengkap));
 
-  return <PedagangTable initialData={rows} />;
+  const activeRooms = await db
+    .select({ pedagangId: perizinan.pedagangId, ruangDagangId: perizinan.ruangDagangId })
+    .from(perizinan)
+    .where(eq(perizinan.statusIzin, 'aktif'));
+  const roomByPedagang = new Map();
+  for (const r of activeRooms) {
+    if (!roomByPedagang.has(r.pedagangId)) roomByPedagang.set(r.pedagangId, r.ruangDagangId);
+  }
+  const initialData = rows.map((p) => ({ ...p, ruangDagangId: roomByPedagang.get(p.id) ?? null }));
+
+  return <PedagangTable initialData={initialData} />;
 }
