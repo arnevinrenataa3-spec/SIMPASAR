@@ -6,6 +6,7 @@
 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import DataTable from '../../../../components/DataTable.js';
 import Badge from '../../../../components/Badge.js';
 import Button from '../../../../components/Button.js';
 
@@ -111,67 +112,53 @@ export default function PerizinanDetail({ permit, history, teguranList }) {
         </div>
       </div>
 
-      <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-800/80">
+      <div className="space-y-4">
+        <div>
           <h2 className="text-lg font-bold text-slate-100">Riwayat Perpanjangan Sebelumnya</h2>
           <p className="text-xs text-slate-400 mt-0.5">Izin-izin sebelumnya dalam rantai perpanjangan yang berujung pada izin ini.</p>
         </div>
-        {history.length === 0 ? (
-          <div className="px-6 py-8 text-center text-sm text-slate-400">
-            {permit.jenisIzin === 'perpanjangan'
-              ? 'Riwayat perpanjangan sebelumnya tidak ditemukan.'
-              : 'Izin ini adalah penerbitan pertama, belum pernah diperpanjang.'}
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
-                <tr>
-                  <th className="px-4 py-3.5">Nomor Kartu</th>
-                  <th className="px-4 py-3.5">Masa Berlaku</th>
-                  <th className="px-4 py-3.5">Tanggal Diperpanjang</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {history.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-800/40 transition duration-150">
-                    <td className="px-4 py-3.5 font-mono text-emerald-300">{item.nomorKartu}</td>
-                    <td className="px-4 py-3.5 text-xs text-slate-400">{formatDate(item.tanggalTerbit)} - {formatDate(item.tanggalKedaluwarsa)}</td>
-                    <td className="px-4 py-3.5 text-xs text-slate-400">{formatDateTime(item.updatedAt)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <DataTable
+          cellPadding="px-4 py-3.5"
+          keyAccessor="id"
+          columns={[
+            { header: 'Nomor Kartu', accessor: 'nomorKartu', tdClassName: 'font-mono text-emerald-300' },
+            {
+              header: 'Masa Berlaku',
+              render: (item) => <span className="text-xs text-slate-400">{formatDate(item.tanggalTerbit)} - {formatDate(item.tanggalKedaluwarsa)}</span>,
+            },
+            {
+              header: 'Tanggal Diperpanjang',
+              accessor: 'updatedAt',
+              render: (item) => <span className="text-xs text-slate-400">{formatDateTime(item.updatedAt)}</span>,
+            },
+          ]}
+          data={history}
+          emptyMessage={permit.jenisIzin === 'perpanjangan'
+            ? 'Riwayat perpanjangan sebelumnya tidak ditemukan.'
+            : 'Izin ini adalah penerbitan pertama, belum pernah diperpanjang.'}
+        />
       </div>
 
       {teguranList.length > 0 && (
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-800/80">
+        <div className="space-y-4">
+          <div>
             <h2 className="text-lg font-bold text-slate-100">Riwayat Surat Peringatan</h2>
             <p className="text-xs text-slate-400 mt-0.5">Surat peringatan yang pernah diterbitkan untuk izin ini.</p>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
-                <tr>
-                  <th className="px-4 py-3.5">Level SP</th>
-                  <th className="px-4 py-3.5">Tanggal Terbit</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {teguranList.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-800/40 transition duration-150">
-                    <td className="px-4 py-3.5">
-                      <Badge color={spColor[t.status] || 'slate'}>{spLabel[t.status] || t.status}</Badge>
-                    </td>
-                    <td className="px-4 py-3.5 text-xs text-slate-400">{formatDate(t.tanggalTerbit)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            cellPadding="px-4 py-3.5"
+            keyAccessor="id"
+            columns={[
+              { header: 'Level SP', accessor: 'status', render: (t) => <Badge color={spColor[t.status] || 'slate'}>{spLabel[t.status] || t.status}</Badge> },
+              {
+                header: 'Tanggal Terbit',
+                accessor: 'tanggalTerbit',
+                render: (t) => <span className="text-xs text-slate-400">{formatDate(t.tanggalTerbit)}</span>,
+              },
+            ]}
+            data={teguranList}
+            emptyMessage="Belum ada surat peringatan."
+          />
         </div>
       )}
     </div>

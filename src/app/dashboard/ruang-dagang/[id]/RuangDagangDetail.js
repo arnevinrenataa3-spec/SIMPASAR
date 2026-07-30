@@ -267,86 +267,53 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
       </div>
 
       {/* Riwayat Perizinan */}
-      {izins.length > 0 && (
-        <div className="space-y-4">
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-800/80">
-              <h2 className="text-lg font-bold text-slate-100">Riwayat Perizinan</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Semua izin yang pernah diterbitkan untuk ruang dagang ini.</p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-300">
-                <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
-                  <tr>
-                    <th className="px-4 py-3.5">Nomor Kartu</th>
-                    <th className="px-4 py-3.5">Pedagang</th>
-                    <th className="px-4 py-3.5">NIK</th>
-                    <th className="px-4 py-3.5">Dagangan</th>
-                    <th className="px-4 py-3.5">Masa Berlaku</th>
-                    <th className="px-4 py-3.5">Status Izin</th>
-                    <th className="px-4 py-3.5">Status Teguran</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/60">
-                  {izins.map((izin) => (
-                    <tr key={izin.id} className="hover:bg-slate-800/40 transition duration-150">
-                      <td className="px-4 py-3.5 font-mono text-emerald-300">{izin.nomorKartu}</td>
-                      <td className="px-4 py-3.5 text-slate-200">{izin.namaPedagang || '-'}</td>
-                      <td className="px-4 py-3.5 font-mono text-slate-400">{izin.nik || '-'}</td>
-                      <td className="px-4 py-3.5 text-slate-400">{izin.jenisDagangan}</td>
-                      <td className="px-4 py-3.5 text-xs text-slate-400">{formatDate(izin.tanggalTerbit)} - {formatDate(izin.tanggalKedaluwarsa)}</td>
-                      <td className="px-4 py-3.5">{statusIzinBadge(izin)}</td>
-                      <td className="px-4 py-3.5">{statusTeguranBadge(izin)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-bold text-slate-100">Riwayat Perizinan</h2>
+          <p className="text-xs text-slate-400 mt-0.5">Semua izin yang pernah diterbitkan untuk ruang dagang ini.</p>
         </div>
-      )}
+        <DataTable
+          cellPadding="px-4 py-3.5"
+          keyAccessor="id"
+          columns={[
+            { header: 'Nomor Kartu', accessor: 'nomorKartu', tdClassName: 'font-mono text-emerald-300' },
+            { header: 'Pedagang', accessor: 'namaPedagang', tdClassName: 'text-slate-200', render: (izin) => izin.namaPedagang || '-' },
+            { header: 'NIK', accessor: 'nik', tdClassName: 'font-mono text-slate-400', render: (izin) => izin.nik || '-' },
+            { header: 'Dagangan', accessor: 'jenisDagangan', tdClassName: 'text-slate-400' },
+            {
+              header: 'Masa Berlaku',
+              render: (izin) => <span className="text-xs text-slate-400">{formatDate(izin.tanggalTerbit)} - {formatDate(izin.tanggalKedaluwarsa)}</span>,
+            },
+            { header: 'Status Izin', accessor: 'statusIzin', render: (izin) => statusIzinBadge(izin) },
+            { header: 'Status Teguran', accessor: 'statusTeguran', render: (izin) => statusTeguranBadge(izin) },
+          ]}
+          data={izins}
+          emptyMessage="Belum ada riwayat perizinan untuk ruang dagang ini."
+        />
+      </div>
 
       {/* Riwayat Teguran */}
       {teguranList.length > 0 && (
         <div className="space-y-4">
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-800/80">
-              <h2 className="text-lg font-bold text-slate-100">Riwayat Surat Peringatan</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Surat peringatan yang pernah diterbitkan untuk izin di ruang ini.</p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-300">
-                <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
-                  <tr>
-                    <th className="px-4 py-3.5">Nomor Kartu</th>
-                    <th className="px-4 py-3.5">Level SP</th>
-                    <th className="px-4 py-3.5">Tanggal Terbit</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/60">
-                  {teguranList.map((t) => (
-                    <tr key={t.id} className="hover:bg-slate-800/40 transition duration-150">
-                      <td className="px-4 py-3.5 font-mono text-emerald-300">{t.nomorKartu || '-'}</td>
-                      <td className="px-4 py-3.5">
-                        <Badge color={spColor[t.status] || 'slate'}>
-                          {spLabel[t.status] || t.status}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3.5 text-xs text-slate-400">{formatDate(t.tanggalTerbit)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div>
+            <h2 className="text-lg font-bold text-slate-100">Riwayat Surat Peringatan</h2>
+            <p className="text-xs text-slate-400 mt-0.5">Surat peringatan yang pernah diterbitkan untuk izin di ruang ini.</p>
           </div>
-        </div>
-      )}
-
-      {izins.length === 0 && (
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6">
-          <div className="text-center text-slate-400 py-4">
-            <p>Belum ada riwayat perizinan untuk ruang dagang ini.</p>
-          </div>
+          <DataTable
+            cellPadding="px-4 py-3.5"
+            keyAccessor="id"
+            columns={[
+              { header: 'Nomor Kartu', accessor: 'nomorKartu', tdClassName: 'font-mono text-emerald-300', render: (t) => t.nomorKartu || '-' },
+              { header: 'Level SP', accessor: 'status', render: (t) => <Badge color={spColor[t.status] || 'slate'}>{spLabel[t.status] || t.status}</Badge> },
+              {
+                header: 'Tanggal Terbit',
+                accessor: 'tanggalTerbit',
+                render: (t) => <span className="text-xs text-slate-400">{formatDate(t.tanggalTerbit)}</span>,
+              },
+            ]}
+            data={teguranList}
+            emptyMessage="Belum ada surat peringatan."
+          />
         </div>
       )}
 
