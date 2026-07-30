@@ -3,6 +3,7 @@
 /**
  * @description Server Action untuk Manajemen Pengguna / User (Admin & Petugas).
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { eq, ne, and } from 'drizzle-orm';

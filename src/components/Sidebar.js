@@ -2,8 +2,8 @@
 
 /**
  * @description Komponen Sidebar navigasi menu SIMPASAR.
- * @author Arnevin Renata Ahmad Barkah
- * @contributor Muhamad Hazmi Alfarizqi
+ * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
 
 import Link from 'next/link';

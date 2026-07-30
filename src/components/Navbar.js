@@ -2,7 +2,8 @@
 
 /**
  * @description Komponen Navbar header dashboard (User Info & Scope Switcher).
- * @author Arnevin Renata Ahmad Barkah
+ * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
 
 import { useTransition } from 'react';

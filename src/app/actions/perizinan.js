@@ -3,6 +3,7 @@
 /**
  * @description Thin Server Action adapter for permit operations.
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { z } from 'zod';

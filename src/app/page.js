@@ -1,6 +1,6 @@
 /**
  * @description Root page redirector ke /dashboard.
- * @author Aditya Syahestiano
+ * @author Muhamad Hazmi Alfarizqi
  */
 
 import { redirect } from 'next/navigation';

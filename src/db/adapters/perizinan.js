@@ -1,6 +1,7 @@
 /**
  * @description Drizzle adapter for the Perizinan domain seam.
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { and, eq } from 'drizzle-orm';

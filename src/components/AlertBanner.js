@@ -1,7 +1,7 @@
 /**
  * @description Banner alert sukses/error untuk hasil server action.
- * @author Arnevin Renata Ahmad Barkah
- * @contributor Muhamad Hazmi Alfarizqi
+ * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 export default function AlertBanner({ state }) {

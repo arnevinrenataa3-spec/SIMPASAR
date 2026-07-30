@@ -2,8 +2,8 @@
 
 /**
  * @description Komponen UI Client-side untuk kelola Master Data Pasar (CRUD, Search & Filter).
- * @author Arnevin Renata Ahmad Barkah
- * @contributor Muhamad Hazmi Alfarizqi
+ * @author Aditya Syahestiano
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { useCrudModal } from '../../../lib/useCrudModal.js';

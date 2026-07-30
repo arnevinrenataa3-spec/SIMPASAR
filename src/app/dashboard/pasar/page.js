@@ -1,6 +1,7 @@
 /**
  * @description Halaman server-side Master Data Pasar.
  * @author Arnevin Renata Ahmad Barkah
+ * @contributor Muhamad Hazmi Alfarizqi, Aditya Syahestiano
  */
 
 import { getSession } from '../../../lib/auth.js';

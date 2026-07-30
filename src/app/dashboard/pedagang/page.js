@@ -1,6 +1,7 @@
 /**
  * @description 
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { asc } from 'drizzle-orm';

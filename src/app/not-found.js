@@ -1,6 +1,6 @@
 /**
  * @description Halaman global 404 Not Found SIMPASAR.
- * @author Aditya Syahestiano
+ * @author Muhamad Hazmi Alfarizqi
  */
 
 import Link from 'next/link';

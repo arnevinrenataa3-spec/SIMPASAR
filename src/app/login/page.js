@@ -3,6 +3,7 @@
 /**
  * @description Halaman login pengguna SIMPASAR.
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Aditya Syahestiano
  */
 
 import { useActionState } from 'react';

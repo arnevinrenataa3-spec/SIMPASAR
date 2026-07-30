@@ -1,6 +1,6 @@
 /**
  * @description 
- * @author Aditya Syahestiano
+ * @author Arnevin Renata Ahmad Barkah
  */
 
 import postgres from 'postgres';

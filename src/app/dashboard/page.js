@@ -1,7 +1,7 @@
 /**
  * @description Halaman Overview Dashboard SIMPASAR (Statistik Pasar, Ruang Dagang, & Quick Actions).
  * @author Muhamad Hazmi Alfarizqi
- * @contributor Arnevin Renata Ahmad Barkah
+ * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
 
 import Link from 'next/link';

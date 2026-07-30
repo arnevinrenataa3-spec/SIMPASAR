@@ -1,6 +1,7 @@
 /**
  * @description Seeder data awal pengguna (admin & petugas default) dan data pasar.
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { db } from './index.js';

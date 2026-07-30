@@ -1,6 +1,7 @@
 /**
  * @description 
- * @author Arnevin Renata Ahmad Barkah
+ * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { redirect, notFound } from 'next/navigation';

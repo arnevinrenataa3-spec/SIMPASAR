@@ -1,7 +1,7 @@
 /**
  * @description Halaman server-side Master Data Ruang Dagang (Los / Meja / Kios / Toko).
  * @author Arnevin Renata Ahmad Barkah
- * @contributor Muhamad Hazmi Alfarizqi
+ * @contributor Muhamad Hazmi Alfarizqi, Aditya Syahestiano
  */
 
 import { redirect } from 'next/navigation';

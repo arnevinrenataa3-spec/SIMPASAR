@@ -1,6 +1,7 @@
 /**
  * @description Halaman server-side Manajemen Pengguna (Admin & Petugas Pasar).
- * @author Arnevin Renata Ahmad Barkah
+ * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
 
 import { getSession } from '../../../lib/auth.js';

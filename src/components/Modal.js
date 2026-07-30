@@ -3,6 +3,7 @@
 /**
  * @description Komponen Dialog Modal reusable — perilaku Enter eksplisit di interface.
  * @author Arnevin Renata Ahmad Barkah
+ * @contributor Muhamad Hazmi Alfarizqi
  */
 
 import { useEffect, useRef } from 'react';

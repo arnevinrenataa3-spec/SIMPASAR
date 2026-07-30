@@ -1,7 +1,7 @@
 /**
  * @description Modal konfirmasi hapus standar — dipakai semua entitas.
- * @author Arnevin Renata Ahmad Barkah
- * @contributor Muhamad Hazmi Alfarizqi
+ * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
 
 import Modal from './Modal.js';

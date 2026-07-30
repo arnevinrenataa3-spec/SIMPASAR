@@ -1,7 +1,8 @@
 'use client';
 /**
  * @description 
- * @author Muhamad Hazmi Alfarizqi
+ * @author Arnevin Renata Ahmad Barkah
+ * @contributor Muhamad Hazmi Alfarizqi, Aditya Syahestiano
  */
 
 

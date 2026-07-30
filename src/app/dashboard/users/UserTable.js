@@ -2,8 +2,8 @@
 
 /**
  * @description Komponen UI Client-side untuk Manajemen Pengguna (CRUD, Modal, Search & Filter).
- * @author Arnevin Renata Ahmad Barkah
- * @contributor Muhamad Hazmi Alfarizqi
+ * @author Aditya Syahestiano
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { useState } from 'react';

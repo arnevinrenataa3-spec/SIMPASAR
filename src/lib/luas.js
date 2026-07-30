@@ -1,6 +1,6 @@
 /**
  * @description Modul murni untuk hitungan dan format luas Ruang Dagang.
- * @author Arnevin Renata Ahmad Barkah
+ * @author Muhamad Hazmi Alfarizqi
  * @contributor Muhamad Hazmi Alfarizqi
  */
 

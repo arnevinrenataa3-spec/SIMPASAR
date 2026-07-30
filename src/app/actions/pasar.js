@@ -2,7 +2,8 @@
 
 /**
  * @description Server Action untuk manajemen Master Data Pasar (CRUD).
- * @author Muhamad Hazmi Alfarizqi
+ * @author Arnevin Renata Ahmad Barkah
+ * @contributor Muhamad Hazmi Alfarizqi
  */
 
 import { eq, sql } from 'drizzle-orm';

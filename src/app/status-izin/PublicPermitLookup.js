@@ -2,7 +2,8 @@
 
 /**
  * @description Public permit search and Digital ID result.
- * @author Muhamad Hazmi Alfarizqi
+ * @author Arnevin Renata Ahmad Barkah
+ * @contributor Aditya Syahestiano
  */
 
 import { useActionState } from 'react';

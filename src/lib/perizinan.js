@@ -1,6 +1,7 @@
 /**
  * @description Domain seam for permit issuance and public permit status.
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import crypto from 'crypto';

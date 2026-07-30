@@ -1,6 +1,7 @@
 /**
  * @description Utility autentikasi (manajemen session cookie terenkripsi, verifikasi session).
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah
  */
 
 import { cookies } from 'next/headers';

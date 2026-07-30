@@ -2,6 +2,7 @@
 /**
  * @description 
  * @author Arnevin Renata Ahmad Barkah
+ * @contributor Aditya Syahestiano
  */
 
 

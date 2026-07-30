@@ -2,8 +2,8 @@
 
 /**
  * @description Komponen UI Client-side untuk Master Data Ruang Dagang (CRUD, Validasi, Modal, Search & Filter).
- * @author Arnevin Renata Ahmad Barkah
- * @contributor Muhamad Hazmi Alfarizqi
+ * @author Aditya Syahestiano
+ * @contributor Arnevin Renata Ahmad Barkah, Muhamad Hazmi Alfarizqi
  */
 
 import { useState, useMemo } from 'react';

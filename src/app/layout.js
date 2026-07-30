@@ -1,6 +1,6 @@
 /**
  * @description Root layout aplikasi SIMPASAR dengan konfigurasi Font & Provider.
- * @author Aditya Syahestiano
+ * @author Muhamad Hazmi Alfarizqi
  */
 
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";

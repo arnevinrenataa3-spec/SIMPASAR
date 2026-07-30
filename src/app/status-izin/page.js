@@ -1,6 +1,7 @@
 /**
  * @description Public permit lookup page for Pedagang.
- * @author Muhamad Hazmi Alfarizqi
+ * @author Arnevin Renata Ahmad Barkah
+ * @contributor Aditya Syahestiano
  */
 
 import Link from 'next/link';

@@ -2,6 +2,7 @@
 /**
  * @description 
  * @author Muhamad Hazmi Alfarizqi
+ * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
 
 
