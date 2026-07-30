@@ -24,7 +24,7 @@ export default function PublicPermitLookup() {
       <form action={action} className="rounded-3xl border border-white/10 bg-white/[0.045] p-5 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-7">
         <label htmlFor="nomorKartu" className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Nomor Kartu</label>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row">
-          <input id="nomorKartu" name="nomorKartu" required maxLength={100} placeholder="Contoh: SPTB-2026-001" className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-black/20 px-4 py-3 font-mono text-sm uppercase text-white outline-none placeholder:normal-case placeholder:text-slate-400 focus:border-emerald-400" />
+          <input id="nomorKartu" name="nomorKartu" required maxLength={100} placeholder="Contoh: 503/00000/KA-01/PKB/X/2025" className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-black/20 px-4 py-3 font-mono text-sm uppercase text-white outline-none placeholder:normal-case placeholder:text-slate-400 focus:border-emerald-400" />
           <button disabled={pending} className="rounded-xl bg-emerald-400 px-6 py-3 text-sm font-black text-slate-950 transition hover:bg-emerald-300 disabled:opacity-50">{pending ? 'Memeriksa...' : 'Cek Status'}</button>
         </div>
         {state?.error && <p role="alert" className="mt-4 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{state.error}</p>}
