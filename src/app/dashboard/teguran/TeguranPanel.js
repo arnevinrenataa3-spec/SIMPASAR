@@ -101,7 +101,7 @@ export default function TeguranPanel({ teguranList }) {
                   <form action={modal.action}>
                     <input type="hidden" name="perizinanId" value={item.id} />
                     <Button type="submit" variant="warning" size="sm" disabled={!needsSP}>
-                      {needsSP ? `Terbitkan ${spLabel[item.computedSP]}` : 'Sudah Diterbitkan'}
+                      {needsSP ? `Terbitkan ${spLabel[item.computedSP]}` : item.computedSP ? 'Sudah Diterbitkan' : 'Belum SP'}
                     </Button>
                   </form>
                 );
