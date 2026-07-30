@@ -186,6 +186,15 @@ export default function DataTable({
         </div>
       )}
 
+      {data.length > 0 && (
+        <div className="px-6 py-2 text-[11px] text-slate-400 border-b border-slate-800/80">
+          Menampilkan <span className="text-slate-300 font-semibold">{sortedData.length}</span>
+          {sortedData.length !== data.length && (
+            <> dari <span className="text-slate-300 font-semibold">{data.length}</span></>
+          )} data
+        </div>
+      )}
+
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-300">
           <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
