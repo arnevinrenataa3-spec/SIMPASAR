@@ -103,7 +103,7 @@ export default function Sidebar({ user }) {
 
         {/* Navigation Items */}
         <nav className="p-4 space-y-1.5">
-          <div className="px-3 py-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
+          <div className="px-3 py-2 text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
             Menu Utama
           </div>
           {navItems.map((item) => {

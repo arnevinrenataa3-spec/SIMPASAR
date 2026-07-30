@@ -67,7 +67,7 @@ export default function TeguranPanel({ teguranList }) {
               render: (item) => (
                 <div>
                   <strong className="text-slate-100">{item.kodeRuang}</strong>
-                  <span className="block text-xs text-slate-500">{item.namaPasar}</span>
+                  <span className="block text-xs text-slate-400">{item.namaPasar}</span>
                 </div>
               ),
             },

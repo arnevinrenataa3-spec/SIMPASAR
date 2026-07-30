@@ -151,32 +151,32 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Pasar</span>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Pasar</span>
             <p className="text-sm font-semibold text-slate-100 mt-1">{ruang.namaPasar || '-'}</p>
           </div>
           <div className="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Kode Ruang</span>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Kode Ruang</span>
             <p className="text-sm font-bold font-mono text-emerald-400 mt-1">{ruang.kodeRuang}</p>
           </div>
           <div className="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Jenis</span>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Jenis</span>
             <div className="mt-1">{getJenisBadge(ruang.jenis)}</div>
           </div>
           <div className="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Panjang</span>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Panjang</span>
             <p className="text-sm font-mono text-slate-100 mt-1">{ruang.panjang != null ? `${ruang.panjang} m` : '-'}</p>
           </div>
           <div className="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Lebar</span>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Lebar</span>
             <p className="text-sm font-mono text-slate-100 mt-1">{ruang.lebar != null ? `${ruang.lebar} m` : '-'}</p>
           </div>
           <div className="bg-slate-950/60 rounded-xl border border-slate-800 p-4">
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Luas</span>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Luas</span>
             <p className="text-sm font-mono text-slate-100 mt-1">{ruang.luas || '-'}</p>
           </div>
           {pedagangAktif && (
             <div className="bg-slate-950/60 rounded-xl border border-slate-800 p-4 sm:col-span-2 lg:col-span-3">
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Pedagang Aktif</span>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Pedagang Aktif</span>
               <p className="text-sm font-semibold text-slate-100 mt-1">{pedagangAktif.namaPedagang}</p>
               <p className="text-xs text-slate-400 mt-0.5">{pedagangAktif.jenisDagangan} &bull; Kartu: {pedagangAktif.nomorKartu}</p>
               <p className="text-xs text-slate-400 mt-0.5">NIK: {pedagangAktif.nik}</p>
@@ -234,31 +234,31 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
         {izinAktif && (
           <div className="bg-slate-950/60 rounded-xl border border-slate-800 p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Nomor Kartu</span>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Nomor Kartu</span>
               <p className="text-sm font-mono text-emerald-300 mt-1">{izinAktif.nomorKartu}</p>
             </div>
             <div>
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Pedagang</span>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Pedagang</span>
               <p className="text-sm font-semibold text-slate-100 mt-1">{izinAktif.namaPedagang}</p>
             </div>
             <div>
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">NIK</span>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">NIK</span>
               <p className="text-sm font-mono text-slate-100 mt-1">{izinAktif.nik}</p>
             </div>
             <div>
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Jenis Dagangan</span>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Jenis Dagangan</span>
               <p className="text-sm text-slate-300 mt-1">{izinAktif.jenisDagangan}</p>
             </div>
             <div>
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Masa Berlaku</span>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Masa Berlaku</span>
               <p className="text-sm text-slate-300 mt-1">{formatDate(izinAktif.tanggalTerbit)} - {formatDate(izinAktif.tanggalKedaluwarsa)}</p>
             </div>
             <div>
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Status Izin</span>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Status Izin</span>
               <div className="mt-1">{statusIzinBadge(izinAktif)}</div>
             </div>
             <div>
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Status Teguran</span>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Status Teguran</span>
               <div className="mt-1">{statusTeguranBadge(izinAktif)}</div>
             </div>
           </div>
@@ -343,7 +343,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
 
       {izins.length === 0 && (
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6">
-          <div className="text-center text-slate-500 py-4">
+          <div className="text-center text-slate-400 py-4">
             <p>Belum ada riwayat perizinan untuk ruang dagang ini.</p>
           </div>
         </div>
@@ -362,9 +362,9 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
           <input type="hidden" name="pasarId" value={ruang.pasarId} />
           <AlertBanner state={terbitkanModal.state} />
           <div className="sm:col-span-2 bg-slate-950/50 rounded-xl border border-slate-800 p-3 text-sm">
-            <span className="text-xs text-slate-500">Ruang:</span>{' '}
+            <span className="text-xs text-slate-400">Ruang:</span>{' '}
             <span className="font-mono font-bold text-emerald-400">{ruang.kodeRuang}</span>{' '}
-            <span className="text-slate-500">— {ruang.namaPasar}</span>
+            <span className="text-slate-400">— {ruang.namaPasar}</span>
           </div>
           <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 sm:col-span-2">
             Pedagang

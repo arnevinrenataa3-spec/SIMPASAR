@@ -71,7 +71,7 @@ export default function SearchableSelect({ options, value, onChange, placeholder
               </button>
             ))
           ) : (
-            <div className="px-4 py-2.5 text-sm text-slate-500">Tidak ada hasil.</div>
+            <div className="px-4 py-2.5 text-sm text-slate-400">Tidak ada hasil.</div>
           )}
         </div>
       )}

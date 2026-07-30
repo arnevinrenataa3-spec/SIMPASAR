@@ -71,7 +71,7 @@ export default function LoginPage() {
                 required
                 autoComplete="username"
                 placeholder="Masukkan username Anda"
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/60 border border-slate-700/80 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition duration-200"
+                className="w-full px-4 py-3 rounded-xl bg-slate-800/60 border border-slate-700/80 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition duration-200"
               />
             </div>
 
@@ -89,7 +89,7 @@ export default function LoginPage() {
                 required
                 autoComplete="current-password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/60 border border-slate-700/80 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition duration-200"
+                className="w-full px-4 py-3 rounded-xl bg-slate-800/60 border border-slate-700/80 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition duration-200"
               />
             </div>
 
@@ -129,7 +129,7 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-slate-500 mt-6">
+        <p className="text-center text-xs text-slate-400 mt-6">
           SIMPASAR v0.1.0 &bull; Hak Cipta &copy; 2026 Tim SIMPASAR UNIKOM
         </p>
       </div>

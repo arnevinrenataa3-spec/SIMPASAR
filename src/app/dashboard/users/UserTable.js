@@ -87,7 +87,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
               u.namaPasar ? (
                 <span className="text-xs max-w-[160px] truncate block" title={u.namaPasar}>{u.namaPasar}</span>
               ) : (
-                <span className="text-xs text-slate-500">&mdash;</span>
+                <span className="text-xs text-slate-400">&mdash;</span>
               ),
           },
           {
@@ -170,7 +170,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
                 type="text"
                 required
                 placeholder="Contoh: Ahmad Subagja"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
@@ -183,7 +183,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
                 type="text"
                 required
                 placeholder="ahmad_petugas"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
           </div>
@@ -198,7 +198,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
                 type="password"
                 required
                 placeholder="••••••••"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
@@ -301,13 +301,13 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
-                  Password Baru <span className="text-slate-500 capitalize font-normal">(Kosongkan jika tidak ingin mengubah)</span>
+                  Password Baru <span className="text-slate-400 capitalize font-normal">(Kosongkan jika tidak ingin mengubah)</span>
                 </label>
                 <input
                   name="password"
                   type="password"
                   placeholder="••••••••"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 

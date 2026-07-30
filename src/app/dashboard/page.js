@@ -115,7 +115,7 @@ export default async function DashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Akses Cepat</span>
+        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Akses Cepat</span>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link href="/dashboard/ruang-dagang" className="group bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 hover:border-emerald-500/40 hover:bg-slate-900/80 transition duration-200">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3 group-hover:bg-emerald-500/20 transition">
@@ -124,7 +124,7 @@ export default async function DashboardPage() {
               </svg>
             </div>
             <p className="text-sm font-semibold text-slate-100">Kelola Ruang Dagang</p>
-            <p className="text-xs text-slate-500 mt-1">Data ruang, status &amp; perizinan</p>
+            <p className="text-xs text-slate-400 mt-1">Data ruang, status &amp; perizinan</p>
           </Link>
 
           <Link href="/dashboard/pedagang" className="group bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 hover:border-cyan-500/40 hover:bg-slate-900/80 transition duration-200">
@@ -134,7 +134,7 @@ export default async function DashboardPage() {
               </svg>
             </div>
             <p className="text-sm font-semibold text-slate-100">Data Pedagang</p>
-            <p className="text-xs text-slate-500 mt-1">Identitas &amp; kontak pedagang</p>
+            <p className="text-xs text-slate-400 mt-1">Identitas &amp; kontak pedagang</p>
           </Link>
 
           <Link href="/dashboard/teguran" className="group bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 hover:border-amber-500/40 hover:bg-slate-900/80 transition duration-200">
@@ -144,7 +144,7 @@ export default async function DashboardPage() {
               </svg>
             </div>
             <p className="text-sm font-semibold text-slate-100">Surat Peringatan</p>
-            <p className="text-xs text-slate-500 mt-1">Pantau &amp; terbitkan SP</p>
+            <p className="text-xs text-slate-400 mt-1">Pantau &amp; terbitkan SP</p>
           </Link>
 
           {user?.role === 'admin' && (
@@ -155,7 +155,7 @@ export default async function DashboardPage() {
                 </svg>
               </div>
               <p className="text-sm font-semibold text-slate-100">Kelola Pasar</p>
-              <p className="text-xs text-slate-500 mt-1">Master data pasar</p>
+              <p className="text-xs text-slate-400 mt-1">Master data pasar</p>
             </Link>
           )}
         </div>
@@ -164,7 +164,7 @@ export default async function DashboardPage() {
       {/* Stats Overview */}
       <div className="space-y-4">
         <div>
-          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Ringkasan Ruang</span>
+          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Ringkasan Ruang</span>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             {[
               { label: 'Total', value: stats.total, color: 'text-slate-100' },
@@ -182,7 +182,7 @@ export default async function DashboardPage() {
         </div>
 
         <div>
-          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Status Ruang</span>
+          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Status Ruang</span>
           <div className="grid grid-cols-3 gap-4">
             {[
               { label: 'Kosong', value: stats.kosong, color: 'text-emerald-400' },
@@ -198,7 +198,7 @@ export default async function DashboardPage() {
         </div>
 
         <div>
-          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">Kedaluwarsaan &amp; Peneguran</span>
+          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Kedaluwarsaan &amp; Peneguran</span>
           <div className="grid grid-cols-3 gap-4">
             {[
               { label: 'Mendekati Kadaluwarsa', value: expiringSoonCount, color: 'text-amber-400' },

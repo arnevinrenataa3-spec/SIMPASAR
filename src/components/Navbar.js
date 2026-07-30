@@ -36,7 +36,7 @@ export default function Navbar({ user, pasars = [], selectedScope = 'all' }) {
       <div>
         <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">
           <span>Portal Pengelola Pasar</span>
-          <span className="text-slate-600">/</span>
+          <span className="text-slate-400">/</span>
           <span className="text-emerald-400 font-normal">Dashboard Utama</span>
         </h2>
       </div>

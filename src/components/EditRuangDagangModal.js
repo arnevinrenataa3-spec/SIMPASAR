@@ -55,7 +55,7 @@ function EditRuangDagangForm({ item, pasars, isAdmin, action, pending, state, on
             name="kodeRuang"
             required
             defaultValue={item.kodeRuang}
-            className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 uppercase font-mono"
+            className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:border-emerald-500/50 uppercase font-mono"
           />
         </div>
 
@@ -90,7 +90,7 @@ function EditRuangDagangForm({ item, pasars, isAdmin, action, pending, state, on
           <option value="kosong">Kosong</option>
           <option value="non-fisik">Non-fisik</option>
         </select>
-        <p className="text-[10px] text-slate-500 mt-1">Status &quot;Terisi&quot; dikelola otomatis melalui perizinan.</p>
+        <p className="text-[10px] text-slate-400 mt-1">Status &quot;Terisi&quot; dikelola otomatis melalui perizinan.</p>
       </div>
 
       <div>
@@ -108,11 +108,11 @@ function EditRuangDagangForm({ item, pasars, isAdmin, action, pending, state, on
                 placeholder="3"
                 value={editPanjang}
                 onChange={(e) => setEditPanjang(e.target.value)}
-                className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 font-mono"
+                className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:border-emerald-500/50 font-mono"
               />
-              <span className="absolute right-3 top-3 text-xs text-slate-500 font-medium">m</span>
+              <span className="absolute right-3 top-3 text-xs text-slate-400 font-medium">m</span>
             </div>
-            <span className="text-[10px] text-slate-500 mt-1 block">Panjang (meter)</span>
+            <span className="text-[10px] text-slate-400 mt-1 block">Panjang (meter)</span>
           </div>
 
           <div>
@@ -125,11 +125,11 @@ function EditRuangDagangForm({ item, pasars, isAdmin, action, pending, state, on
                 placeholder="4"
                 value={editLebar}
                 onChange={(e) => setEditLebar(e.target.value)}
-                className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 font-mono"
+                className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:border-emerald-500/50 font-mono"
               />
-              <span className="absolute right-3 top-3 text-xs text-slate-500 font-medium">m</span>
+              <span className="absolute right-3 top-3 text-xs text-slate-400 font-medium">m</span>
             </div>
-            <span className="text-[10px] text-slate-500 mt-1 block">Lebar (meter)</span>
+            <span className="text-[10px] text-slate-400 mt-1 block">Lebar (meter)</span>
           </div>
         </div>
 
