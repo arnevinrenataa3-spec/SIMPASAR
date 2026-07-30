@@ -7,6 +7,33 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Select from './Select.js';
+
+function compareValues(a, b) {
+  if (a == null && b == null) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  if (typeof a === 'number' && typeof b === 'number') return a - b;
+  if (a !== '' && b !== '' && !Number.isNaN(Number(a)) && !Number.isNaN(Number(b))) {
+    return Number(a) - Number(b);
+  }
+  return String(a).localeCompare(String(b), 'id-ID', { sensitivity: 'base' });
+}
+
+function SortIcon({ direction }) {
+  return (
+    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      {direction === 'asc' && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 15l7-7 7 7" />}
+      {direction === 'desc' && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />}
+      {!direction && (
+        <>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l4-4 4 4" opacity="0.5" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 15l4 4 4-4" opacity="0.5" />
+        </>
+      )}
+    </svg>
+  );
+}
 
 export default function DataTable({
   columns = [],
@@ -106,6 +133,22 @@ export default function DataTable({
     });
   }, [data, searchQuery, filterValues, columns, filters]);
 
+  const [sortConfig, setSortConfig] = useState({ accessor: null, direction: null });
+
+  function handleSort(accessor) {
+    setSortConfig((prev) => {
+      if (prev.accessor !== accessor) return { accessor, direction: 'asc' };
+      if (prev.direction === 'asc') return { accessor, direction: 'desc' };
+      return { accessor: null, direction: null };
+    });
+  }
+
+  const sortedData = useMemo(() => {
+    if (!sortConfig.accessor) return filteredData;
+    const sorted = [...filteredData].sort((a, b) => compareValues(a[sortConfig.accessor], b[sortConfig.accessor]));
+    return sortConfig.direction === 'desc' ? sorted.reverse() : sorted;
+  }, [filteredData, sortConfig]);
+
   const showSearchBar = searchPlaceholder || filters.length > 0;
   const colSpan = columns.length;
 
@@ -130,19 +173,13 @@ export default function DataTable({
           {filters.length > 0 && (
             <div className="flex gap-2">
               {filters.map((filter) => (
-                <div key={filter.accessor} className="relative">
-                  <select
-                    value={filterValues[filter.accessor] || ''}
-                    onChange={(e) => handleFilterChange(filter.accessor, e.target.value)}
-                    className="appearance-none pl-3.5 pr-8 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-300 text-xs focus:outline-none focus:border-emerald-500/50 hover:border-slate-700 transition cursor-pointer"
-                  >
-                    {filter.options.map((opt) => (
-                      <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-200">
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  key={filter.accessor}
+                  options={filter.options}
+                  value={filterValues[filter.accessor] || ''}
+                  onChange={(value) => handleFilterChange(filter.accessor, value)}
+                  placeholder={filter.placeholder}
+                />
               ))}
             </div>
           )}
@@ -153,16 +190,29 @@ export default function DataTable({
         <table className="w-full text-left text-sm text-slate-300">
           <thead className="bg-slate-950/60 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800/80">
             <tr>
-              {columns.map((col) => (
-                <th key={col.header} className={`${cellPadding} ${col.thClassName || ''}`}>
-                  {col.header}
-                </th>
-              ))}
+              {columns.map((col) => {
+                const isSortable = Boolean(col.accessor) && col.sortable !== false;
+                const isActive = sortConfig.accessor === col.accessor;
+                return (
+                  <th key={col.header} className={`${cellPadding} ${col.thClassName || ''}`}>
+                    {isSortable ? (
+                      <button
+                        type="button"
+                        onClick={() => handleSort(col.accessor)}
+                        className={`inline-flex items-center gap-1 transition cursor-pointer ${isActive ? 'text-emerald-400' : 'hover:text-slate-200'}`}
+                      >
+                        {col.header}
+                        <SortIcon direction={isActive ? sortConfig.direction : null} />
+                      </button>
+                    ) : col.header}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/60">
-            {filteredData.length > 0 ? (
-              filteredData.map((row, idx) => (
+            {sortedData.length > 0 ? (
+              sortedData.map((row, idx) => (
                 <tr key={row[keyAccessor] ?? idx} className="hover:bg-slate-800/40 transition duration-150">
                   {columns.map((col) => (
                     <td key={col.header} className={`${cellPadding} ${col.tdClassName || ''}`}>

@@ -10,6 +10,8 @@
  * tombol (primary/secondary/danger/info/ghost) di seluruh dashboard.
  */
 
+import Link from 'next/link';
+
 const BASE_CLASS = 'inline-flex items-center justify-center gap-2 rounded-xl transition duration-150 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50';
 
 const SIZE_CLASSES = {
@@ -22,6 +24,8 @@ const VARIANT_CLASSES = {
   secondary: 'font-semibold text-slate-400 hover:bg-slate-800',
   danger: 'font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20',
   info: 'font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/20',
+  success: 'font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20',
+  warning: 'font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30',
   ghost: 'text-slate-400 hover:text-slate-200',
 };
 
@@ -37,6 +41,7 @@ export default function Button({
   loading = false,
   disabled = false,
   className = '',
+  href,
   children,
   ...rest
 }) {
@@ -45,8 +50,23 @@ export default function Button({
     BASE_CLASS,
     SIZE_CLASSES[size] ?? SIZE_CLASSES.md,
     VARIANT_CLASSES[variant] ?? VARIANT_CLASSES.primary,
+    isDisabled && 'pointer-events-none opacity-50',
     className,
   );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={classes}
+        aria-disabled={isDisabled || undefined}
+        tabIndex={isDisabled ? -1 : undefined}
+        {...rest}
+      >
+        {children}
+      </Link>
+    );
+  }
 
   return (
     <button type={type} disabled={isDisabled} className={classes} {...rest}>
