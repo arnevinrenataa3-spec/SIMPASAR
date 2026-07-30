@@ -9,9 +9,11 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import DataTable from '../../../components/DataTable.js';
 import Badge from '../../../components/Badge.js';
+import Button from '../../../components/Button.js';
 
 const spLabel = { sp1: 'SP 1', sp2: 'SP 2', sp3: 'SP 3' };
 const spColor = { sp1: 'amber', sp2: 'orange', sp3: 'rose' };
+const jenisIzinLabel = { baru: 'Izin Baru', perpanjangan: 'Perpanjangan' };
 
 function formatDate(value) {
   if (!value) return '-';
@@ -20,8 +22,12 @@ function formatDate(value) {
 
 function statusIzinBadge(permit) {
   const status = permit.isExpired ? 'kedaluwarsa' : permit.statusIzin;
-  const color = status === 'aktif' ? 'emerald' : status === 'diperpanjang' ? 'blue' : 'rose';
+  const color = status === 'aktif' ? 'emerald' : status === 'dicabut' ? 'rose' : 'amber';
   return <Badge color={color}>{status}</Badge>;
+}
+
+function jenisIzinBadge(permit) {
+  return <Badge color={permit.jenisIzin === 'perpanjangan' ? 'blue' : 'indigo'}>{jenisIzinLabel[permit.jenisIzin]}</Badge>;
 }
 
 function statusTeguranBadge(permit) {
@@ -43,7 +49,7 @@ export default function PerizinanTable({ permits }) {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-400">Operasional</p>
           <h1 className="mt-1 text-2xl font-bold text-slate-100">Perizinan</h1>
-          <p className="mt-1 text-sm text-slate-400">Daftar dan histori seluruh izin dalam scope aktif. Klik Ruang atau Pedagang untuk berpindah langsung ke datanya.</p>
+          <p className="mt-1 text-sm text-slate-400">Izin Baru, Perpanjangan, dan yang sudah Dicabut dalam scope aktif. Buka Detail untuk melihat riwayat perpanjangan sebelumnya.</p>
         </div>
       </section>
 
@@ -70,9 +76,16 @@ export default function PerizinanTable({ permits }) {
             options: [
               { label: 'Semua Status', value: '' },
               { label: 'Aktif', value: 'aktif' },
-              { label: 'Kedaluwarsa', value: 'kedaluwarsa' },
               { label: 'Dicabut', value: 'dicabut' },
-              { label: 'Diperpanjang', value: 'diperpanjang' },
+            ],
+          },
+          {
+            accessor: 'jenisIzin',
+            placeholder: 'Semua Jenis',
+            options: [
+              { label: 'Semua Jenis', value: '' },
+              { label: 'Izin Baru', value: 'baru' },
+              { label: 'Perpanjangan', value: 'perpanjangan' },
             ],
           },
         ]}
@@ -121,6 +134,11 @@ export default function PerizinanTable({ permits }) {
             ),
           },
           {
+            header: 'Jenis Izin',
+            accessor: 'jenisIzin',
+            render: (permit) => jenisIzinBadge(permit),
+          },
+          {
             header: 'Status Izin',
             accessor: 'statusIzin',
             render: (permit) => statusIzinBadge(permit),
@@ -129,6 +147,16 @@ export default function PerizinanTable({ permits }) {
             header: 'Status Teguran',
             accessor: 'statusTeguran',
             render: (permit) => statusTeguranBadge(permit),
+          },
+          {
+            header: 'Aksi',
+            thClassName: 'text-right',
+            tdClassName: 'text-right',
+            render: (permit) => (
+              <Button href={`/dashboard/perizinan/${permit.id}`} variant="success" size="sm">
+                Detail
+              </Button>
+            ),
           },
         ]}
         data={permits}

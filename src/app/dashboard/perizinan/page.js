@@ -9,6 +9,7 @@ import { db } from '../../../db/index.js';
 import { pasar, pedagang, perizinan, ruangDagang } from '../../../db/schema.js';
 import { getSession } from '../../../lib/auth.js';
 import { resolveScope, buildScopeFilter } from '../../../lib/scope.js';
+import { classifyLineage } from '../../../lib/perizinan.js';
 import PerizinanTable from './PerizinanTable.js';
 
 export default async function PerizinanPage() {
@@ -43,13 +44,20 @@ export default async function PerizinanPage() {
     .orderBy(desc(perizinan.createdAt));
 
   const today = new Date().toISOString().slice(0, 10);
-  const permits = rows.map((row) => {
-    const kadaluwarsa = String(row.tanggalKedaluwarsa).slice(0, 10);
-    const daysLeft = Math.ceil((new Date(kadaluwarsa) - new Date(today)) / 86400000);
-    const isExpiringSoon = row.statusIzin === 'aktif' && daysLeft >= 0 && daysLeft <= 7;
-    const isExpired = row.statusIzin === 'aktif' && daysLeft < 0;
-    return { ...row, daysLeft, isExpiringSoon, isExpired };
-  });
+  const lineage = classifyLineage(rows);
+
+  const permits = rows
+    // Baris berstatus 'diperpanjang' adalah rekam jejak yang sudah digantikan —
+    // hanya tampil sebagai histori di halaman Detail Izin, bukan di daftar utama.
+    .filter((row) => row.statusIzin !== 'diperpanjang')
+    .map((row) => {
+      const kadaluwarsa = String(row.tanggalKedaluwarsa).slice(0, 10);
+      const daysLeft = Math.ceil((new Date(kadaluwarsa) - new Date(today)) / 86400000);
+      const isExpiringSoon = row.statusIzin === 'aktif' && daysLeft >= 0 && daysLeft <= 7;
+      const isExpired = row.statusIzin === 'aktif' && daysLeft < 0;
+      const jenisIzin = lineage.get(row.id)?.isPerpanjangan ? 'perpanjangan' : 'baru';
+      return { ...row, daysLeft, isExpiringSoon, isExpired, jenisIzin };
+    });
 
   return <PerizinanTable permits={permits} />;
 }

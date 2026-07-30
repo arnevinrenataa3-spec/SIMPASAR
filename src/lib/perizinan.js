@@ -158,6 +158,37 @@ export async function cabutIzin(perizinanId, dbAdapter) {
   });
 }
 
+/**
+ * Klasifikasi setiap baris perizinan sebagai "Izin Baru" atau "Izin Perpanjangan"
+ * berdasarkan rantai penerbitan (ruangDagangId + pedagangId), tanpa butuh kolom
+ * penanda eksplisit. Sebuah baris adalah perpanjangan hanya jika baris tepat
+ * sebelumnya (secara createdAt) dalam rantai yang sama berstatus 'diperpanjang' —
+ * pengajuan baru pada ruang yang sama setelah izin sebelumnya dicabut tetap
+ * terhitung "Izin Baru", bukan perpanjangan.
+ *
+ * @param {Array<{id: string, ruangDagangId: string, pedagangId: string, statusIzin: string, createdAt: string|Date}>} rows
+ * @returns {Map<string, {isPerpanjangan: boolean, previousId: string|null}>}
+ */
+export function classifyLineage(rows) {
+  const groups = new Map();
+  for (const row of rows) {
+    const key = `${row.ruangDagangId}:${row.pedagangId}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(row);
+  }
+
+  const result = new Map();
+  for (const group of groups.values()) {
+    const sorted = [...group].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    sorted.forEach((row, i) => {
+      const previous = i > 0 ? sorted[i - 1] : null;
+      const isPerpanjangan = Boolean(previous && previous.statusIzin === 'diperpanjang');
+      result.set(row.id, { isPerpanjangan, previousId: isPerpanjangan ? previous.id : null });
+    });
+  }
+  return result;
+}
+
 export async function statusPublik(nomorKartu, dbAdapter, sekarang = new Date()) {
   const normalized = String(nomorKartu ?? '').trim();
   if (!normalized || !dbAdapter?.findPerizinanByNomorKartu) return null;
