@@ -82,7 +82,7 @@ export default function DataTable({
       return same ? prev : urlFilters;
     });
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [searchParamsKey, urlQ, urlFilters]);
+  }, [searchParamsKey, urlQ, urlFilters, syncSearchParams]);
 
   const syncToUrl = useCallback((q, fv) => {
     if (!syncSearchParams || !router) return;

@@ -6,11 +6,17 @@
  */
 
 import { useTransition } from 'react';
+import { useSelectedLayoutSegment } from 'next/navigation';
 import { setPasarScopeAction } from '../app/actions/scope.js';
 import Select from './Select.js';
+import { baseNavItems, adminNavItems } from './navConfig.js';
+
+const ALL_NAV_ITEMS = [...baseNavItems, ...adminNavItems];
 
 export default function Navbar({ user, pasars = [], selectedScope = 'all' }) {
   const [isPending, startTransition] = useTransition();
+  const segment = useSelectedLayoutSegment();
+  const currentPageName = ALL_NAV_ITEMS.find((item) => item.segment === segment)?.name || 'Overview';
 
   const currentDate = new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
@@ -37,7 +43,7 @@ export default function Navbar({ user, pasars = [], selectedScope = 'all' }) {
         <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">
           <span>Portal Pengelola Pasar</span>
           <span className="text-slate-400">/</span>
-          <span className="text-emerald-400 font-normal">Dashboard Utama</span>
+          <span className="text-emerald-400 font-normal">{currentPageName}</span>
         </h2>
       </div>
 

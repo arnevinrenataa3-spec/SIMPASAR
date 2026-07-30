@@ -4,11 +4,13 @@
  * @contributor Arnevin Renata Ahmad Barkah
  */
 
+import Link from 'next/link';
 import { getSession } from '../../lib/auth.js';
 import { resolveScope, buildScopeFilter } from '../../lib/scope.js';
 import { db } from '../../db/index.js';
 import { pasar, perizinan, ruangDagang } from '../../db/schema.js';
-import { and, eq, lt, sql } from 'drizzle-orm';
+import { and, asc, eq, lt, sql } from 'drizzle-orm';
+import Badge from '../../components/Badge.js';
 
 export default async function DashboardPage() {
   const user = await getSession();
@@ -69,6 +71,32 @@ export default async function DashboardPage() {
 
   const expiringSoonCount = expiringSoonResult?.count ?? 0;
 
+  const attentionBase = and(
+    sql`${perizinan.statusIzin} IN ('aktif', 'kedaluwarsa')`,
+    sql`${perizinan.tanggalKedaluwarsa} <= ${sevenDaysLater}`,
+  );
+  const attentionWhere = whereClause ? and(whereClause, attentionBase) : attentionBase;
+
+  const attentionRows = await db
+    .select({
+      ruangDagangId: ruangDagang.id,
+      kodeRuang: ruangDagang.kodeRuang,
+      namaPasar: pasar.namaPasar,
+      tanggalKedaluwarsa: perizinan.tanggalKedaluwarsa,
+    })
+    .from(perizinan)
+    .innerJoin(ruangDagang, eq(perizinan.ruangDagangId, ruangDagang.id))
+    .innerJoin(pasar, eq(ruangDagang.pasarId, pasar.id))
+    .where(attentionWhere)
+    .orderBy(asc(perizinan.tanggalKedaluwarsa))
+    .limit(6);
+
+  const attentionRooms = attentionRows.map((r) => {
+    const kadaluwarsa = String(r.tanggalKedaluwarsa).slice(0, 10);
+    const daysLeft = Math.ceil((new Date(kadaluwarsa) - new Date(today)) / 86400000);
+    return { ...r, daysLeft, isExpired: daysLeft < 0 };
+  });
+
   const teguranWhere = whereClause
     ? and(whereClause, sql`${perizinan.statusTeguran} != 'none'`)
     : sql`${perizinan.statusTeguran} != 'none'`;
@@ -110,6 +138,42 @@ export default async function DashboardPage() {
             Portal Sistem Informasi Manajemen Pasar (SIMPASAR). Mengelola denah ruang dagang, data pedagang, perizinan, dan peneguran Surat Peringatan (SP) untuk scope <strong>{activeScopeLabel}</strong>.
           </p>
         </div>
+      </div>
+
+      {/* Perlu Perhatian */}
+      <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-800/80">
+          <h2 className="text-sm font-bold text-slate-100">Perlu Perhatian</h2>
+          <p className="text-xs text-slate-400 mt-0.5">Ruang dagang dengan izin kadaluwarsa atau akan kadaluwarsa dalam 7 hari.</p>
+        </div>
+        {attentionRooms.length === 0 ? (
+          <div className="px-6 py-8 text-center text-sm text-slate-400">
+            Tidak ada ruang dagang yang perlu perhatian saat ini. 🎉
+          </div>
+        ) : (
+          <ul className="divide-y divide-slate-800/60">
+            {attentionRooms.map((r) => (
+              <li key={r.ruangDagangId}>
+                <Link
+                  href={`/dashboard/ruang-dagang/${r.ruangDagangId}`}
+                  className="flex items-center justify-between gap-3 px-6 py-3.5 hover:bg-slate-800/40 transition"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-slate-100">{r.kodeRuang}</p>
+                    <p className="text-xs text-slate-400">{r.namaPasar}</p>
+                  </div>
+                  <Badge color={r.isExpired ? 'rose' : 'amber'}>
+                    {r.isExpired
+                      ? `${Math.abs(r.daysLeft)} hari lalu`
+                      : r.daysLeft === 0
+                        ? 'Hari ini'
+                        : `${r.daysLeft} hari lagi`}
+                  </Badge>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Stats Overview */}
