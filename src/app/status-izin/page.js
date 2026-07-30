@@ -15,7 +15,6 @@ export const metadata = {
 export default function PublicPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#07110e] px-4 py-8 text-slate-100 sm:px-8 sm:py-14">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(52,211,153,0.14),transparent_35%),radial-gradient(circle_at_90%_80%,rgba(6,182,212,0.1),transparent_30%)]" />
       <div className="relative mx-auto max-w-5xl">
         <nav className="mb-12 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-400 font-black text-slate-950">SP</span><span><strong className="block tracking-tight">SIMPASAR</strong><small className="text-[10px] uppercase tracking-[0.24em] text-emerald-400">Portal Publik</small></span></Link>

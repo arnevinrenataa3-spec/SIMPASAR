@@ -27,7 +27,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
   return (
     <div className="space-y-6">
       {/* Judul halaman dan pintasan untuk membuka form tambah. */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800/80 p-6 rounded-2xl">
         <div>
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
             Kelola User & Petugas

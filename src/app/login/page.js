@@ -16,16 +16,13 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Ornamen latar tidak menerima interaksi agar tidak menghalangi form. */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none" />
-
       <div className="w-full max-w-md z-10">
         {/* Identitas aplikasi dan judul halaman. */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-slate-950 font-bold text-2xl shadow-lg shadow-emerald-500/20 mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500 text-slate-950 font-bold text-2xl shadow-lg shadow-emerald-500/20 mb-4">
             SP
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-100">
             SIMPASAR
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -34,7 +31,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form dikirim langsung ke loginAction tanpa handler submit manual. */}
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-8 shadow-2xl shadow-black/50">
+        <div className="bg-slate-900 border border-slate-800/80 rounded-2xl p-8 shadow-2xl shadow-black/50">
           <h2 className="text-xl font-semibold text-slate-200 mb-6">
             Masuk Akun
           </h2>

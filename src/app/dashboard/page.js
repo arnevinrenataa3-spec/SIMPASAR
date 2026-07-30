@@ -127,9 +127,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Sambutan dan cakupan data aktif */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-950/70 via-slate-900/80 to-slate-900/80 border border-emerald-500/30 p-8 shadow-xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="relative overflow-hidden rounded-2xl bg-slate-900 border border-emerald-500/30 p-8 shadow-xl">
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold mb-3">
             🏢 Active Scope: {activeScopeLabel}
@@ -144,7 +142,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Perlu Perhatian */}
-      <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden">
+      <div className="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-800/80">
           <h2 className="text-sm font-bold text-slate-100">Perlu Perhatian</h2>
           <p className="text-xs text-slate-400 mt-0.5">Ruang dagang dengan izin kadaluwarsa atau akan kadaluwarsa dalam 7 hari.</p>
@@ -191,7 +189,7 @@ export default async function DashboardPage() {
               { label: 'Lapak', value: stats.lapak, color: 'text-emerald-400' },
               { label: 'Toko', value: stats.toko, color: 'text-amber-400' },
             ].map((s) => (
-              <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center">
+              <div key={s.label} className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 text-center">
                 <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
                 <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
               </div>
@@ -207,7 +205,7 @@ export default async function DashboardPage() {
               { label: 'Terisi', value: stats.terisi, color: 'text-rose-400' },
               { label: 'Non-fisik', value: stats.nonFisik, color: 'text-slate-400' },
             ].map((s) => (
-              <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center">
+              <div key={s.label} className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 text-center">
                 <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
                 <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
               </div>
@@ -223,7 +221,7 @@ export default async function DashboardPage() {
               { label: 'Kadaluwarsa', value: kedaluwarsaCount, color: 'text-rose-400' },
               { label: 'Teguran (SP)', value: teguranCount, color: 'text-amber-400' },
             ].map((s) => (
-              <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-xl p-4 text-center">
+              <div key={s.label} className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 text-center">
                 <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
                 <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
               </div>

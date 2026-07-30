@@ -19,11 +19,11 @@ export default function Sidebar({ user }) {
   const navItems = user?.role === 'admin' ? [...baseNavItems, ...adminNavItems] : baseNavItems;
 
   return (
-    <aside className="w-64 bg-slate-900/80 backdrop-blur-xl border-r border-slate-800/80 flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none">
+    <aside className="w-64 bg-slate-900 border-r border-slate-800/80 flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none">
       <div>
         {/* Identitas aplikasi */}
         <div className="h-16 px-6 flex items-center gap-3 border-b border-slate-800/60">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-slate-950 font-bold flex items-center justify-center text-lg shadow-md shadow-emerald-500/20">
+          <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 font-bold flex items-center justify-center text-lg shadow-md shadow-emerald-500/20">
             SP
           </div>
           <div>

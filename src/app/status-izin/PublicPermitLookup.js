@@ -23,7 +23,7 @@ export default function PublicPermitLookup() {
 
   return (
     <section className="space-y-6">
-      <form action={action} className="rounded-3xl border border-white/10 bg-white/[0.045] p-5 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-7">
+      <form action={action} className="rounded-3xl border border-slate-800 bg-slate-900 p-5 shadow-2xl shadow-black/30 sm:p-7">
         <label htmlFor="nomorKartu" className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Nomor Kartu</label>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row">
           <input id="nomorKartu" name="nomorKartu" required maxLength={100} placeholder="Contoh: 503/00000/KA-01/PKB/X/2025" className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-black/20 px-4 py-3 font-mono text-sm uppercase text-white outline-none placeholder:normal-case placeholder:text-slate-400 focus:border-emerald-400" />

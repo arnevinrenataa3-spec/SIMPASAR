@@ -39,7 +39,7 @@ export default function Navbar({ user, pasars = [], selectedScope = 'all' }) {
   ];
 
   return (
-    <header className="h-16 px-8 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 flex items-center justify-between sticky top-0 z-20">
+    <header className="h-16 px-8 bg-slate-900 border-b border-slate-800/80 flex items-center justify-between sticky top-0 z-20">
       {/* Judul halaman mengikuti segmen URL aktif */}
       <div>
         <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">

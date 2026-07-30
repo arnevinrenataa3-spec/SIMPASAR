@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export default function DashboardNotFound() {
   return (
-    <div className="max-w-lg mx-auto my-16 text-center space-y-6 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-8 rounded-2xl shadow-xl">
+    <div className="max-w-lg mx-auto my-16 text-center space-y-6 bg-slate-900 border border-slate-800/80 p-8 rounded-2xl shadow-xl">
       <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto text-2xl font-bold font-mono">
         404
       </div>

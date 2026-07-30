@@ -8,10 +8,7 @@ import Link from 'next/link';
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-md w-full text-center space-y-6 z-10 bg-slate-900/60 backdrop-blur-xl border border-slate-800 p-8 rounded-2xl shadow-2xl">
+      <div className="max-w-md w-full text-center space-y-6 z-10 bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl">
         <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto text-3xl font-extrabold font-mono">
           404
         </div>
