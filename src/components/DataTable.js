@@ -156,7 +156,7 @@ export default function DataTable({
   const colSpan = columns.length;
 
   return (
-    <div className="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl">
+    <div className="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden shadow-lg shadow-black/30">
       {showSearchBar && (
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center px-6 py-4 border-b border-slate-800/80">
           {searchPlaceholder && (

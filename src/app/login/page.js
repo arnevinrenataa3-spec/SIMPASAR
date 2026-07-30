@@ -31,7 +31,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form dikirim langsung ke loginAction tanpa handler submit manual. */}
-        <div className="bg-slate-900 border border-slate-800/80 rounded-2xl p-8 shadow-2xl shadow-black/50">
+        <div className="bg-slate-900 border border-slate-800/80 border-t-2 border-t-emerald-400 rounded-2xl p-8 shadow-2xl shadow-black/50">
           <h2 className="text-xl font-semibold text-slate-200 mb-6">
             Masuk Akun
           </h2>

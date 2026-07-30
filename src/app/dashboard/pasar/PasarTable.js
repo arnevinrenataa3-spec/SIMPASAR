@@ -23,7 +23,7 @@ export default function PasarTable({ pasars }) {
   return (
     <div className="space-y-6">
       {/* Judul dan tombol tambah */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800/80 p-6 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800/80 p-6 rounded-2xl shadow-lg shadow-black/30">
         <div>
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
             Kelola Pasar

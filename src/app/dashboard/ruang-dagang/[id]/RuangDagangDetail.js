@@ -137,7 +137,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
       )}
 
       {/* Ringkasan ruang dagang */}
-      <div className="bg-slate-900 border border-slate-800/80 rounded-2xl p-6">
+      <div className="bg-slate-900 border border-slate-800/80 rounded-2xl p-6 shadow-lg shadow-black/30">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Detail Ruang Dagang</h1>
@@ -188,7 +188,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
       </div>
 
       {/* Aksi izin dirender sesuai status ruang dan keberadaan izin aktif. */}
-      <div className="bg-slate-900 border border-slate-800/80 rounded-2xl p-6">
+      <div className="bg-slate-900 border border-slate-800/80 rounded-2xl p-6 shadow-lg shadow-black/30">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
             <h2 className="text-lg font-bold text-slate-100">Perizinan</h2>

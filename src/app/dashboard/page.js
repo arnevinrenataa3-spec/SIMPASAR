@@ -127,8 +127,8 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Sambutan dan cakupan data aktif */}
-      <div className="relative overflow-hidden rounded-2xl bg-slate-900 border border-emerald-500/30 p-8 shadow-xl">
-        <div className="relative z-10 max-w-2xl">
+      <div className="rounded-2xl bg-slate-900 border border-slate-800/80 border-l-4 border-l-emerald-400 p-8 shadow-lg shadow-black/30">
+        <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold mb-3">
             🏢 Active Scope: {activeScopeLabel}
           </div>
@@ -142,7 +142,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Perlu Perhatian */}
-      <div className="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden">
+      <div className="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden shadow-lg shadow-black/30">
         <div className="px-6 py-4 border-b border-slate-800/80">
           <h2 className="text-sm font-bold text-slate-100">Perlu Perhatian</h2>
           <p className="text-xs text-slate-400 mt-0.5">Ruang dagang dengan izin kadaluwarsa atau akan kadaluwarsa dalam 7 hari.</p>
@@ -183,13 +183,13 @@ export default async function DashboardPage() {
           <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Ringkasan Ruang</span>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             {[
-              { label: 'Total', value: stats.total, color: 'text-slate-100' },
-              { label: 'Kios', value: stats.kios, color: 'text-indigo-400' },
-              { label: 'Meja', value: stats.los, color: 'text-cyan-400' },
-              { label: 'Lapak', value: stats.lapak, color: 'text-emerald-400' },
-              { label: 'Toko', value: stats.toko, color: 'text-amber-400' },
+              { label: 'Total', value: stats.total, color: 'text-slate-100', accent: 'border-l-slate-600' },
+              { label: 'Kios', value: stats.kios, color: 'text-indigo-400', accent: 'border-l-indigo-400' },
+              { label: 'Meja', value: stats.los, color: 'text-cyan-400', accent: 'border-l-cyan-400' },
+              { label: 'Lapak', value: stats.lapak, color: 'text-emerald-400', accent: 'border-l-emerald-400' },
+              { label: 'Toko', value: stats.toko, color: 'text-amber-400', accent: 'border-l-amber-400' },
             ].map((s) => (
-              <div key={s.label} className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 text-center">
+              <div key={s.label} className={`bg-slate-900 border border-slate-800/80 border-l-2 ${s.accent} rounded-xl p-4 text-center shadow-sm shadow-black/20`}>
                 <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
                 <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
               </div>
@@ -201,11 +201,11 @@ export default async function DashboardPage() {
           <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Status Ruang</span>
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: 'Kosong', value: stats.kosong, color: 'text-emerald-400' },
-              { label: 'Terisi', value: stats.terisi, color: 'text-rose-400' },
-              { label: 'Non-fisik', value: stats.nonFisik, color: 'text-slate-400' },
+              { label: 'Kosong', value: stats.kosong, color: 'text-emerald-400', accent: 'border-l-emerald-400' },
+              { label: 'Terisi', value: stats.terisi, color: 'text-rose-400', accent: 'border-l-rose-400' },
+              { label: 'Non-fisik', value: stats.nonFisik, color: 'text-slate-400', accent: 'border-l-slate-500' },
             ].map((s) => (
-              <div key={s.label} className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 text-center">
+              <div key={s.label} className={`bg-slate-900 border border-slate-800/80 border-l-2 ${s.accent} rounded-xl p-4 text-center shadow-sm shadow-black/20`}>
                 <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
                 <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
               </div>
@@ -217,11 +217,11 @@ export default async function DashboardPage() {
           <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Kedaluwarsaan &amp; Peneguran</span>
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: 'Mendekati Kadaluwarsa', value: expiringSoonCount, color: 'text-amber-400' },
-              { label: 'Kadaluwarsa', value: kedaluwarsaCount, color: 'text-rose-400' },
-              { label: 'Teguran (SP)', value: teguranCount, color: 'text-amber-400' },
+              { label: 'Mendekati Kadaluwarsa', value: expiringSoonCount, color: 'text-amber-400', accent: 'border-l-amber-400' },
+              { label: 'Kadaluwarsa', value: kedaluwarsaCount, color: 'text-rose-400', accent: 'border-l-rose-400' },
+              { label: 'Teguran (SP)', value: teguranCount, color: 'text-amber-400', accent: 'border-l-amber-400' },
             ].map((s) => (
-              <div key={s.label} className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 text-center">
+              <div key={s.label} className={`bg-slate-900 border border-slate-800/80 border-l-2 ${s.accent} rounded-xl p-4 text-center shadow-sm shadow-black/20`}>
                 <span className="text-xs text-slate-400 uppercase tracking-wider block mb-1">{s.label}</span>
                 <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
               </div>
