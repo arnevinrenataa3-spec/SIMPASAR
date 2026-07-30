@@ -1,5 +1,5 @@
 /**
- * @description Public permit lookup page for Pedagang.
+ * @description Halaman publik bagi pedagang untuk memeriksa status izin tanpa login.
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Aditya Syahestiano
  */
@@ -28,6 +28,7 @@ export default function PublicPage() {
             <p className="mt-5 max-w-md leading-7 text-slate-400">Masukkan Nomor Kartu untuk melihat Ruang Dagang, masa berlaku, dan tingkat Surat Peringatan tanpa login.</p>
             <div className="mt-8 flex gap-6 border-t border-slate-800 pt-6 text-xs text-slate-400"><span>Tanpa NIK</span><span>Tanpa nomor HP</span><span>Data aman</span></div>
           </header>
+          {/* Form interaktif dipisahkan ke Client Component; halaman ini tetap Server Component. */}
           <PublicPermitLookup />
         </div>
       </div>

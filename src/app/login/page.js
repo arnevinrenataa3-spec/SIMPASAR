@@ -10,16 +10,17 @@ import { useActionState } from 'react';
 import { loginAction } from '../actions/auth.js';
 
 export default function LoginPage() {
+  // useActionState menghubungkan form ke Server Action sekaligus menyediakan hasil dan status prosesnya.
   const [state, formAction, isPending] = useActionState(loginAction, null);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Background glow effects */}
+      {/* Ornamen latar tidak menerima interaksi agar tidak menghalangi form. */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-md z-10">
-        {/* Brand Badge & Header */}
+        {/* Identitas aplikasi dan judul halaman. */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-slate-950 font-bold text-2xl shadow-lg shadow-emerald-500/20 mb-4">
             SP
@@ -32,7 +33,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Glassmorphic Form Card */}
+        {/* Form dikirim langsung ke loginAction tanpa handler submit manual. */}
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-8 shadow-2xl shadow-black/50">
           <h2 className="text-xl font-semibold text-slate-200 mb-6">
             Masuk Akun

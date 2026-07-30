@@ -1,5 +1,5 @@
 /**
- * @description Domain seam for the Pedagang master record.
+ * @description Aturan inti untuk normalisasi dan pembuatan data induk Pedagang.
  * @author Muhamad Hazmi Alfarizqi
  */
 
@@ -17,6 +17,7 @@ function normalizeData(data = {}) {
 }
 
 export async function temukanAtauBuatPedagang(nik, data, dbAdapter) {
+  // Pola find-or-create mencegah data Pedagang ganda saat NIK yang sama dipakai untuk izin baru.
   if (!dbAdapter?.findPedagangByNik || !dbAdapter?.insertPedagang) {
     throw new Error('Adapter Pedagang tidak lengkap.');
   }
@@ -29,7 +30,7 @@ export async function temukanAtauBuatPedagang(nik, data, dbAdapter) {
   try {
     return await dbAdapter.insertPedagang(values);
   } catch (error) {
-    // A concurrent request may have won the unique-NIK race.
+    // Permintaan lain mungkin lebih dahulu menyimpan NIK unik yang sama; ambil hasilnya kembali.
     if (error?.code === '23505') {
       const concurrent = await dbAdapter.findPedagangByNik(normalizedNik);
       if (concurrent) return concurrent;

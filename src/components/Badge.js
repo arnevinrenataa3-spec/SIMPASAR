@@ -1,12 +1,6 @@
 /**
- * @description 
+ * @description Badge status bersama yang aman dipakai di Server maupun Client Component.
  * @author Aditya Syahestiano
- */
-
-/**
- * @description Pill/badge primitif bersama — satu sumber kebenaran untuk semua
- * status/jenis badge di seluruh dashboard. Tidak butuh 'use client', aman dipakai
- * dari Server Component.
  */
 
 const COLOR_CLASSES = {
@@ -21,6 +15,7 @@ const COLOR_CLASSES = {
 };
 
 export default function Badge({ color, dot = false, children }) {
+  // Warna yang tidak dikenal memakai slate agar komponen tetap memiliki tampilan aman.
   const colorClasses = COLOR_CLASSES[color] ?? COLOR_CLASSES.slate;
   const paddingClasses = dot ? 'gap-1.5 px-2.5 py-0.5' : 'px-2.5 py-1';
 

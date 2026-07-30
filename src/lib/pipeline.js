@@ -1,5 +1,5 @@
 /**
- * @description Pipeline server action: plumbing guard → validasi → scope → execute → revalidate.
+ * @description Pipeline Server Action: autentikasi, otorisasi, validasi, scope, eksekusi, lalu revalidasi cache.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */
@@ -33,6 +33,7 @@ import { assertWriteScope } from './scope.js';
  * @returns {(prevState: any, formData: FormData) => Promise<{success: boolean, message?: string, error?: string, fieldErrors?: Record<string,string[]>}>}
  */
 export function defineAction({ operasi, scope, schema, revalidate = [], execute }) {
+  // Factory ini menyamakan bentuk respons dan urutan pemeriksaan untuk semua Server Action CRUD.
   return async function action(prevState, formData) {
     const user = await getSession();
 
@@ -42,6 +43,7 @@ export function defineAction({ operasi, scope, schema, revalidate = [], execute 
 
     let derivedPasarId = null;
     if (scope === 'enforce') {
+      // Scope diturunkan di server karena field tersembunyi pada form tetap dapat dimanipulasi klien.
       const requested = formData.get('pasarId')?.toString() || null;
       try {
         derivedPasarId = assertWriteScope(user, requested);
@@ -52,6 +54,7 @@ export function defineAction({ operasi, scope, schema, revalidate = [], execute 
 
     let data;
     if (schema) {
+      // FormData diubah menjadi objek biasa agar dapat diperiksa Zod dan menghasilkan error per field.
       const raw = {};
       for (const [k, v] of formData.entries()) {
         raw[k] = v;
@@ -78,6 +81,7 @@ export function defineAction({ operasi, scope, schema, revalidate = [], execute 
       }
 
       for (const path of revalidate) {
+        // Prefix "layout:" memberi tahu Next.js untuk menyegarkan seluruh layout dan turunannya.
         if (path.startsWith('layout:')) {
           revalidatePath(path.slice(7), 'layout');
         } else {

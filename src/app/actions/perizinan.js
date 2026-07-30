@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @description Thin Server Action adapter for permit operations.
+ * @description Adapter tipis Server Action untuk validasi input dan operasi domain Perizinan.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */
@@ -25,6 +25,7 @@ const schema = z.object({
 });
 
 const reasons = {
+  // Domain mengembalikan kode stabil; action menerjemahkannya menjadi pesan ramah pengguna.
   ruang_tidak_tersedia: 'Ruang Dagang sudah terisi atau berada di luar scope Pasar aktif.',
   tanggal_tidak_valid: 'Tanggal kedaluwarsa harus setelah tanggal terbit.',
   izin_tidak_aktif: 'Izin sudah dicabut atau diperpanjang.',
@@ -39,6 +40,7 @@ export const terbitkanIzinAction = defineAction({
   revalidate: ['layout:/dashboard/ruang-dagang', '/dashboard'],
   execute: async (data, ctx) => {
     try {
+      // Scope aktif lebih kuat daripada pasarId dari form agar izin tidak diterbitkan lintas pasar.
       const activeScope = await resolveScope(ctx.user);
       const pasarId = activeScope === 'all' ? ctx.pasarId : activeScope;
       if (!pasarId) return { error: 'Pilih Ruang Dagang pada sebuah Pasar.' };
@@ -71,6 +73,7 @@ export const terbitkanTeguranAction = defineAction({
   revalidate: ['/dashboard/teguran', '/dashboard'],
   execute: async (data, ctx) => {
     try {
+      // ID user dicatat bersama teguran sebagai jejak petugas yang menerbitkannya.
       const result = await terbitkanTeguran(data.perizinanId, ctx.user.id, perizinanDbAdapter);
       if (!result.ok) return { error: reasons[result.reason] ?? 'Gagal menerbitkan SP.' };
       const label = { sp1: 'SP 1', sp2: 'SP 2', sp3: 'SP 3' }[result.level];
@@ -93,6 +96,7 @@ export const perpanjangIzinAction = defineAction({
   revalidate: ['layout:/dashboard/ruang-dagang', '/dashboard'],
   execute: async (data, ctx) => {
     try {
+      // Perpanjangan diproses domain sebagai izin baru sambil mempertahankan izin lama sebagai riwayat.
       const result = await perpanjangIzin(data.perizinanId, {
         tanggalTerbit: data.tanggalTerbit,
         tanggalKedaluwarsa: data.tanggalKedaluwarsa,
@@ -116,6 +120,7 @@ export const cabutIzinAction = defineAction({
   revalidate: ['layout:/dashboard/ruang-dagang', '/dashboard'],
   execute: async (data, ctx) => {
     try {
+      // Domain mengubah izin dan ruang dalam satu transaksi agar status keduanya selalu selaras.
       const result = await cabutIzin(data.perizinanId, perizinanDbAdapter);
       if (!result.ok) return { error: reasons[result.reason] ?? 'Gagal mencabut izin.' };
       return { message: 'Izin berhasil dicabut. Ruang Dagang telah dikosongkan.' };

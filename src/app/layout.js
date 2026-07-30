@@ -1,5 +1,5 @@
 /**
- * @description Root layout aplikasi SIMPASAR dengan konfigurasi Font & Provider.
+ * @description Layout akar yang memasang font, metadata, dan struktur HTML seluruh aplikasi.
  * @author Muhamad Hazmi Alfarizqi
  */
 
@@ -25,6 +25,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // children adalah halaman atau layout turunan yang sedang dirender oleh App Router.
   return (
     <html
       lang="id"

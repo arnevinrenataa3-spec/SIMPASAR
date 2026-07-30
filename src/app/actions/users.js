@@ -14,6 +14,7 @@ import { hashPassword } from '../../lib/password.js';
 import { defineAction } from '../../lib/pipeline.js';
 
 const createSchema = z.object({
+  // Validasi di server tetap wajib karena request Server Action dapat dibuat tanpa memakai form resmi.
   name: z.string().min(1, 'Nama lengkap wajib diisi.'),
   username: z.string().min(1, 'Username wajib diisi.'),
   password: z.string().min(1, 'Password wajib diisi.'),
@@ -39,12 +40,14 @@ export const createUserAction = defineAction({
   schema: createSchema,
   revalidate: ['/dashboard/users'],
   execute: async (data) => {
+    // Admin tidak terikat pasar, sedangkan petugas harus memiliki scope kerja yang jelas.
     const pasarId = data.role === 'admin' ? null : data.pasarId;
 
     if (data.role === 'petugas' && !pasarId) {
       return { error: 'Petugas wajib ditugaskan ke sebuah Pasar.' };
     }
 
+    // Username dinormalisasi ke huruf kecil agar pemeriksaan dan penyimpanan konsisten.
     const existing = await db
       .select()
       .from(users)
@@ -97,6 +100,7 @@ export const updateUserAction = defineAction({
     };
 
     if (data.password && data.password.trim() !== '') {
+      // Password kosong berarti mempertahankan hash lama, bukan menggantinya dengan password kosong.
       updateData.password = await hashPassword(data.password);
     }
 
@@ -111,6 +115,7 @@ export const deleteUserAction = defineAction({
   schema: deleteSchema,
   revalidate: ['/dashboard/users'],
   execute: async (data, ctx) => {
+    // Mencegah admin menghapus sesi yang sedang dipakai dan kehilangan akses tanpa sengaja.
     if (data.id === ctx.user.id) {
       return { error: 'Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif.' };
     }

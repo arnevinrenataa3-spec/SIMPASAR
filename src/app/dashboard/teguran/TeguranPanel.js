@@ -1,11 +1,9 @@
 'use client';
 /**
- * @description 
+ * @description Panel interaktif untuk memfilter dan menerbitkan Surat Peringatan.
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Aditya Syahestiano
  */
-
-
 import { useCrudModal } from '../../../lib/useCrudModal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import DataTable from '../../../components/DataTable.js';
@@ -21,6 +19,7 @@ function formatDate(value) {
 }
 
 export default function TeguranPanel({ teguranList }) {
+  // Hook CRUD menyimpan hasil Server Action agar pesan sukses atau error dapat ditampilkan.
   const modal = useCrudModal({ action: terbitkanTeguranAction });
 
   return (
@@ -96,6 +95,7 @@ export default function TeguranPanel({ teguranList }) {
               thClassName: 'text-right',
               tdClassName: 'text-right',
               render: (item) => {
+                // Tombol aktif hanya jika jenjang yang seharusnya berbeda dari SP terakhir.
                 const needsSP = item.computedSP && item.statusTeguran !== item.computedSP;
                 return (
                   <form action={modal.action}>

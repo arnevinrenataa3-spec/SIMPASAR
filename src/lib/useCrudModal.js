@@ -1,6 +1,6 @@
 'use client';
 /**
- * @description 
+ * @description Hook bersama untuk mengatur state modal dan hasil Server Action CRUD.
  * @author Arnevin Renata Ahmad Barkah
  */
 
@@ -10,6 +10,7 @@ import { useActionState, useCallback, useState } from 'react';
 let instanceCounter = 0;
 
 export function useCrudModal({ action, onSuccess }) {
+  // ID dan key membuat isi form di-reset setiap kali modal dibuka kembali.
   const [instanceId] = useState(() => instanceCounter++);
   const [isOpen, setIsOpen] = useState(false);
   const [item, setItem] = useState(null);
@@ -17,6 +18,8 @@ export function useCrudModal({ action, onSuccess }) {
 
   const handleAction = useCallback(async (prevState, formData) => {
     const res = await action(prevState, formData);
+    // Modal hanya ditutup jika server menyatakan operasi berhasil.
+    // Saat gagal, modal tetap terbuka agar pesan validasi dapat dibaca pengguna.
     if (res?.success) {
       setIsOpen(false);
       setItem(null);
@@ -28,6 +31,7 @@ export function useCrudModal({ action, onSuccess }) {
   const [state, formAction, pending] = useActionState(handleAction, null);
 
   const open = useCallback((item = null) => {
+    // item berisi data lama untuk mode edit/hapus; mode tambah memakai null.
     setModalKey(k => k + 1);
     setItem(item);
     setIsOpen(true);

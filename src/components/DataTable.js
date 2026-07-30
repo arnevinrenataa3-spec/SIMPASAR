@@ -1,16 +1,15 @@
 'use client';
 /**
- * @description 
+ * @description Tabel client-side dengan pencarian, filter, pengurutan, dan sinkronisasi URL opsional.
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Muhamad Hazmi Alfarizqi, Aditya Syahestiano
  */
-
-
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Select from './Select.js';
 
 function compareValues(a, b) {
+  // Nilai kosong ditempatkan terakhir; angka dibandingkan sebagai angka, sisanya sebagai teks Indonesia.
   if (a == null && b == null) return 0;
   if (a == null) return 1;
   if (b == null) return -1;
@@ -52,9 +51,8 @@ export default function DataTable({
   const syncTimeout = useRef(null);
 
   const searchParamsKey = syncSearchParams ? searchParams?.toString() : null;
-  // Depend on accessor names (a stable primitive), not the `filters` array reference itself —
-  // callers routinely pass `filters={[...]}` as a fresh inline literal on every render, which
-  // would otherwise make this key (and everything downstream of it) churn every render.
+  // Gunakan nama accessor yang stabil, bukan referensi array filters yang sering dibuat ulang
+  // oleh komponen induk pada setiap render.
   const filterAccessorsKey = filters.map((f) => f.accessor).join('|');
 
   const urlQ = syncSearchParams ? (searchParams.get('q') || '') : '';
@@ -65,7 +63,7 @@ export default function DataTable({
       fv[f.accessor] = searchParams.get(f.accessor) || '';
     }
     return fv;
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- filterAccessorsKey stands in for `filters`/`searchParams` identity on purpose, see comment above
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- filterAccessorsKey sengaja mewakili identitas filters/searchParams, lihat komentar di atas
   }, [syncSearchParams, searchParamsKey, filterAccessorsKey]);
 
   const [searchQuery, setSearchQuery] = useState(urlQ);
@@ -73,9 +71,9 @@ export default function DataTable({
 
   useEffect(() => {
     if (!syncSearchParams) return;
-    /* eslint-disable react-hooks/set-state-in-effect -- Syncing URL params to local state is the standard Next.js pattern for debounced search/filter */
-    // Bail out on value-equal updates so an upstream reference change (e.g. a caller passing a
-    // fresh `filters`/`urlFilters` literal) can never re-trigger this effect's own state updates.
+    /* eslint-disable react-hooks/set-state-in-effect -- State lokal perlu mengikuti parameter URL untuk pencarian/filter dengan debounce */
+    // Pertahankan state lama bila nilainya sama agar perubahan referensi dari induk tidak
+    // memicu rangkaian render baru.
     setSearchQuery((prev) => (prev === urlQ ? prev : urlQ));
     setFilterValues((prev) => {
       const keys = Object.keys(urlFilters);
@@ -88,6 +86,7 @@ export default function DataTable({
   const syncToUrl = useCallback((q, fv) => {
     if (!syncSearchParams || !router) return;
     if (syncTimeout.current) clearTimeout(syncTimeout.current);
+    // Debounce menunda perubahan URL sampai pengguna berhenti mengetik selama 300 ms.
     syncTimeout.current = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString());
       if (q) params.set('q', q); else params.delete('q');
@@ -112,6 +111,7 @@ export default function DataTable({
   }
 
   const filteredData = useMemo(() => {
+    // Pencarian memeriksa semua kolom yang memiliki accessor, kemudian menerapkan setiap filter.
     return data.filter((item) => {
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
@@ -137,6 +137,7 @@ export default function DataTable({
   const [sortConfig, setSortConfig] = useState({ accessor: null, direction: null });
 
   function handleSort(accessor) {
+    // Klik berulang menjalankan siklus: naik, turun, lalu tanpa pengurutan.
     setSortConfig((prev) => {
       if (prev.accessor !== accessor) return { accessor, direction: 'asc' };
       if (prev.direction === 'asc') return { accessor, direction: 'desc' };
@@ -146,6 +147,7 @@ export default function DataTable({
 
   const sortedData = useMemo(() => {
     if (!sortConfig.accessor) return filteredData;
+    // Salin array agar data dari props tidak ikut berubah saat sort dijalankan.
     const sorted = [...filteredData].sort((a, b) => compareValues(a[sortConfig.accessor], b[sortConfig.accessor]));
     return sortConfig.direction === 'desc' ? sorted.reverse() : sorted;
   }, [filteredData, sortConfig]);

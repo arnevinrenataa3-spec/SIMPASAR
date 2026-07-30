@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * @description Komponen Navbar header dashboard (User Info & Scope Switcher).
+ * @description Header dashboard untuk judul halaman dan pemilih cakupan pasar.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
@@ -15,6 +15,7 @@ import { baseNavItems, adminNavItems } from './navConfig.js';
 const ALL_NAV_ITEMS = [...baseNavItems, ...adminNavItems];
 
 export default function Navbar({ user, pasars = [], selectedScope = 'all' }) {
+  // useTransition menjaga UI tetap responsif selama Server Action mengganti cakupan pasar.
   const [isPending, startTransition] = useTransition();
   const segment = useSelectedLayoutSegment();
   const currentPageName = ALL_NAV_ITEMS.find((item) => item.segment === segment)?.name || 'Overview';
@@ -39,7 +40,7 @@ export default function Navbar({ user, pasars = [], selectedScope = 'all' }) {
 
   return (
     <header className="h-16 px-8 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 flex items-center justify-between sticky top-0 z-20">
-      {/* Title / Breadcrumb */}
+      {/* Judul halaman mengikuti segmen URL aktif */}
       <div>
         <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">
           <span>Portal Pengelola Pasar</span>
@@ -48,14 +49,14 @@ export default function Navbar({ user, pasars = [], selectedScope = 'all' }) {
         </h2>
       </div>
 
-      {/* Quick Info Bar */}
+      {/* Informasi singkat */}
       <div className="flex items-center gap-4 text-xs">
-        {/* Date Display */}
+        {/* Tanggal hari ini */}
         <div className="hidden sm:block text-slate-400 text-xs bg-slate-950/40 px-3 py-1.5 rounded-full border border-slate-800">
           {currentDate}
         </div>
 
-        {/* Market Selector (Admin) or Badge (Petugas) */}
+        {/* Admin dapat mengganti cakupan; petugas hanya melihat pasar penempatannya. */}
         {user?.role === 'admin' ? (
           <Select
             options={scopeOptions}

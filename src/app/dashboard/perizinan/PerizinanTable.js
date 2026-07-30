@@ -1,7 +1,7 @@
 'use client';
 /**
- * @description Daftar & histori seluruh izin (read-only) dengan shortcut ke Ruang
- * Dagang dan Pedagang terkait — pandangan "murni perizinan" tanpa perlu membuka
+ * @description Daftar dan histori seluruh izin tanpa fitur ubah, dilengkapi tautan ke Ruang
+ * Dagang dan Pedagang terkait. Pengguna tidak perlu membuka
  * Ruang Dagang satu per satu.
  */
 
@@ -38,6 +38,7 @@ function statusTeguranBadge(permit) {
 }
 
 export default function PerizinanTable({ permits }) {
+  // Statistik dihitung dari data yang sudah dibatasi scope oleh Server Component induk.
   const stats = useMemo(() => ({
     expiringSoon: permits.filter((p) => p.isExpiringSoon).length,
     expired: permits.filter((p) => p.isExpired).length,
@@ -65,6 +66,7 @@ export default function PerizinanTable({ permits }) {
         </div>
       )}
 
+      {/* DataTable mengelola pencarian, filter, sort, dan penyimpanan filter di URL. */}
       <DataTable
         cellPadding="px-5 py-4"
         syncSearchParams

@@ -1,6 +1,6 @@
 /**
  * @description Halaman Perizinan — daftar & histori seluruh izin lintas Ruang Dagang,
- * dengan shortcut langsung ke Ruang Dagang dan Pedagang terkait.
+ * dengan tautan langsung ke Ruang Dagang dan Pedagang terkait.
  */
 
 import { redirect } from 'next/navigation';
@@ -13,6 +13,7 @@ import { classifyLineage } from '../../../lib/perizinan.js';
 import PerizinanTable from './PerizinanTable.js';
 
 export default async function PerizinanPage() {
+  // Halaman server menangani autentikasi, cakupan pasar, dan pengambilan data.
   const user = await getSession();
   if (!user) redirect('/login');
 
@@ -44,6 +45,7 @@ export default async function PerizinanPage() {
     .orderBy(desc(perizinan.createdAt));
 
   const today = new Date().toISOString().slice(0, 10);
+  // Peta riwayat ini menghubungkan izin awal dengan izin hasil perpanjangannya.
   const lineage = classifyLineage(rows);
 
   const permits = rows

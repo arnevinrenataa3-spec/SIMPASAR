@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * @description Komponen Dialog Modal reusable — perilaku Enter eksplisit di interface.
+ * @description Modal bersama dengan dukungan tutup via Escape dan submit via Enter.
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Muhamad Hazmi Alfarizqi
  */
@@ -11,6 +11,7 @@ import { useEffect, useRef } from 'react';
 export default function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-md', submitOnEnter = true }) {
   const modalRef = useRef(null);
 
+  // Efek hanya memasang listener keyboard selama modal terbuka.
   useEffect(() => {
     if (!isOpen) return;
 
@@ -18,12 +19,14 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
       if (e.key === 'Escape' && onClose) {
         onClose();
       } else if (e.key === 'Enter' && submitOnEnter) {
+        // Enter di textarea tetap membuat baris baru; tombol menangani Enter-nya sendiri.
         const targetTagName = e.target?.tagName?.toLowerCase();
         if (targetTagName === 'textarea' || targetTagName === 'button') return;
         if (targetTagName !== 'input' && modalRef.current) {
           const form = modalRef.current.querySelector('form');
           if (form) {
             e.preventDefault();
+            // requestSubmit menjalankan validasi HTML seperti klik tombol submit biasa.
             if (typeof form.requestSubmit === 'function') {
               form.requestSubmit();
             } else {

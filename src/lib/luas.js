@@ -5,10 +5,12 @@
  */
 
 export function hitungLuas(panjang, lebar) {
+  // Nilai kosong atau nonpositif tidak dianggap sebagai ukuran ruang yang sah.
   if (panjang == null || lebar == null) return null;
   const p = parseFloat(panjang);
   const l = parseFloat(lebar);
   if (isNaN(p) || isNaN(l) || p <= 0 || l <= 0) return null;
+  // Pembulatan dua desimal menghindari pecahan biner panjang dari operasi float JavaScript.
   return Math.round(p * l * 100) / 100;
 }
 

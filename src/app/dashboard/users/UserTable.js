@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * @description Komponen UI Client-side untuk Manajemen Pengguna (CRUD, Modal, Search & Filter).
+ * @description Tabel client untuk mencari, memfilter, dan mengelola akun pengguna melalui modal.
  * @author Aditya Syahestiano
  * @contributor Arnevin Renata Ahmad Barkah
  */
@@ -17,6 +17,7 @@ import Badge from '../../../components/Badge.js';
 import { createUserAction, updateUserAction, deleteUserAction } from '../../actions/users.js';
 
 export default function UserTable({ users, pasars = [], currentUserId, selectedScope = 'all' }) {
+  // Role disimpan sebagai state karena pilihan ini menentukan apakah field pasar perlu ditampilkan.
   const [addRole, setAddRole] = useState('petugas');
   const [editRole, setEditRole] = useState('petugas');
   const createModal = useCrudModal({ action: createUserAction });
@@ -25,7 +26,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
 
   return (
     <div className="space-y-6">
-      {/* Header Bar */}
+      {/* Judul halaman dan pintasan untuk membuka form tambah. */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl">
         <div>
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
@@ -151,7 +152,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
         filterEmptyMessage="Tidak ada pengguna yang cocok dengan filter."
       />
 
-      {/* Add User Modal */}
+      {/* Modal tambah memakai state sendiri agar tidak bercampur dengan hasil edit atau hapus. */}
       <Modal
         key={createModal.key}
         isOpen={createModal.isOpen}
@@ -258,7 +259,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
         </form>
       </Modal>
 
-      {/* Edit User Modal */}
+      {/* Data item terpilih menjadi nilai awal form edit. */}
       <Modal
         key={editModal.key}
         isOpen={editModal.isOpen}
@@ -368,7 +369,7 @@ export default function UserTable({ users, pasars = [], currentUserId, selectedS
         )}
       </Modal>
 
-      {/* Delete Confirmation Modal */}
+      {/* Akun yang sedang dipakai tidak diberi tombol hapus untuk mencegah pengguna mengunci dirinya sendiri. */}
       <DeleteConfirmModal
         isOpen={deleteModal.isOpen}
         onClose={deleteModal.close}

@@ -1,22 +1,15 @@
 'use client';
 /**
- * @description 
+ * @description Dropdown bertema gelap dengan pilihan yang dikendalikan komponen induk.
  * @author Arnevin Renata Ahmad Barkah
  */
-
-
-/**
- * @description Dropdown pilihan custom-styled — pengganti <select> native agar
- * konsisten dengan tema gelap aplikasi (native <select> tidak bisa distyle penuh,
- * termasuk indikator opsi terpilih di dropdown-nya).
- */
-
 import { useEffect, useRef, useState } from 'react';
 
 export default function Select({ options, value, onChange, placeholder, disabled = false, className = '' }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
+  // Tutup dropdown ketika klik terjadi di luar elemen yang ditandai ref.
   useEffect(() => {
     if (!open) return undefined;
     function handleMouseDown(event) {

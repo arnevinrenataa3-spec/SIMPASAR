@@ -1,5 +1,5 @@
 /**
- * @description 
+ * @description Skrip pengembangan untuk menghapus seluruh tabel dan enum agar database dapat dibuat ulang.
  * @author Arnevin Renata Ahmad Barkah
  */
 
@@ -11,6 +11,7 @@ const client = postgres(connectionString, { prepare: false });
 
 async function reset() {
   try {
+    // Tabel dihapus sebelum enum karena kolom tabel masih bergantung pada tipe enum tersebut.
     logger.info('Dropping tables and types...');
     await client`DROP TABLE IF EXISTS perizinan CASCADE`;
     await client`DROP TABLE IF EXISTS ruang_dagang CASCADE`;
@@ -29,6 +30,7 @@ async function reset() {
   } catch (err) {
     logger.error('Failed to drop tables and types:', err);
   } finally {
+    // Koneksi harus ditutup meskipun query gagal agar proses Node.js tidak terus menggantung.
     await client.end();
   }
   process.exit(0);

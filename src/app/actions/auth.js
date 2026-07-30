@@ -12,6 +12,7 @@ import { users } from '../../db/schema.js';
 import { verifyPassword, createSession, destroySession } from '../../lib/auth.js';
 
 export async function loginAction(prevState, formData) {
+  // Ambil nilai minimum dari FormData; password sengaja tidak di-trim karena spasi dapat menjadi bagiannya.
   const username = formData.get('username')?.toString().trim();
   const password = formData.get('password')?.toString();
 
@@ -25,6 +26,7 @@ export async function loginAction(prevState, formData) {
       .from(users)
       .where(eq(users.username, username));
 
+    // Pesan dibuat sama untuk username dan password salah agar akun terdaftar tidak dapat ditebak.
     if (foundUsers.length === 0) {
       return { error: 'Username atau password salah.' };
     }
@@ -42,6 +44,7 @@ export async function loginAction(prevState, formData) {
     return { error: 'Terjadi kesalahan pada server. Silakan coba lagi.' };
   }
 
+  // redirect melempar sinyal khusus Next.js, sehingga harus berada di luar blok catch.
   redirect('/dashboard');
 }
 

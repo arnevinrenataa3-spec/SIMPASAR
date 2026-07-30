@@ -1,5 +1,5 @@
 /**
- * @description Catch-all route 404 Not Found khusus area Dashboard.
+ * @description Rute penampung untuk URL dashboard yang tidak memiliki halaman.
  * @author Muhamad Hazmi Alfarizqi
  */
 

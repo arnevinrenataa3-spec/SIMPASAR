@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * @description Public permit search and Digital ID result.
+ * @description Form pencarian izin publik dan tampilan hasil kartu digital.
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Aditya Syahestiano
  */
@@ -10,10 +10,12 @@ import { useActionState } from 'react';
 import { checkStatusPublik } from '../actions/publik.js';
 
 function formatDate(value) {
+  // UTC menjaga tanggal database tidak bergeser sehari akibat zona waktu perangkat pengguna.
   return new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`));
 }
 
 export default function PublicPermitLookup() {
+  // useActionState menghubungkan form ke Server Action sekaligus menyediakan hasil dan status proses.
   const [state, action, pending] = useActionState(checkStatusPublik, null);
   const permit = state?.data;
   const active = permit?.status === 'aktif';
@@ -30,6 +32,7 @@ export default function PublicPermitLookup() {
         {state?.error && <p role="alert" className="mt-4 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{state.error}</p>}
       </form>
 
+      {/* Kartu hasil baru dirender setelah Server Action mengembalikan data izin. */}
       {permit && (
         <article className={`relative overflow-hidden rounded-[2rem] border bg-slate-900 p-6 shadow-2xl sm:p-8 ${active ? 'border-emerald-400/50 shadow-emerald-950' : 'border-rose-500/60 shadow-rose-950'}`}>
           <div className={`absolute inset-x-0 top-0 h-1.5 ${active ? 'bg-emerald-400' : 'bg-rose-500'}`} />

@@ -1,5 +1,5 @@
 /**
- * @description Drizzle adapter for the Perizinan domain seam.
+ * @description Adapter Drizzle yang menerjemahkan operasi domain Perizinan menjadi query database.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */
@@ -9,12 +9,14 @@ import { db } from '../index.js';
 import { pasar, pedagang, perizinan, ruangDagang, teguran } from '../schema.js';
 
 function adapterFor(executor) {
+  // executor dapat berupa koneksi biasa atau transaksi, sehingga aturan domain tidak bergantung pada Drizzle.
   return {
     findPedagangByNik: async (nik) => {
       const rows = await executor.select().from(pedagang).where(eq(pedagang.nik, nik)).limit(1);
       return rows[0] ?? null;
     },
     insertPedagang: async (values) => {
+      // Konflik NIK tidak melempar error; data yang lebih dahulu tersimpan dibaca dan dipakai kembali.
       const rows = await executor.insert(pedagang).values(values).onConflictDoNothing({ target: pedagang.nik }).returning();
       if (rows[0]) return rows[0];
       const existing = await executor.select().from(pedagang).where(eq(pedagang.nik, values.nik)).limit(1);
@@ -53,6 +55,7 @@ function adapterFor(executor) {
       return rows[0] ?? null;
     },
     markRuangTerisi: async (id, pasarId) => {
+      // Kondisi status='kosong' membuat perebutan ruang aman: hanya satu update yang dapat berhasil.
       const predicates = [eq(ruangDagang.id, id), eq(ruangDagang.status, 'kosong')];
       if (pasarId) predicates.push(eq(ruangDagang.pasarId, pasarId));
       const rows = await executor
@@ -110,6 +113,7 @@ function adapterFor(executor) {
 }
 
 export const perizinanDbAdapter = {
+  // Callback domain menerima adapter berbasis tx agar seluruh query memakai transaksi yang sama.
   transaction: (work) => db.transaction((tx) => work(adapterFor(tx))),
   findPerizinanByNomorKartu: async (nomorKartu) => {
     const rows = await db

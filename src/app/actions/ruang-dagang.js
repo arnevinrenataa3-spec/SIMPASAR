@@ -32,6 +32,7 @@ const deleteSchema = z.object({
 });
 
 function parseNumber(val) {
+  // Input HTML tiba sebagai string; kosong atau ukuran nonpositif disimpan sebagai null.
   if (!val || val.trim() === '') return null;
   const n = parseFloat(val);
   return isNaN(n) || n <= 0 ? null : n;
@@ -45,6 +46,7 @@ export const createRuangDagangAction = defineAction({
   execute: async (data, ctx) => {
     const kodeRuang = data.kodeRuang.toUpperCase();
 
+    // Kode hanya wajib unik di pasar aktif, bukan secara global di semua pasar.
     const existing = await db
       .select()
       .from(ruangDagang)
@@ -94,6 +96,7 @@ export const updateRuangDagangAction = defineAction({
       return { error: 'Ruang dagang tidak ditemukan.' };
     }
 
+    // Status ruang tidak boleh bertentangan dengan izin aktif yang masih menempatinya.
     if (data.status !== currentRuang.status) {
       const [activePerizinan] = await db
         .select({ id: perizinan.id })
@@ -132,6 +135,7 @@ export const deleteRuangDagangAction = defineAction({
   schema: deleteSchema,
   revalidate: ['/dashboard/ruang-dagang', '/dashboard'],
   execute: async (data) => {
+    // Riwayat perizinan harus tetap utuh, jadi ruang yang pernah dirujuk tidak boleh dihapus.
     const linkedPerizinan = await db
       .select({ id: perizinan.id })
       .from(perizinan)

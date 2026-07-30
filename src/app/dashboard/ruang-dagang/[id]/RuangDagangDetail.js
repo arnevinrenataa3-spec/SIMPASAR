@@ -1,11 +1,9 @@
 'use client';
 /**
- * @description 
+ * @description Detail client untuk mengelola ruang, penerbitan izin, dan perpanjangan.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
-
-
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCrudModal } from '../../../../lib/useCrudModal.js';
@@ -64,11 +62,13 @@ function statusTeguranBadge(izin) {
 
 export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders, teguranList, user }) {
   const router = useRouter();
+  // State berikut mengendalikan pilihan pedagang dan field tanggal pada modal perpanjangan.
   const [selectedTrader, setSelectedTrader] = useState('new');
   const [perpanjangTarget, setPerpanjangTarget] = useState(null);
   const [perpanjangTanggalTerbit, setPerpanjangTanggalTerbit] = useState('');
   const [perpanjangTanggalKedaluwarsa, setPerpanjangTanggalKedaluwarsa] = useState('');
 
+  // refresh meminta Server Component mengambil ulang data setelah mutasi berhasil.
   const terbitkanModal = useCrudModal({
     action: terbitkanIzinAction,
     onSuccess: () => router.refresh(),
@@ -86,6 +86,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
     onSuccess: () => router.refresh(),
   });
 
+  // Jika pedagang lama dipilih, datanya mengisi field identitas yang dibuat read-only.
   const trader = traders.find((item) => item.id === selectedTrader);
   const traderOptions = useMemo(() => [
     { value: 'new', label: 'Pedagang baru' },
@@ -108,7 +109,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
 
   return (
     <div className="space-y-6">
-      {/* Back Button */}
+      {/* Tombol kembali */}
       <Button
         variant="ghost"
         onClick={() => router.push('/dashboard/ruang-dagang')}
@@ -119,7 +120,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
         Kembali ke Ruang Dagang
       </Button>
 
-      {/* Warning Banner */}
+      {/* Peringatan masa berlaku izin */}
       {(isExpiringSoon || isExpired) && (
         <div className={`rounded-xl border px-4 py-3 text-sm flex items-center gap-3 ${isExpired ? 'border-rose-500/20 bg-rose-500/10 text-rose-200' : 'border-amber-500/20 bg-amber-500/10 text-amber-200'}`}>
           <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,7 +136,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
         </div>
       )}
 
-      {/* Detail Ruang Dagang Card */}
+      {/* Ringkasan ruang dagang */}
       <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
@@ -186,7 +187,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
         </div>
       </div>
 
-      {/* Perizinan Section */}
+      {/* Aksi izin dirender sesuai status ruang dan keberadaan izin aktif. */}
       <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
@@ -231,7 +232,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
           </div>
         </div>
 
-        {/* Current Active Permit Info */}
+        {/* Ringkasan izin aktif */}
         {izinAktif && (
           <div className="bg-slate-950/60 rounded-xl border border-slate-800 p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
@@ -266,7 +267,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
         )}
       </div>
 
-      {/* Riwayat Perizinan */}
+      {/* Riwayat perizinan */}
       <div className="space-y-4">
         <div>
           <h2 className="text-lg font-bold text-slate-100">Riwayat Perizinan</h2>
@@ -292,7 +293,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
         />
       </div>
 
-      {/* Riwayat Teguran */}
+      {/* Riwayat teguran */}
       {teguranList.length > 0 && (
         <div className="space-y-4">
           <div>
@@ -317,7 +318,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
         </div>
       )}
 
-      {/* Terbitkan Izin Modal */}
+      {/* Modal penerbitan izin */}
       <Modal
         key={terbitkanModal.key}
         isOpen={terbitkanModal.isOpen}
@@ -351,6 +352,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
               maxLength={16}
               className={`${inputClass} mt-2 font-mono`}
               readOnly={Boolean(trader)}
+              // key membuat input uncontrolled dibuat ulang saat pilihan pedagang berubah.
               key={`nik-${selectedTrader}`}
               defaultValue={trader?.nik ?? ''}
             />
@@ -414,7 +416,7 @@ export default function RuangDagangDetail({ ruang, izins, pedagangAktif, traders
         </form>
       </Modal>
 
-      {/* Perpanjang Izin Modal */}
+      {/* Modal perpanjangan izin */}
       <Modal
         key={perpanjangModal.key}
         isOpen={perpanjangModal.isOpen}

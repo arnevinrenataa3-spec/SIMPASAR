@@ -1,5 +1,5 @@
 /**
- * @description 
+ * @description Halaman server yang menyiapkan daftar izin kedaluwarsa untuk peneguran.
  * @author Arnevin Renata Ahmad Barkah
  */
 
@@ -13,6 +13,7 @@ import { buildScopeFilter, resolveScope } from '../../../lib/scope.js';
 import TeguranPanel from './TeguranPanel.js';
 
 export default async function TeguranPage() {
+  // Data dibatasi sesuai pasar aktif sebelum dikirim ke komponen interaktif.
   const user = await getSession();
   if (!user) redirect('/login');
   const scope = await resolveScope(user);
@@ -44,6 +45,7 @@ export default async function TeguranPage() {
     .where(whereClause)
     .orderBy(asc(perizinan.tanggalKedaluwarsa));
 
+  // Normalisasi tanggal dan hitung jenjang SP agar komponen client tinggal merender hasilnya.
   const teguranList = rows.map((row) => ({
     ...row,
     tanggalTerbit: String(row.tanggalTerbit).slice(0, 10),

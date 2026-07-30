@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * @description Komponen Sidebar navigasi menu SIMPASAR.
+ * @description Sidebar interaktif yang menampilkan menu sesuai peran dan halaman aktif.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
@@ -12,14 +12,16 @@ import { logoutAction } from '../app/actions/auth.js';
 import { baseNavItems, adminNavItems } from './navConfig.js';
 
 export default function Sidebar({ user }) {
+  // Hook navigasi hanya tersedia di Client Component dan mengembalikan segmen URL aktif.
   const segment = useSelectedLayoutSegment();
 
+  // Menu pengelolaan pasar dan pengguna hanya ditampilkan kepada admin.
   const navItems = user?.role === 'admin' ? [...baseNavItems, ...adminNavItems] : baseNavItems;
 
   return (
     <aside className="w-64 bg-slate-900/80 backdrop-blur-xl border-r border-slate-800/80 flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none">
       <div>
-        {/* Brand Logo Header */}
+        {/* Identitas aplikasi */}
         <div className="h-16 px-6 flex items-center gap-3 border-b border-slate-800/60">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-slate-950 font-bold flex items-center justify-center text-lg shadow-md shadow-emerald-500/20">
             SP
@@ -34,7 +36,7 @@ export default function Sidebar({ user }) {
           </div>
         </div>
 
-        {/* Navigation Items */}
+        {/* Daftar navigasi */}
         <nav className="p-4 space-y-1.5">
           <div className="px-3 py-2 text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
             Menu Utama
@@ -68,7 +70,7 @@ export default function Sidebar({ user }) {
         </nav>
       </div>
 
-      {/* User Profile & Logout Footer */}
+      {/* Ringkasan pengguna dan formulir logout melalui Server Action */}
       <div className="p-4 border-t border-slate-800/60 bg-slate-950/40">
         <div className="flex items-center justify-between gap-2.5">
           <div className="flex items-center gap-2.5 min-w-0 flex-1">

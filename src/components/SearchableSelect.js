@@ -1,15 +1,9 @@
 'use client';
 /**
- * @description 
+ * @description Combobox ringan untuk mencari dan memilih satu opsi.
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Aditya Syahestiano
  */
-
-
-/**
- * @description Combobox input ringan: ketik untuk memfilter opsi, tanpa dependensi eksternal.
- */
-
 import { useEffect, useRef, useState } from 'react';
 
 const inputClass = 'w-full rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 outline-none focus:border-emerald-500/60';
@@ -19,6 +13,8 @@ export default function SearchableSelect({ options, value, onChange, placeholder
   const [query, setQuery] = useState('');
   const containerRef = useRef(null);
 
+  // Listener global diperlukan agar daftar tertutup saat pengguna mengeklik di luar komponen.
+  // Fungsi cleanup mencegah listener lama tertinggal setelah dropdown ditutup.
   useEffect(() => {
     if (!open) return undefined;
     function handleMouseDown(event) {
@@ -33,6 +29,7 @@ export default function SearchableSelect({ options, value, onChange, placeholder
 
   const selected = options.find((option) => option.value === value);
   const displayValue = open ? query : (selected?.label ?? '');
+  // Pencarian tidak membedakan huruf besar dan kecil agar lebih mudah digunakan.
   const filteredOptions = query
     ? options.filter((option) => option.label.toLowerCase().includes(query.toLowerCase()))
     : options;
@@ -62,6 +59,7 @@ export default function SearchableSelect({ options, value, onChange, placeholder
                 key={option.value}
                 type="button"
                 onClick={() => {
+                  // Nilai pilihan dikirim ke komponen induk, lalu pencarian direset.
                   onChange(option.value);
                   setQuery('');
                   setOpen(false);

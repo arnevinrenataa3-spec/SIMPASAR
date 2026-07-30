@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @description Server Actions for scoped Pedagang CRUD.
+ * @description Server Action CRUD Pedagang dengan pembatasan berdasarkan scope Pasar.
  * @author Muhamad Hazmi Alfarizqi
  */
 
@@ -22,9 +22,11 @@ const updateSchema = createSchema.extend({ id: z.string().uuid('ID Pedagang tida
 const deleteSchema = z.object({ id: z.string().uuid('ID Pedagang tidak valid.') });
 
 function scopedPedagang(id, pasarId) {
+  // Admin tanpa scope dapat mengakses ID langsung; petugas harus punya riwayat izin di pasarnya.
   if (!pasarId) return eq(pedagang.id, id);
   return and(
     eq(pedagang.id, id),
+    // EXISTS memeriksa keterkaitan tanpa mengambil seluruh baris perizinan.
     exists(
       db.select({ id: perizinan.id })
         .from(perizinan)
@@ -52,6 +54,7 @@ export const updatePedagangAction = defineAction({
   schema: updateSchema,
   revalidate: ['/dashboard/pedagang', 'layout:/dashboard/ruang-dagang'],
   execute: async (data, ctx) => {
+    // Otorisasi objek diperiksa sebelum update, tidak cukup hanya mengandalkan izin menjalankan action.
     const allowed = await db.select({ id: pedagang.id }).from(pedagang).where(scopedPedagang(data.id, ctx.pasarId)).limit(1);
     if (!allowed.length) return { error: 'Pedagang tidak ditemukan dalam scope Pasar aktif.' };
 
@@ -79,6 +82,7 @@ export const deletePedagangAction = defineAction({
     const allowed = await db.select({ id: pedagang.id }).from(pedagang).where(scopedPedagang(data.id, ctx.pasarId)).limit(1);
     if (!allowed.length) return { error: 'Pedagang tidak ditemukan dalam scope Pasar aktif.' };
 
+    // Riwayat izin dipertahankan untuk audit, sehingga data induk yang sudah dirujuk tidak boleh dihapus.
     const linked = await db.select({ id: perizinan.id }).from(perizinan)
       .where(eq(perizinan.pedagangId, data.id)).limit(1);
     if (linked.length) return { error: 'Pedagang tidak dapat dihapus karena memiliki riwayat Perizinan.' };

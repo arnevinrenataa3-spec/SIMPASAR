@@ -1,5 +1,5 @@
 /**
- * @description 
+ * @description Halaman server untuk mengambil daftar pedagang sebelum dirender sebagai tabel.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */
@@ -12,6 +12,7 @@ import { getSession } from '../../../lib/auth.js';
 import PedagangTable from './PedagangTable.js';
 
 export default async function PedagangPage() {
+  // Sesi diperiksa di server agar data pedagang tidak dikirim kepada pengguna anonim.
   const user = await getSession();
   if (!user) redirect('/login');
 

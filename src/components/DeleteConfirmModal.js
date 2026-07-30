@@ -9,10 +9,12 @@ import AlertBanner from './AlertBanner.js';
 import Button from './Button.js';
 
 export default function DeleteConfirmModal({ isOpen, onClose, itemName, onConfirm, isPending, itemId, state }) {
+  // Jangan merender isi konfirmasi sebelum ada item yang dipilih untuk dihapus.
   if (!isOpen) return null;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Konfirmasi Hapus" submitOnEnter={false}>
+      {/* action menerima FormData; id tersembunyi menghubungkan konfirmasi dengan itemnya. */}
       <form action={onConfirm} className="space-y-6">
         {itemId != null && <input type="hidden" name="id" value={itemId} />}
 

@@ -1,5 +1,5 @@
 /**
- * @description Standard Logger dengan Pretty Print & Timestamp untuk SIMPASAR.
+ * @description Logger standar dengan warna, waktu, dan konteks untuk proses server SIMPASAR.
  * @author Muhamad Hazmi Alfarizqi
  */
 
@@ -7,10 +7,10 @@ const COLORS = {
   reset: '\x1b[0m',
   dim: '\x1b[2m',
   bright: '\x1b[1m',
-  debug: '\x1b[36m', // Cyan
-  info: '\x1b[32m',  // Green
-  warn: '\x1b[33m',  // Yellow
-  error: '\x1b[31m', // Red
+  debug: '\x1b[36m', // Sian
+  info: '\x1b[32m',  // Hijau
+  warn: '\x1b[33m',  // Kuning
+  error: '\x1b[31m', // Merah
 };
 
 function formatTimestamp() {
@@ -19,6 +19,7 @@ function formatTimestamp() {
 }
 
 function formatArg(arg) {
+  // Objek dibuat mudah dibaca, sedangkan Error tetap menyertakan stack untuk pelacakan masalah.
   if (arg instanceof Error) {
     return `${arg.message}\n${arg.stack}`;
   }
@@ -38,11 +39,13 @@ export class Logger {
   }
 
   child(context) {
+    // Logger anak menambah nama modul tanpa mengubah logger induk.
     const nextContext = this.context ? `${this.context}:${context}` : context;
     return new Logger(nextContext);
   }
 
   _log(level, ...args) {
+    // Kode ANSI hanya mengatur warna terminal dan tidak mengubah isi pesan log.
     const timestamp = formatTimestamp();
     const color = COLORS[level] || COLORS.reset;
     const levelLabel = level.toUpperCase().padStart(5);

@@ -1,7 +1,7 @@
 'use client';
 /**
- * @description Tampilan Detail Izin (read-only) — info lengkap satu izin,
- * shortcut ke Ruang Dagang & Pedagang, serta riwayat perpanjangan sebelumnya.
+ * @description Detail izin tanpa fitur ubah, dilengkapi tautan ke Ruang Dagang,
+ * Pedagang, dan riwayat perpanjangan sebelumnya.
  */
 
 import { useRouter } from 'next/navigation';
@@ -38,6 +38,7 @@ function statusTeguranBadge(statusTeguran) {
 }
 
 export default function PerizinanDetail({ permit, history, teguranList }) {
+  // useRouter diperlukan karena tombol kembali memicu navigasi dari event klik di browser.
   const router = useRouter();
 
   return (
@@ -112,6 +113,7 @@ export default function PerizinanDetail({ permit, history, teguranList }) {
         </div>
       </div>
 
+      {/* Riwayat perpanjangan sudah disusun kronologis oleh Server Component. */}
       <div className="space-y-4">
         <div>
           <h2 className="text-lg font-bold text-slate-100">Riwayat Perpanjangan Sebelumnya</h2>
@@ -139,6 +141,7 @@ export default function PerizinanDetail({ permit, history, teguranList }) {
         />
       </div>
 
+      {/* Bagian teguran disembunyikan bila belum ada riwayat. */}
       {teguranList.length > 0 && (
         <div className="space-y-4">
           <div>

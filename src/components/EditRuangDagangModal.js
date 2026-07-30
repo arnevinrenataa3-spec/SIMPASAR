@@ -1,16 +1,9 @@
 'use client';
 /**
- * @description 
+ * @description Form modal bersama untuk mengubah data dan ukuran ruang dagang.
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Aditya Syahestiano
  */
-
-
-/**
- * @description Modal Edit Ruang Dagang bersama — dipakai di halaman Kelola Ruang
- * Dagang maupun halaman Detail Ruang Dagang, agar form editnya satu sumber kebenaran.
- */
-
 import { useState } from 'react';
 import { hitungLuas, formatLuas } from '../lib/luas.js';
 import Modal from './Modal.js';
@@ -18,6 +11,7 @@ import AlertBanner from './AlertBanner.js';
 import Button from './Button.js';
 
 function EditRuangDagangForm({ item, pasars, isAdmin, action, pending, state, onCancel }) {
+  // Input ukuran dibuat controlled agar luas dapat dihitung ulang saat pengguna mengetik.
   const [editPanjang, setEditPanjang] = useState(item.panjang != null ? String(item.panjang) : '');
   const [editLebar, setEditLebar] = useState(item.lebar != null ? String(item.lebar) : '');
   const luasPreviewEdit = hitungLuas(editPanjang, editLebar);
@@ -27,6 +21,7 @@ function EditRuangDagangForm({ item, pasars, isAdmin, action, pending, state, on
       <input type="hidden" name="id" value={item.id} />
       <input type="hidden" name="pasarId" value={item.pasarId} />
 
+      {/* Pemilihan pasar hanya relevan bagi admin yang memiliki lebih dari satu pilihan. */}
       {isAdmin && pasars.length > 1 && (
         <div>
           <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
@@ -157,6 +152,7 @@ function EditRuangDagangForm({ item, pasars, isAdmin, action, pending, state, on
 
 export default function EditRuangDagangModal({ modal, pasars = [], isAdmin }) {
   return (
+    // key baru mereset state form setiap kali hook CRUD membuka sesi modal baru.
     <Modal key={modal.key} isOpen={modal.isOpen} onClose={modal.close} title="Edit Data Ruang Dagang" maxWidth="max-w-xl">
       {modal.item && (
         <EditRuangDagangForm

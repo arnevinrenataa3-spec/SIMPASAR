@@ -1,5 +1,5 @@
 /**
- * @description Domain seam for permit issuance and public permit status.
+ * @description Aturan inti penerbitan izin, teguran, perpanjangan, pencabutan, dan status publik.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */
@@ -8,6 +8,7 @@ import crypto from 'crypto';
 import { temukanAtauBuatPedagang } from './pedagang.js';
 
 function asDateOnly(value) {
+  // Normalisasi ke tengah malam UTC agar perbandingan tanggal tidak bergeser karena zona waktu server.
   if (value instanceof Date) return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
   const parsed = new Date(`${String(value).slice(0, 10)}T00:00:00Z`);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
@@ -16,6 +17,7 @@ function asDateOnly(value) {
 const ROMAN_MONTHS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
 
 export function buildNomorKartu({ nomorUrut, nomorPasar, kodeRuang, jenis, tanggal }) {
+  // Format nomor kartu mengikuti nomor urut database dan bulan Romawi yang berlaku di dokumen izin.
   const date = asDateOnly(tanggal);
   const seq = String(nomorUrut).padStart(5, '0');
   const romanBulan = ROMAN_MONTHS[date.getUTCMonth()];
@@ -24,6 +26,7 @@ export function buildNomorKartu({ nomorUrut, nomorPasar, kodeRuang, jenis, tangg
 }
 
 export function statusTeguran(tanggalKedaluwarsa, sekarang = new Date()) {
+  // SP naik bertahap mulai 28 hari setelah izin kedaluwarsa, dengan jeda tujuh hari per tingkat.
   const expiry = asDateOnly(tanggalKedaluwarsa);
   const now = asDateOnly(sekarang);
   if (!expiry || !now || now <= expiry) return null;
@@ -42,10 +45,12 @@ export async function terbitkanIzin(input, dbAdapter) {
   if (!start || !expiry || expiry <= start) return { ok: false, reason: 'tanggal_tidak_valid' };
 
   return dbAdapter.transaction(async (tx) => {
+    // Semua langkah harus atomik: kegagalan membuat izin tidak boleh meninggalkan ruang berstatus terisi.
     const ruang = await tx.findRuangForUpdate(input.ruangDagangId, input.pasarId);
     if (!ruang || ruang.status !== 'kosong') return { ok: false, reason: 'ruang_tidak_tersedia' };
 
     const marked = await tx.markRuangTerisi(ruang.id, input.pasarId);
+    // Update bersyarat ini mencegah dua permintaan bersamaan memakai ruang yang sama.
     if (!marked) return { ok: false, reason: 'ruang_tidak_tersedia' };
 
     const pedagang = await temukanAtauBuatPedagang(input.pedagang.nik, input.pedagang, tx);
@@ -79,6 +84,7 @@ export async function terbitkanTeguran(perizinanId, userId, dbAdapter, sekarang 
   if (!now) return { ok: false, reason: 'tanggal_tidak_valid' };
 
   return dbAdapter.transaction(async (tx) => {
+    // Simpan riwayat teguran dan snapshot terakhir pada perizinan dalam satu transaksi.
     const izin = await tx.findPerizinanById(perizinanId);
     if (!izin || izin.statusIzin === 'dicabut' || izin.statusIzin === 'diperpanjang') {
       return { ok: false, reason: 'izin_tidak_aktif' };
@@ -117,6 +123,7 @@ export async function perpanjangIzin(perizinanId, { tanggalTerbit, tanggalKedalu
     const ruang = await tx.findRuangById(izin.ruangDagangId);
     if (!ruang) return { ok: false, reason: 'ruang_tidak_tersedia' };
 
+    // Izin lama dipertahankan sebagai riwayat; perpanjangan selalu membuat baris izin baru.
     await tx.updatePerizinanStatus(perizinanId, 'diperpanjang');
 
     const perizinan = await tx.insertPerizinan({
@@ -151,6 +158,7 @@ export async function cabutIzin(perizinanId, dbAdapter) {
       return { ok: false, reason: 'izin_tidak_aktif' };
     }
 
+    // Status izin dan ketersediaan ruang harus berubah bersama agar data tidak bertentangan.
     await tx.updatePerizinanStatus(perizinanId, 'dicabut');
     await tx.markRuangKosong(izin.ruangDagangId);
 
@@ -190,6 +198,7 @@ export function classifyLineage(rows) {
 }
 
 export async function statusPublik(nomorKartu, dbAdapter, sekarang = new Date()) {
+  // Keluaran sengaja dibatasi pada data izin non-sensitif yang aman ditampilkan tanpa login.
   const normalized = String(nomorKartu ?? '').trim();
   if (!normalized || !dbAdapter?.findPerizinanByNomorKartu) return null;
   const record = await dbAdapter.findPerizinanByNomorKartu(normalized);

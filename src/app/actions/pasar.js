@@ -31,6 +31,7 @@ export const createPasarAction = defineAction({
   schema: createSchema,
   revalidate: ['/dashboard/pasar', '/dashboard'],
   execute: async (data) => {
+    // LOWER membuat pemeriksaan nama duplikat tidak membedakan huruf besar dan kecil.
     const existing = await db
       .select()
       .from(pasar)
@@ -83,6 +84,7 @@ export const deletePasarAction = defineAction({
   schema: deleteSchema,
   revalidate: ['/dashboard/pasar', '/dashboard'],
   execute: async (data) => {
+    // Cek relasi lebih dahulu agar pengguna mendapat pesan jelas sebelum constraint database menolak hapus.
     const linkedRuangDagang = await db
       .select({ id: ruangDagang.id })
       .from(ruangDagang)

@@ -1,5 +1,5 @@
 /**
- * @description Root layout untuk area Dashboard SIMPASAR (Sidebar, Navbar, Scope Provider).
+ * @description Layout server untuk autentikasi dan kerangka bersama seluruh dashboard.
  * @author Muhamad Hazmi Alfarizqi
  */
 
@@ -13,6 +13,7 @@ import Sidebar from '../../components/Sidebar.js';
 import Navbar from '../../components/Navbar.js';
 
 export default async function DashboardLayout({ children }) {
+  // Pemeriksaan sesi dilakukan di server sebelum isi dashboard dikirim ke browser.
   const user = await getSession();
 
   if (!user) {
@@ -20,6 +21,7 @@ export default async function DashboardLayout({ children }) {
   }
 
   let pasars = [];
+  // Hanya admin memerlukan daftar pasar karena petugas tidak boleh mengganti cakupan.
   if (user.role === 'admin') {
     pasars = await db
       .select({
@@ -34,15 +36,15 @@ export default async function DashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex">
-      {/* Sidebar Navigation */}
+      {/* Navigasi samping */}
       <Sidebar user={user} />
 
-      {/* Main Content Container */}
+      {/* Kontainer isi utama */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Navbar */}
+        {/* Navigasi atas */}
         <Navbar user={user} pasars={pasars} selectedScope={scope} />
 
-        {/* Page Body */}
+        {/* children berisi halaman dashboard yang cocok dengan URL aktif. */}
         <main className="flex-1 p-8 overflow-y-auto">
           {children}
         </main>

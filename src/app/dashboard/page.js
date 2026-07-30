@@ -1,5 +1,5 @@
 /**
- * @description Halaman Overview Dashboard SIMPASAR (Statistik Pasar, Ruang Dagang, & Quick Actions).
+ * @description Halaman ringkasan dashboard berdasarkan cakupan pasar pengguna.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
@@ -13,6 +13,7 @@ import { and, asc, eq, lt, sql } from 'drizzle-orm';
 import Badge from '../../components/Badge.js';
 
 export default async function DashboardPage() {
+  // Server Component boleh membaca sesi dan database langsung tanpa mengirim kredensial ke browser.
   const user = await getSession();
   const scope = await resolveScope(user);
   const whereClause = buildScopeFilter(scope, ruangDagang.pasarId);
@@ -27,6 +28,7 @@ export default async function DashboardPage() {
     .from(ruangDagang)
     .where(whereClause);
 
+  // Ruang non-fisik dilaporkan terpisah dan tidak dihitung dalam total jenis ruang fisik.
   const fisik = allRuang.filter((r) => r.status !== 'non-fisik');
   const stats = {
     total: fisik.length,
@@ -91,6 +93,7 @@ export default async function DashboardPage() {
     .orderBy(asc(perizinan.tanggalKedaluwarsa))
     .limit(6);
 
+  // Tambahkan informasi turunan untuk menentukan label peringatan tanpa query tambahan.
   const attentionRooms = attentionRows.map((r) => {
     const kadaluwarsa = String(r.tanggalKedaluwarsa).slice(0, 10);
     const daysLeft = Math.ceil((new Date(kadaluwarsa) - new Date(today)) / 86400000);
@@ -123,7 +126,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Banner */}
+      {/* Sambutan dan cakupan data aktif */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-950/70 via-slate-900/80 to-slate-900/80 border border-emerald-500/30 p-8 shadow-xl">
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -176,7 +179,7 @@ export default async function DashboardPage() {
         )}
       </div>
 
-      {/* Stats Overview */}
+      {/* Ringkasan statistik */}
       <div className="space-y-4">
         <div>
           <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Ringkasan Ruang</span>

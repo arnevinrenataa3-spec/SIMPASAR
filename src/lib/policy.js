@@ -1,10 +1,11 @@
 /**
- * @description Satu-satunya rumah aturan "siapa boleh apa" di seam action.
+ * @description Pusat aturan otorisasi untuk menentukan role yang boleh menjalankan operasi.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */
 
 const RULES = {
+  // Kunci operasi dipakai Server Action agar aturan role tidak tersebar di banyak file.
   'pasar:crud': ['admin'],
   'users:crud': ['admin'],
   'scope:set': ['admin'],
@@ -21,6 +22,7 @@ const RULES = {
  * @returns {boolean}
  */
 export function boleh(user, operasi) {
+  // Operasi yang tidak dikenal ditolak secara default untuk mencegah akses terbuka akibat salah ketik.
   if (!user) return false;
   const allowed = RULES[operasi];
   if (!allowed) return false;

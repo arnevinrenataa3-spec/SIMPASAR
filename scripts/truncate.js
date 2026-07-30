@@ -1,5 +1,5 @@
 /**
- * @description 
+ * @description Skrip pengembangan untuk mengosongkan seluruh data tanpa menghapus struktur tabel.
  * @author Arnevin Renata Ahmad Barkah
  */
 
@@ -10,7 +10,7 @@ import logger from '../src/lib/logger.js';
 async function reset() {
   try {
     logger.info('Truncating tables...');
-    // We truncate perizinan first due to FK constraints, then others
+    // CASCADE ikut mengosongkan tabel yang bergantung melalui foreign key, termasuk riwayat teguran.
     await db.execute(sql`TRUNCATE TABLE perizinan, ruang_dagang, users, pedagang CASCADE;`);
     logger.info('Tables truncated.');
   } catch (err) {

@@ -1,5 +1,5 @@
 /**
- * @description Halaman server-side Manajemen Pengguna (Admin & Petugas Pasar).
+ * @description Halaman server untuk manajemen akun admin dan petugas pasar.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
@@ -13,6 +13,7 @@ import UserTable from './UserTable.js';
 export default async function UsersPage() {
   const session = await getSession();
 
+  // Menu yang disembunyikan bukan pengaman; URL tetap harus dilindungi di server.
   if (!session || session.role !== 'admin') {
     return (
       <div className="max-w-xl mx-auto mt-12 p-8 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-center text-rose-300">
@@ -29,6 +30,7 @@ export default async function UsersPage() {
     );
   }
 
+  // Left join tetap menampilkan admin yang memang tidak terikat ke satu pasar.
   const userList = await db
     .select({
       id: users.id,

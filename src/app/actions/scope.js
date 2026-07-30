@@ -17,11 +17,13 @@ export async function setPasarScopeAction(pasarId) {
     return { error: 'Akses ditolak. Fitur ini hanya dapat diakses oleh Admin.' };
   }
 
+  // Hanya admin boleh memilih scope; petugas selalu memakai pasar dari data akun.
   const cookieStore = await cookies();
   if (!pasarId || pasarId === 'all') {
     cookieStore.set('simpasar_scope_pasar', 'all', { path: '/' });
   } else {
     cookieStore.set('simpasar_scope_pasar', pasarId, { path: '/' });
   }
+  // Revalidasi layout menyegarkan seluruh halaman dashboard yang membaca scope cookie ini.
   revalidatePath('/dashboard', 'layout');
 }

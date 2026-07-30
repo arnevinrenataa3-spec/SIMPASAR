@@ -1,11 +1,9 @@
 'use client';
 /**
- * @description 
+ * @description Tabel client untuk pencarian dan CRUD data pedagang melalui modal.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah, Aditya Syahestiano
  */
-
-
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCrudModal } from '../../../lib/useCrudModal.js';
@@ -22,6 +20,7 @@ import {
 const inputClass = 'w-full rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 outline-none focus:border-emerald-500/60';
 
 function Fields({ item }) {
+  // Field yang sama dipakai form tambah dan edit; item hanya tersedia saat mengedit.
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -43,12 +42,14 @@ function Fields({ item }) {
 }
 
 export default function PedagangTable({ initialData }) {
+  // Setiap operasi memiliki state modal dan hasil Server Action yang terpisah.
   const createModal = useCrudModal({ action: createPedagangAction });
   const editModal = useCrudModal({ action: updatePedagangAction });
   const deleteModal = useCrudModal({ action: deletePedagangAction });
   const searchParams = useSearchParams();
   const pedagangIdFilter = searchParams.get('pedagangId');
 
+  // Query pedagangId dipakai saat pengguna datang dari tautan detail izin atau ruang.
   const scopedData = pedagangIdFilter
     ? initialData.filter((item) => item.id === pedagangIdFilter)
     : initialData;
@@ -129,6 +130,7 @@ export default function PedagangTable({ initialData }) {
         filterEmptyMessage="Tidak ada Pedagang yang cocok."
       />
 
+      {/* key dari hook mereset input uncontrolled ketika modal dibuka kembali. */}
       <Modal key={createModal.key} isOpen={createModal.isOpen} onClose={createModal.close} title="Tambah Pedagang" maxWidth="max-w-xl">
         <form action={createModal.action} className="space-y-4"><Fields /><AlertBanner state={createModal.state} /><Button type="submit" variant="primary" pending={createModal.pending} className="w-full">{createModal.pending ? 'Menyimpan...' : 'Simpan Pedagang'}</Button></form>
       </Modal>

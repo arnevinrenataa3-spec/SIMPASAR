@@ -1,20 +1,13 @@
 'use client';
 /**
- * @description 
+ * @description Checkbox bertema aplikasi yang tetap memakai input native untuk aksesibilitas.
  * @author Aditya Syahestiano
  */
-
-
-/**
- * @description Custom-styled checkbox primitif (forward-looking, mis. untuk bulk
- * row-selection di DataTable). Input native tetap ada di DOM (sr-only) supaya
- * fokus keyboard & toggle Space/Enter tetap berfungsi.
- */
-
 import { useId } from 'react';
 
 export default function Checkbox({ checked = false, onChange, id, label, disabled = false }) {
   const generatedId = useId();
+  // useId memberi pasangan id/htmlFor yang stabil bila pemanggil tidak menyediakan id.
   const inputId = id ?? generatedId;
 
   return (
@@ -23,6 +16,7 @@ export default function Checkbox({ checked = false, onChange, id, label, disable
       className={`inline-flex items-center gap-2 select-none ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
     >
       <span className="relative inline-flex h-4 w-4 shrink-0 items-center justify-center">
+        {/* Input tetap ada untuk fokus keyboard; span berikutnya hanya menggambar tampilannya. */}
         <input
           type="checkbox"
           id={inputId}

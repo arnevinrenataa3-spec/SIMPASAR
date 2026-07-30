@@ -1,16 +1,9 @@
 'use client';
 /**
- * @description 
+ * @description Tombol bersama yang dapat dirender sebagai button atau tautan Next.js.
  * @author Aditya Syahestiano
  * @contributor Arnevin Renata Ahmad Barkah
  */
-
-
-/**
- * @description Tombol primitif bersama — satu sumber kebenaran untuk semua varian
- * tombol (primary/secondary/danger/info/ghost) di seluruh dashboard.
- */
-
 import Link from 'next/link';
 
 const BASE_CLASS = 'inline-flex items-center justify-center gap-2 rounded-xl transition duration-150 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50';
@@ -56,6 +49,7 @@ export default function Button({
   );
 
   if (href) {
+    // Jika href tersedia, gunakan Link agar navigasi internal tidak memuat ulang halaman penuh.
     return (
       <Link
         href={href}

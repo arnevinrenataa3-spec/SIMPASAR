@@ -1,5 +1,5 @@
 /**
- * @description Halaman server-side Master Data Ruang Dagang (Los / Meja / Kios / Toko).
+ * @description Halaman server untuk mengambil ruang dagang sesuai cakupan pasar aktif.
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Muhamad Hazmi Alfarizqi, Aditya Syahestiano
  */
@@ -14,6 +14,7 @@ import { ruangDagang, pasar, perizinan, pedagang } from '../../../db/schema.js';
 import RuangDagangTable from './RuangDagangTable.js';
 
 export default async function RuangDagangPage() {
+  // Query dan pembatasan scope dilakukan di server sebelum data masuk ke tabel client.
   const session = await getSession();
 
   if (!session) {
@@ -23,6 +24,7 @@ export default async function RuangDagangPage() {
   const scope = await resolveScope(session);
   const whereClause = buildScopeFilter(scope, ruangDagang.pasarId);
 
+  // Left join mempertahankan ruang kosong yang belum memiliki izin atau pedagang.
   const rawList = await db
     .select({
       id: ruangDagang.id,
@@ -51,6 +53,7 @@ export default async function RuangDagangPage() {
 
   const today = new Date().toISOString().slice(0, 10);
 
+  // Tambahkan luas dan status kedaluwarsa sebagai data siap tampil.
   const ruangList = rawList.map((row) => {
     const kadaluwarsa = row.tanggalKedaluwarsa
       ? String(row.tanggalKedaluwarsa).slice(0, 10)

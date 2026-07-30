@@ -1,5 +1,5 @@
 /**
- * @description Halaman global 404 Not Found SIMPASAR.
+ * @description Halaman 404 global ketika rute yang diminta tidak ditemukan.
  * @author Muhamad Hazmi Alfarizqi
  */
 

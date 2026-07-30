@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * @description Komponen UI Client-side untuk Master Data Ruang Dagang (CRUD, Validasi, Modal, Search & Filter).
+ * @description Tabel client untuk CRUD, filter, dan peringatan izin ruang dagang.
  * @author Aditya Syahestiano
  * @contributor Arnevin Renata Ahmad Barkah, Muhamad Hazmi Alfarizqi
  */
@@ -21,11 +21,13 @@ import Badge from '../../../components/Badge.js';
 import { createRuangDagangAction, updateRuangDagangAction, deleteRuangDagangAction } from '../../actions/ruang-dagang.js';
 
 export default function RuangDagangTable({ initialData = [], pasars = [], user, selectedScope = 'all' }) {
+  // Ukuran disimpan sebagai state agar estimasi luas form tambah berubah secara langsung.
   const [panjang, setPanjang] = useState('');
   const [lebar, setLebar] = useState('');
   const searchParams = useSearchParams();
   const pedagangIdFilter = searchParams.get('pedagangId');
 
+  // Setelah berhasil membuat ruang, kosongkan state input ukuran untuk pemakaian berikutnya.
   const createModal = useCrudModal({
     action: createRuangDagangAction,
     onSuccess: () => { setPanjang(''); setLebar(''); },
@@ -33,6 +35,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
   const editModal = useCrudModal({ action: updateRuangDagangAction });
   const deleteModal = useCrudModal({ action: deleteRuangDagangAction });
 
+  // Filter khusus ini berasal dari tautan "Ruang" pada halaman pedagang.
   const scopedData = pedagangIdFilter
     ? initialData.filter((item) => item.pedagangId === pedagangIdFilter)
     : initialData;
@@ -86,7 +89,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
 
   return (
     <div className="space-y-6">
-      {/* Header Bar */}
+      {/* Judul dan tombol tambah */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl">
         <div>
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Kelola Ruang Dagang</h1>
@@ -104,7 +107,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
         </Button>
       </div>
 
-      {/* Filtered by Pedagang */}
+      {/* Informasi filter pedagang dari URL */}
       {pedagangIdFilter && (
         <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200 flex items-center justify-between gap-3">
           <span>
@@ -117,7 +120,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
         </div>
       )}
 
-      {/* Stats Row */}
+      {/* Peringatan izin yang mendekati atau melewati masa berlaku */}
       {stats.expiringSoon > 0 && (
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200 flex items-center gap-3">
           <svg className="w-5 h-5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -245,7 +248,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
         filterEmptyMessage="Tidak ada ruang dagang yang cocok dengan filter."
       />
 
-      {/* Add Modal */}
+      {/* Modal tambah ruang dagang */}
       <Modal
         key={createModal.key}
         isOpen={createModal.isOpen}
@@ -254,6 +257,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
         maxWidth="max-w-xl"
       >
         <form action={createModal.action} className="space-y-4">
+          {/* Admin memilih pasar; Server Action menentukan pasar petugas dari sesinya. */}
           {isAdmin && (
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
@@ -377,7 +381,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
 
       <EditRuangDagangModal modal={editModal} pasars={pasars} isAdmin={isAdmin} />
 
-      {/* Delete Confirmation Modal */}
+      {/* Modal konfirmasi hapus */}
       <DeleteConfirmModal
         isOpen={deleteModal.isOpen}
         onClose={deleteModal.close}

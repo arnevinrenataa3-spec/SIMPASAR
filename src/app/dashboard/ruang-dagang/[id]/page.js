@@ -1,5 +1,5 @@
 /**
- * @description 
+ * @description Halaman server untuk detail ruang, izin, pedagang, dan riwayat teguran.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */
@@ -14,12 +14,14 @@ import { ruangDagang, pasar, perizinan, pedagang, teguran } from '../../../../db
 import RuangDagangDetail from './RuangDagangDetail.js';
 
 export default async function RuangDagangDetailPage({ params }) {
+  // Ambil sesi dan parameter dinamis di server sebelum menjalankan query detail.
   const session = await getSession();
   if (!session) redirect('/login');
 
   const scope = await resolveScope(session);
   const { id } = await params;
 
+  // Gabungan id dan scope mencegah akses detail ruang di luar pasar yang diizinkan.
   const scopeFilter = buildScopeFilter(scope, ruangDagang.pasarId);
   const whereClause = scopeFilter ? and(eq(ruangDagang.id, id), scopeFilter) : eq(ruangDagang.id, id);
 
@@ -69,6 +71,7 @@ export default async function RuangDagangDetailPage({ params }) {
 
   const pedagangAktif = izins.find((i) => i.statusIzin === 'aktif');
 
+  // Admin scope "all" melihat semua pedagang; scope pasar hanya melihat pedagang terkait pasar itu.
   const traders = scope === 'all'
     ? await db.select({
         id: pedagang.id,
@@ -93,6 +96,7 @@ export default async function RuangDagangDetailPage({ params }) {
 
   const izinIds = izins.map((i) => i.id);
   let teguranList = [];
+  // Hindari query teguran bila ruang belum pernah memiliki izin.
   if (izinIds.length > 0) {
     teguranList = await db
       .select({

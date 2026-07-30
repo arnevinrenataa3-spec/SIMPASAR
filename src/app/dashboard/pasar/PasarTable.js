@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * @description Komponen UI Client-side untuk kelola Master Data Pasar (CRUD, Search & Filter).
+ * @description Tabel client untuk pencarian dan CRUD master data pasar melalui modal.
  * @author Aditya Syahestiano
  * @contributor Arnevin Renata Ahmad Barkah
  */
@@ -15,13 +15,14 @@ import Button from '../../../components/Button.js';
 import { createPasarAction, updatePasarAction, deletePasarAction } from '../../actions/pasar.js';
 
 export default function PasarTable({ pasars }) {
+  // State tambah, edit, dan hapus dipisah agar item serta pesan hasilnya tidak tercampur.
   const createModal = useCrudModal({ action: createPasarAction });
   const editModal = useCrudModal({ action: updatePasarAction });
   const deleteModal = useCrudModal({ action: deletePasarAction });
 
   return (
     <div className="space-y-6">
-      {/* Header Bar */}
+      {/* Judul dan tombol tambah */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl">
         <div>
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
@@ -97,7 +98,7 @@ export default function PasarTable({ pasars }) {
         filterEmptyMessage="Tidak ada pasar yang cocok dengan pencarian."
       />
 
-      {/* Add Pasar Modal */}
+      {/* Modal tambah pasar */}
       <Modal
         key={createModal.key}
         isOpen={createModal.isOpen}
@@ -156,7 +157,7 @@ export default function PasarTable({ pasars }) {
         </form>
       </Modal>
 
-      {/* Edit Pasar Modal */}
+      {/* Modal edit pasar; item dipastikan tersedia sebelum form dirender. */}
       <Modal
         key={editModal.key}
         isOpen={editModal.isOpen}
@@ -219,7 +220,7 @@ export default function PasarTable({ pasars }) {
         )}
       </Modal>
 
-      {/* Delete Confirmation Modal */}
+      {/* Modal konfirmasi hapus */}
       <DeleteConfirmModal
         isOpen={deleteModal.isOpen}
         onClose={deleteModal.close}

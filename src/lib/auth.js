@@ -1,5 +1,5 @@
 /**
- * @description Utility autentikasi (manajemen session cookie terenkripsi, verifikasi session).
+ * @description Utilitas autentikasi untuk menandatangani, membaca, dan menghapus cookie sesi.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */
@@ -17,6 +17,7 @@ const SESSION_COOKIE_NAME = 'simpasar_session';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'simpasar-secret-key-2026-v1';
 
 function signSession(payload) {
+  // HMAC menjamin isi sesi tidak diubah klien; data ditandatangani, bukan dienkripsi.
   const data = JSON.stringify(payload);
   const hmac = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('hex');
   return Buffer.from(JSON.stringify({ data, hmac })).toString('base64url');
@@ -31,6 +32,7 @@ function verifySessionToken(token) {
     const hmacBuf = Buffer.from(hmac);
     const expectedBuf = Buffer.from(expectedHmac);
 
+    // Perbandingan waktu-konstan mengurangi kebocoran informasi melalui durasi pemeriksaan signature.
     if (hmacBuf.length === expectedBuf.length && crypto.timingSafeEqual(hmacBuf, expectedBuf)) {
       const payload = JSON.parse(data);
       if (payload.exp && Date.now() > payload.exp) {
@@ -45,6 +47,7 @@ function verifySessionToken(token) {
 }
 
 export async function createSession(userId) {
+  // Sesi berlaku tujuh hari dan cookie httpOnly tidak dapat dibaca JavaScript di browser.
   const exp = Date.now() + 7 * 24 * 60 * 60 * 1000;
   const token = signSession({ userId, exp });
 
@@ -72,6 +75,7 @@ export async function getSession() {
   if (!payload || !payload.userId) return null;
 
   try {
+    // Data user selalu dibaca ulang dari database agar role/pasar terbaru langsung berlaku.
     const userRecords = await db
       .select({
         id: users.id,

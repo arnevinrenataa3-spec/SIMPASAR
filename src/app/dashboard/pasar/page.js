@@ -1,5 +1,5 @@
 /**
- * @description Halaman server-side Master Data Pasar.
+ * @description Halaman server untuk otorisasi admin dan pengambilan master data pasar.
  * @author Arnevin Renata Ahmad Barkah
  * @contributor Muhamad Hazmi Alfarizqi, Aditya Syahestiano
  */
@@ -12,6 +12,7 @@ import PasarTable from './PasarTable.js';
 export default async function PasarPage() {
   const session = await getSession();
 
+  // Pemeriksaan ini tetap diperlukan walau menu admin disembunyikan, karena URL bisa diketik langsung.
   if (!session || session.role !== 'admin') {
     return (
       <div className="max-w-xl mx-auto mt-12 p-8 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-center text-rose-300">

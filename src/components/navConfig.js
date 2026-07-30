@@ -1,14 +1,9 @@
 /**
- * @description 
+ * @description Konfigurasi bersama untuk menu dan penanda halaman aktif dashboard.
  * @author Muhamad Hazmi Alfarizqi
  */
 
-/**
- * @description Satu sumber kebenaran untuk daftar navigasi dashboard — dipakai
- * Sidebar (menu + highlight aktif) dan Navbar (breadcrumb dinamis) agar keduanya
- * tidak bisa saling berbeda.
- */
-
+// Sidebar memakai daftar ini sebagai menu, sedangkan Navbar memakainya untuk judul halaman.
 export const baseNavItems = [
   {
     name: 'Overview',

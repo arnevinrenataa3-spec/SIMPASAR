@@ -17,6 +17,7 @@ export async function seed() {
 
   const adminPasswordHash = await hashPassword('admin123');
 
+  // Pemeriksaan ini membuat seed idempoten: startup berulang tidak membuat admin duplikat.
   const existingAdmin = await db.select().from(users).where(eq(users.username, 'admin'));
   if (existingAdmin.length === 0) {
     await db.insert(users).values({
@@ -34,6 +35,7 @@ export async function seed() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
+  // Saat diimpor init.js, pemanggil yang mengatur alur; saat dijalankan langsung, skrip mengatur exit code.
   seed()
     .then(() => process.exit(0))
     .catch((err) => {

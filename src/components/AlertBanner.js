@@ -7,6 +7,7 @@
 export default function AlertBanner({ state }) {
   if (!state) return null;
 
+  // Ubah objek error per field menjadi daftar yang mudah dirender di bawah pesan utama.
   const fieldErrorEntries = state?.fieldErrors
     ? Object.entries(state.fieldErrors).filter(([, msgs]) => msgs?.length > 0)
     : [];

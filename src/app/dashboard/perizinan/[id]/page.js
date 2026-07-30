@@ -13,12 +13,14 @@ import { classifyLineage } from '../../../../lib/perizinan.js';
 import PerizinanDetail from './PerizinanDetail.js';
 
 export default async function PerizinanDetailPage({ params }) {
+  // params pada App Router ini bersifat async, sehingga id dibaca setelah await.
   const user = await getSession();
   if (!user) redirect('/login');
 
   const scope = await resolveScope(user);
   const { id } = await params;
 
+  // Filter scope sekaligus mencegah pengguna membuka detail pasar lain lewat URL langsung.
   const scopeFilter = buildScopeFilter(scope, ruangDagang.pasarId);
   const whereClause = scopeFilter ? and(eq(perizinan.id, id), scopeFilter) : eq(perizinan.id, id);
 
@@ -49,6 +51,7 @@ export default async function PerizinanDetailPage({ params }) {
   if (!targetRows.length) notFound();
   const target = targetRows[0];
 
+  // Ambil izin untuk pasangan ruang-pedagang yang sama guna menyusun rantai perpanjangan.
   const lineageRows = await db
     .select({
       id: perizinan.id,
@@ -73,6 +76,7 @@ export default async function PerizinanDetailPage({ params }) {
   const byId = new Map(lineageRows.map((row) => [row.id, row]));
 
   const history = [];
+  // Telusuri previousId mundur dari izin saat ini, lalu balik agar urutannya kronologis.
   let cursor = lineage.get(target.id);
   while (cursor?.previousId) {
     history.push(byId.get(cursor.previousId));
@@ -97,6 +101,7 @@ export default async function PerizinanDetailPage({ params }) {
   const isExpiringSoon = target.statusIzin === 'aktif' && daysLeft >= 0 && daysLeft <= 7;
   const isExpired = target.statusIzin === 'aktif' && daysLeft < 0;
 
+  // Gabungkan data database dengan nilai turunan yang khusus diperlukan tampilan.
   const permit = {
     ...target,
     daysLeft,
