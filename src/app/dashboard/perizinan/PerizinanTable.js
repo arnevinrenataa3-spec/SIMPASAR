@@ -101,10 +101,10 @@ export default function PerizinanTable({ permits }) {
             render: (permit) => (
               <Link
                 href={`/dashboard/ruang-dagang/${permit.ruangDagangId}`}
-                className="block hover:text-emerald-400 transition"
+                className="block transition"
                 title={`Lihat detail ruang dagang: ${permit.kodeRuang}`}
               >
-                <strong className="text-slate-100 hover:text-emerald-400 transition">{permit.kodeRuang}</strong>
+                <strong className="text-emerald-400 underline hover:text-emerald-300 transition">{permit.kodeRuang}</strong>
                 <span className="block text-xs text-slate-500">{permit.namaPasar}</span>
               </Link>
             ),
@@ -115,7 +115,7 @@ export default function PerizinanTable({ permits }) {
             render: (permit) => (
               <Link
                 href={`/dashboard/pedagang?pedagangId=${permit.pedagangId}`}
-                className="text-slate-200 hover:text-emerald-400 hover:underline transition"
+                className="text-emerald-400 underline hover:text-emerald-300 transition"
                 title={`Lihat data pedagang: ${permit.namaPedagang}`}
               >
                 {permit.namaPedagang}

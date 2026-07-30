@@ -81,7 +81,7 @@ export default function PerizinanDetail({ permit, history, teguranList }) {
             <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Ruang Dagang</span>
             <Link
               href={`/dashboard/ruang-dagang/${permit.ruangDagangId}`}
-              className="block text-sm font-bold font-mono text-emerald-400 mt-1 hover:underline"
+              className="block text-sm font-bold font-mono text-emerald-400 underline hover:text-emerald-300 mt-1 transition"
             >
               {permit.kodeRuang}
             </Link>
@@ -91,7 +91,7 @@ export default function PerizinanDetail({ permit, history, teguranList }) {
             <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Pedagang</span>
             <Link
               href={`/dashboard/pedagang?pedagangId=${permit.pedagangId}`}
-              className="block text-sm font-semibold text-slate-100 mt-1 hover:text-emerald-400 hover:underline"
+              className="block text-sm font-semibold text-emerald-400 underline hover:text-emerald-300 mt-1 transition"
             >
               {permit.namaPedagang}
             </Link>

@@ -164,7 +164,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
               item.namaPedagang ? (
                 <Link
                   href={`/dashboard/pedagang?pedagangId=${item.pedagangId}`}
-                  className="text-xs text-slate-300 hover:text-emerald-400 hover:underline max-w-[140px] truncate block transition"
+                  className="text-xs text-emerald-400 underline hover:text-emerald-300 max-w-[140px] truncate block transition"
                   title={`Lihat data pedagang: ${item.namaPedagang}`}
                 >
                   {item.namaPedagang}
