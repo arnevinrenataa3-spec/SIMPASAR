@@ -34,6 +34,7 @@ export default async function RuangDagangPage() {
       lebar: ruangDagang.lebar,
       status: ruangDagang.status,
       namaPedagang: pedagang.namaLengkap,
+      pedagangId: pedagang.id,
       createdAt: ruangDagang.createdAt,
       updatedAt: ruangDagang.updatedAt,
       tanggalKedaluwarsa: perizinan.tanggalKedaluwarsa,

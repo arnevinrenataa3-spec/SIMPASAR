@@ -5,6 +5,8 @@
  */
 
 
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useCrudModal } from '../../../lib/useCrudModal.js';
 import AlertBanner from '../../../components/AlertBanner.js';
 import Modal from '../../../components/Modal.js';
@@ -43,6 +45,12 @@ export default function PedagangTable({ initialData }) {
   const createModal = useCrudModal({ action: createPedagangAction });
   const editModal = useCrudModal({ action: updatePedagangAction });
   const deleteModal = useCrudModal({ action: deletePedagangAction });
+  const searchParams = useSearchParams();
+  const pedagangIdFilter = searchParams.get('pedagangId');
+
+  const scopedData = pedagangIdFilter
+    ? initialData.filter((item) => item.id === pedagangIdFilter)
+    : initialData;
 
   return (
     <div className="space-y-6">
@@ -59,6 +67,17 @@ export default function PedagangTable({ initialData }) {
           <span>Tambah Pedagang</span>
         </Button>
       </section>
+
+      {pedagangIdFilter && (
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200 flex items-center justify-between gap-3">
+          <span>
+            Menampilkan: <strong>{scopedData[0]?.namaLengkap || 'pedagang ini'}</strong>
+          </span>
+          <Link href="/dashboard/pedagang" className="text-xs font-semibold text-emerald-300 hover:text-emerald-200 underline shrink-0">
+            Tampilkan Semua
+          </Link>
+        </div>
+      )}
 
       <DataTable
         cellPadding="px-5 py-4"
@@ -90,27 +109,21 @@ export default function PedagangTable({ initialData }) {
             tdClassName: 'text-right',
             render: (item) => (
               <div className="flex items-center justify-end gap-2">
-                {item.ruangDagangId ? (
-                  <Button
-                    href={`/dashboard/ruang-dagang/${item.ruangDagangId}`}
-                    variant="success"
-                    size="sm"
-                    title="Lihat Ruang Dagang yang dimiliki"
-                  >
-                    Ruang
-                  </Button>
-                ) : (
-                  <Button variant="success" size="sm" disabled title="Belum memiliki Ruang Dagang aktif">
-                    Ruang
-                  </Button>
-                )}
+                <Button
+                  href={`/dashboard/ruang-dagang?pedagangId=${item.id}`}
+                  variant="success"
+                  size="sm"
+                  title="Lihat Ruang Dagang yang dimiliki"
+                >
+                  Ruang
+                </Button>
                 <Button variant="info" size="sm" onClick={() => editModal.open(item)}>Edit</Button>
                 <Button variant="danger" size="sm" onClick={() => deleteModal.open(item)}>Hapus</Button>
               </div>
             ),
           },
         ]}
-        data={initialData}
+        data={scopedData}
         emptyMessage="Belum ada Pedagang."
         filterEmptyMessage="Tidak ada Pedagang yang cocok."
       />

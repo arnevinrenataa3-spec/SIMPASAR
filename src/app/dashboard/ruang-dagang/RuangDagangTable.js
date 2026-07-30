@@ -7,6 +7,8 @@
  */
 
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useCrudModal } from '../../../lib/useCrudModal.js';
 import { hitungLuas, formatLuas } from '../../../lib/luas.js';
 import Modal from '../../../components/Modal.js';
@@ -21,6 +23,8 @@ import { createRuangDagangAction, updateRuangDagangAction, deleteRuangDagangActi
 export default function RuangDagangTable({ initialData = [], pasars = [], user, selectedScope = 'all' }) {
   const [panjang, setPanjang] = useState('');
   const [lebar, setLebar] = useState('');
+  const searchParams = useSearchParams();
+  const pedagangIdFilter = searchParams.get('pedagangId');
 
   const createModal = useCrudModal({
     action: createRuangDagangAction,
@@ -29,11 +33,19 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
   const editModal = useCrudModal({ action: updateRuangDagangAction });
   const deleteModal = useCrudModal({ action: deleteRuangDagangAction });
 
+  const scopedData = pedagangIdFilter
+    ? initialData.filter((item) => item.pedagangId === pedagangIdFilter)
+    : initialData;
+
+  const filteredPedagangName = pedagangIdFilter
+    ? scopedData[0]?.namaPedagang ?? initialData.find((item) => item.pedagangId === pedagangIdFilter)?.namaPedagang
+    : null;
+
   const stats = useMemo(() => {
-    const expiringSoon = initialData.filter((item) => item.isExpiringSoon).length;
-    const expired = initialData.filter((item) => item.isExpired).length;
+    const expiringSoon = scopedData.filter((item) => item.isExpiringSoon).length;
+    const expired = scopedData.filter((item) => item.isExpired).length;
     return { expiringSoon, expired };
-  }, [initialData]);
+  }, [scopedData]);
 
   const getJenisBadge = (jenis) => {
     switch (jenis) {
@@ -92,6 +104,19 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
         </Button>
       </div>
 
+      {/* Filtered by Pedagang */}
+      {pedagangIdFilter && (
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200 flex items-center justify-between gap-3">
+          <span>
+            Menampilkan ruang dagang milik{' '}
+            <strong>{filteredPedagangName || 'pedagang ini'}</strong> ({scopedData.length} ruang).
+          </span>
+          <Link href="/dashboard/ruang-dagang" className="text-xs font-semibold text-emerald-300 hover:text-emerald-200 underline shrink-0">
+            Tampilkan Semua
+          </Link>
+        </div>
+      )}
+
       {/* Stats Row */}
       {stats.expiringSoon > 0 && (
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200 flex items-center gap-3">
@@ -137,9 +162,15 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
             accessor: 'namaPedagang',
             render: (item) => (
               item.namaPedagang ? (
-                <span className="text-xs text-slate-300 max-w-[140px] truncate block" title={item.namaPedagang}>{item.namaPedagang}</span>
+                <Link
+                  href={`/dashboard/pedagang?pedagangId=${item.pedagangId}`}
+                  className="text-xs text-slate-300 hover:text-emerald-400 hover:underline max-w-[140px] truncate block transition"
+                  title={`Lihat data pedagang: ${item.namaPedagang}`}
+                >
+                  {item.namaPedagang}
+                </Link>
               ) : (
-                <span className="text-xs text-slate-500">&mdash;</span>
+                <span className="text-xs text-slate-400">&mdash;</span>
               )
             ),
           },
@@ -148,7 +179,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
             accessor: 'kadaluwarsa',
             render: (item) => {
               if (!item.kadaluwarsa) {
-                return <span className="text-xs text-slate-500">&mdash;</span>;
+                return <span className="text-xs text-slate-400">&mdash;</span>;
               }
               const daysLeft = Math.ceil((new Date(item.kadaluwarsa) - new Date(today)) / 86400000);
               if (item.isExpired) {
@@ -209,7 +240,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
             ],
           },
         ]}
-        data={initialData}
+        data={scopedData}
         emptyMessage="Belum ada data ruang dagang."
         filterEmptyMessage="Tidak ada ruang dagang yang cocok dengan filter."
       />
@@ -252,7 +283,7 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
                 name="kodeRuang"
                 required
                 placeholder="Contoh: KI-A-01"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:border-emerald-500/50"
               />
             </div>
 
@@ -288,11 +319,11 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
                     placeholder="3"
                     value={panjang}
                     onChange={(e) => setPanjang(e.target.value)}
-                    className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 font-mono"
+                    className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:border-emerald-500/50 font-mono"
                   />
-                  <span className="absolute right-3 top-3 text-xs text-slate-500 font-medium">m</span>
+                  <span className="absolute right-3 top-3 text-xs text-slate-400 font-medium">m</span>
                 </div>
-                <span className="text-[10px] text-slate-500 mt-1 block">Panjang (meter)</span>
+                <span className="text-[10px] text-slate-400 mt-1 block">Panjang (meter)</span>
               </div>
 
               <div>
@@ -305,11 +336,11 @@ export default function RuangDagangTable({ initialData = [], pasars = [], user, 
                     placeholder="4"
                     value={lebar}
                     onChange={(e) => setLebar(e.target.value)}
-                    className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500/50 font-mono"
+                    className="w-full pl-3 pr-8 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:border-emerald-500/50 font-mono"
                   />
-                  <span className="absolute right-3 top-3 text-xs text-slate-500 font-medium">m</span>
+                  <span className="absolute right-3 top-3 text-xs text-slate-400 font-medium">m</span>
                 </div>
-                <span className="text-[10px] text-slate-500 mt-1 block">Lebar (meter)</span>
+                <span className="text-[10px] text-slate-400 mt-1 block">Lebar (meter)</span>
               </div>
             </div>
 
