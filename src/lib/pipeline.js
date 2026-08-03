@@ -33,7 +33,7 @@ import { assertWriteScope } from './scope.js';
  * @returns {(prevState: any, formData: FormData) => Promise<{success: boolean, message?: string, error?: string, fieldErrors?: Record<string,string[]>}>}
  */
 export function defineAction({ operasi, scope, schema, revalidate = [], execute }) {
-  // Factory ini menyamakan bentuk respons dan urutan pemeriksaan untuk semua Server Action CRUD.
+  // Factory ini menyamakan plumbing untuk action data maupun operasi domain perizinan.
   return async function action(prevState, formData) {
     const user = await getSession();
 

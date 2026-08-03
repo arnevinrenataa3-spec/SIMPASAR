@@ -1,5 +1,5 @@
 /**
- * @description Sumber utama struktur database Drizzle ORM untuk seluruh data SIMPASAR.
+ * @description Sumber utama definisi tabel Drizzle ORM untuk seluruh data SIMPASAR.
  * @author Muhamad Hazmi Alfarizqi
  * @contributor Arnevin Renata Ahmad Barkah
  */

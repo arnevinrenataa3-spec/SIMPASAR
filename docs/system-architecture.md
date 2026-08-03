@@ -14,11 +14,11 @@ Berdasarkan diskusi tim, berikut adalah tumpukan teknologi (Tech Stack) yang aka
 
 ### 3. Database Layer (PostgreSQL v18 & Drizzle ORM)
 - **Database Engine:** Menggunakan **PostgreSQL v18**. Versi terbaru ini dipilih karena memiliki dukungan fungsi *native* `uuidv7()` yang luar biasa untuk meng-*generate* UUID secara efisien tanpa membebani aplikasi.
-- **ORM / Database Client:** Menggunakan **Drizzle ORM**. Sangat ringan, cepat, dan modern untuk berinteraksi dengan database langsung dari lingkungan Node.js/Next.js.
+- **ORM dan Query Builder:** Menggunakan paket **Drizzle ORM** melalui `drizzle-orm/postgres-js`. Dalam proyek ini, fitur yang dipakai difokuskan pada definisi schema, migration melalui Drizzle Kit, dan query builder SQL seperti `.select().from()`, `.insert()`, `.update()`, serta `.delete()`. Proyek tidak menggunakan abstraksi model/entity ORM tingkat tinggi karena fokus pembelajaran adalah memahami query dan relasi database secara eksplisit.
 
 ### 4. UI & Styling (Tailwind CSS v4)
 - Untuk memukau penguji pada kriteria penilaian Desain (Kerapihan, Filosofi Pewarnaan), proyek akan menggunakan **Tailwind CSS versi 4**.
 - Memungkinkan pembuatan UI modern yang responsif dan sangat kencang menggunakan mesin CSS *native* (tanpa `tailwind.config.js` gaya lama).
 
 ### Kesimpulan
-Kombinasi *Tech Stack* ini (**Next.js JS + Drizzle + Postgres v18 + Tailwind v4**) sangat mutakhir secara arsitektur, sangat cepat untuk pengembangan (*developer experience* tinggi), namun tetap secara ketat dan aman mematuhi syarat tugas untuk menggunakan Javascript (bukan TS).
+Kombinasi *Tech Stack* ini (**Next.js JS + Drizzle ORM Query Builder + Postgres v18 + Tailwind v4**) mendukung pembelajaran query database, arsitektur server, dan pengembangan UI, serta tetap mematuhi syarat tugas untuk menggunakan JavaScript (bukan TypeScript).

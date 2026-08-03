@@ -102,7 +102,7 @@ Gunakan anotasi JSDoc untuk dokumentasi tipe: `@typedef`, `@param`, `@returns`, 
 
 ### Server Actions & Pipeline
 
-Semua server action CRUD **wajib** menggunakan `defineAction()` dari `src/lib/pipeline.js`:
+Semua server action pengelolaan data maupun operasi domain **wajib** menggunakan `defineAction()` dari `src/lib/pipeline.js`. Sistem bukan CRUD murni karena perizinan memiliki invariant, transaksi atomik, riwayat, dan perhitungan teguran:
 
 ```
 auth → authorization (boleh()) → scope enforcement → Zod validation → execute → revalidatePath()

@@ -3,13 +3,13 @@
 **Status:** Accepted
 **Date:** 2026-07-26
 **⚠ Kontradiksi: ADR-0001 (pipeline) — modul ini boleh memakai pipeline, tidak wajib.**
-**⚠ Implementasi: milik anggota kelompok lain — ADR ini hanya menetapkan interface dan invariant, bukan kode.**
+**Implementasi:** sudah tersedia pada `src/lib/perizinan.js` dan adapter database pada `src/db/adapters/perizinan.js`; ADR ini menetapkan interface dan invariant yang harus dipertahankan.
 
 ## Context
 
-Modul inti domain — Perizinan (penerbitan, perpanjangan, pencabutan, Surat Peringatan) — belum
-dibangun. Issue #15–#18 di GitHub akan menuliskannya. Tanpa keputusan seam, aturan domain akan
-disebar ke dalam server action (pola `src/app/actions/*` hari ini) dan tidak bisa di-test.
+Modul inti domain — Perizinan (penerbitan, perpanjangan, pencabutan, Surat Peringatan) — telah
+dibangun di luar Server Action. Tanpa keputusan seam, aturan domain akan tersebar ke dalam adapter
+action dan sulit diuji secara terisolasi.
 
 Aturan yang didefinisikan user stories (`docs/user-stories.md`):
 - Terbitkan izin: status ruang dagang berubah kosong → terisi; upsert Pedagang by NIK.

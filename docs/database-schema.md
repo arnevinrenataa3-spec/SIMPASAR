@@ -1,5 +1,7 @@
 ## Database Schema & ERD
 
+> Catatan implementasi: proyek memang menggunakan paket **Drizzle ORM**. Pemakaiannya difokuskan pada schema definition, migration melalui Drizzle Kit, dan query builder seperti `.select().from()`; proyek tidak memakai abstraksi model/entity ORM tingkat tinggi.
+
 Berdasarkan User Story (Issue #2) dan tambahan fitur Surat Peringatan (SP), berikut adalah rancangan skema database untuk SIMPASAR.
 
 ### Entity Relationship Diagram (ERD)

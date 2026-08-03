@@ -27,7 +27,7 @@
 
 ## Batasan Arsitektur & Teknologi
 *   **Aplikasi:** Monolith (Next.js App Router dengan JavaScript murni, tanpa TypeScript).
-*   **Database:** PostgreSQL v18 dengan tipe data **UUIDv7** untuk semua *Primary Key* demi keamanan dan kecepatan *indexing*. Menggunakan **Drizzle ORM**.
+*   **Database:** PostgreSQL v18 dengan tipe data **UUIDv7** untuk semua *Primary Key* demi keamanan dan kecepatan *indexing*. Menggunakan **Drizzle ORM**, dengan fokus pemakaian pada schema definition, migration, dan query builder seperti `.select().from()` daripada abstraksi model/entity ORM tingkat tinggi.
 *   **UI/UX:** Dibangun dengan Tailwind CSS v4 menggunakan filosofi *Premium Dark Mode/Glassmorphism* dan visualisasi grid peta denah interaktif.
 
 *(Untuk melihat dokumentasi PRD, Database Schema, dan API lengkap, lihat folder `docs/`)*.
