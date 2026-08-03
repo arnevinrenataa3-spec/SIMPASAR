@@ -25,7 +25,6 @@ export default function PublicPage() {
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-emerald-400">Validasi Mandiri</p>
             <h1 className="mt-4 text-4xl font-black leading-tight tracking-tight sm:text-5xl">Kartu pasar Anda, <span className="text-emerald-400">selalu terpantau.</span></h1>
             <p className="mt-5 max-w-md leading-7 text-slate-400">Masukkan Nomor Kartu untuk melihat Ruang Dagang, masa berlaku, dan tingkat Surat Peringatan tanpa login.</p>
-            <div className="mt-8 flex gap-6 border-t border-slate-800 pt-6 text-xs text-slate-400"><span>Tanpa NIK</span><span>Tanpa nomor HP</span><span>Data aman</span></div>
           </header>
           {/* Form interaktif dipisahkan ke Client Component; halaman ini tetap Server Component. */}
           <PublicPermitLookup />

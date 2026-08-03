@@ -129,7 +129,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">
-          SIMPASAR v0.1.0 &bull; Hak Cipta &copy; 2026 Tim SIMPASAR UNIKOM
+          SIMPASAR v0.1.0 &bull; Hak Cipta &copy; 2026 Tim SIMPASAR
         </p>
       </div>
     </div>
